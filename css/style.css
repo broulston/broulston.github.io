@@ -170,7 +170,14 @@ blockquote {
 }
 .section3 {
 	background-color: #ffffff;
-	padding-bottom: 80px;
+	padding-bottom: 40px;
+	padding-top: 40px;
+	padding-left: 0px;
+	padding-right: 0px;
+}
+.section_contact {
+	background-color: #ffffff;
+	padding-bottom: 0px;
 	padding-top: 0px;
 	padding-left: 0px;
 	padding-right: 0px;
