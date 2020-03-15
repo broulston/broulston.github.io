@@ -934,6 +934,13 @@ figure {
 img {
   vertical-align: middle;
 }
+.resize {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+  height: 25%;
+}
 .img-responsive,
 .thumbnail > img,
 .thumbnail a > img,
@@ -2060,11 +2067,15 @@ table {
 caption {
   padding-top: 8px;
   padding-bottom: 8px;
-  color: #777;
-  text-align: left;
+  color: white;
+  text-align: center;
+  font-size: x-large;
 }
 th {
-  text-align: left;
+  text-align: center;
+}
+td {
+  text-align: center;
 }
 .table {
   width: 100%;
@@ -2080,7 +2091,7 @@ th {
   padding: 8px;
   line-height: 1.42857143;
   vertical-align: top;
-  border-top: 1px solid #ddd;
+  border-top: 0px solid #ddd;
 }
 .table > thead > tr > th {
   vertical-align: bottom;
