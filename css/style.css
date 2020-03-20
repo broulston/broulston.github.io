@@ -116,7 +116,7 @@ blockquote {
 ----------------------------------------------------------------------------- */
 .header {
 	color: #ffffff;
-	background-color: rgba(0, 0, 0, 0.10);
+	background-color: black;
 	padding: 10px 0;
 	-webkit-transition: all 0.2s ease-in-out;
 	-moz-transition: all 0.2s ease-in-out;
@@ -253,16 +253,16 @@ blockquote {
 	position: relative;
 }
 .bg-image-1 {
-	background: url("../images/bg-image-1.jpg") 50% 0px no-repeat;
+	background: url("../images/backgrounds/bg-image-1.jpg") 50% 0px no-repeat;
 }
-.bg-image-2 {
-	background: url("../images/bg-image-2.jpg") 50% 0px no-repeat;
+.mont_mag {
+	background: url("../images/backgrounds/mont_mag.jpg") 50% 0px no-repeat;
 }
 .galaxy{
-	background: url("../images/galaxy.jpg") 50% 0px no-repeat;
+	background: url("../images/backgrounds/galaxy.jpg") 50% 0px no-repeat;
 }
 .nebula {
-	background: url("../images/nebula.jpg") 50% 0px no-repeat;
+	background: url("../images/backgrounds/nebula.jpg") 50% 0px no-repeat;
 }
 /* Misc
 ----------------------------------------------------------------------------- */
