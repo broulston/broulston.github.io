@@ -2643,6 +2643,10 @@ input, select, textarea {
 			width: 6.25em;
 		}
 
+		#header .contact {
+		color: #ffffff;
+		}
+
 /* Footer */
 
 	#footer .contact {
