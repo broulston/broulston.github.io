@@ -1,587 +1,318 @@
-<!DOCTYPE HTML>
-<!--
-	Strata by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
--->
-<html>
-	<head>
-		<title>Benjamin R. Roulston, Ph.D.</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="assets/css/main.css" />
-	</head>
-	<body class="is-preload">
+<!DOCTYPE html>
+<html lang="en">
 
-		<!-- Header -->
-			<header id="header">
-				<div class="inner">
-					<a href="#" class="image avatar"><img src="images/profile_shot.jpg" alt="" /></a>
-                    <div class="contact">
-                        <h1><strong>Benjamin R. Roulston, Ph.D.</strong></h1>
-                        Postdoctoral Scholar Research Associate in Astronomy<br>
-                        Division of Physics, Mathematics and Astronomy<br>
-                        California Institute of Technology<br>
-                    </div>
-					<h3><a href="#about">About</a><a>  |  </a>
-					<a href="#research">Research</a><a> | </a>
-					<a href="#teaching">Teaching</a><a> | </a>
-					<a href="Roulston_Benjamin_CV.pdf" target="_blank">CV</a>
-					<!-- <a href="#contact">Contact</a></h3> -->
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Benjamin Roulston | Astrophysicist</title>
+	<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-white text-gray-800 font-sans">
+	<!-- Header -->
+	<header class="p-6 bg-gray-100 shadow-md">
+		<div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center">
+			<h1 class="text-3xl font-bold">Benjamin Roulston</h1>
+			<nav class="mt-2 md:mt-0">
+				<a href="#about" class="mx-2">About</a>
+				<a href="research.html" class="mx-2">Research</a>
+				<a href="teaching.html" class="mx-2">Teaching</a>
+				<!-- <a href="#random" class="mx-2">Random</a> -->
+				<a href="Roulston_Benjamin_CV.pdf" target="_blank" class="mx-2">CV</a>
+			</nav>
+		</div>
+	</header>
+
+	<div class="max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-12">
+
+		<!-- Left Sidebar -->
+		<aside class="lg:col-span-1 space-y-8">
+			<!-- Profile Image -->
+			<figure class="selfie-figure mx-auto lg:mx-0">
+				<img src="images/profile_shot.jpg" alt="Portrait of Benjamin Roulston" class="selfie" loading="lazy"
+					width="480" height="480" tabindex="0">
+			</figure>
+
+			<!-- Contact -->
+			<section id="contact">
+				<h2 class="text-xl font-bold mb-3 border-b pb-1">Contact</h2>
+				<p class="mb-2">Email: <a href="mailto:broulsto@clarkson.edu"
+						class="text-blue-600 hover:underline">broulsto@clarkson.edu</a></p>
+				<p class="mb-2">Clarkson: <a href="https://www.clarkson.edu/people/benjamin-roulston"
+						class="text-blue-600 hover:underline">clarkson.edu/people/benjamin-roulston</a></p>
+				<p class="mb-2">GitHub: <a href="https://github.com/broulston"
+						class="text-blue-600 hover:underline">github.com/broulston</a></p>
+				<p class="mb-2">LinkedIn: <a href="https://linkedin.com/in/benjaminroulston"
+						class="text-blue-600 hover:underline">linkedin.com/in/benjaminroulston</a></p>
+				<p class="text-sm mt-3 text-gray-600">Feel free to get in touch if you want to talk anything related to
+					binary stars, MESA, large data in astronomy, or teaching!</p>
+			</section>
+
+			<!-- Education -->
+			<section>
+				<h2 class="text-xl font-bold mb-3 border-b pb-1">Education</h2>
+				<div class="mb-4">
+					<p class="font-semibold">Ph.D. - Astronomy</p>
+					<p class="text-sm text-gray-600">Boston University 2022</p>
+					<p class="text-sm mt-1">
+						Thesis: <a href="https://ui.adsabs.harvard.edu/abs/2022PhDT........20R/abstract"
+							class="text-blue-600 hover:underline">Forged by Giants: Understanding the Dwarf Carbon
+							Stars</a>
+					</p>
 				</div>
-			</header>
+				<div>
+					<p class="font-semibold">B.S. - Physics - Mathematics Minor - Honors</p>
+					<p class="text-sm text-gray-600">Clarkson University 2016</p>
 
-		<!-- Main -->
-			<div id="main">
-
-					<section id="about">
-					<blockquote>“If the stars should appear one night in a thousand years, how would men believe and adore; and preserve for many generations the remembrance of the city of God which had been shown! But every night come out these envoys of beauty, and light the universe with their admonishing smile.” ― Ralph Waldo Emerson</blockquote>
-						
-						<header class="major">
-							<h1>About Me</h1>
-						</header>
-							<p align="justify">Hello! My name is Ben, and I am postdoc in the Division of Physics, Mathematics and Astronomy at Caltech. I earned my B.S. from Clarkson University in May 2016 with a physics major and a mathematics minor. I earned my Ph.D. in Astronomy from Boston University in August 2022.</p>
-							<p align="justify">As a graduate student, my research revolved around post-mass transfer binaries. Specifically, in my dissertation, I  studied the dwarf carbon stars, main-sequence stars with carbon enhanced atmospheres (C/O > 1). As main-sequence stars, they could not have produced their own carbon yet, and so have been enhanced by a companion. </p>
-							<p align="justify">Using repeat epochs of SDSS spectra, I modeled the dC population. I found them to be consistent with a 100% binary fraction. I also found 34 new periodic dCs and a host of new short periods as well.  Additionally, I have also characterized dCs as being chromospherically active from their X-ray emission. More information can be found in my <a href="#dC">Research</a> section.</p>
-							<p align="justify">Another one of my research projects is working with the Time-Domain Spectroscopic Survey's (<a href="https://www.sdss.org/dr16/spectro/extragalactic-observing-programs/tdss/"target="_blank">TDSS</a>) stellar sample of variable stars. This sample was selected based on SDSS and PanSTARRS photometry for variability, for which the TDSS program got spectra for approximately 50,000 variable stars. I have also collected <a href="http://nesssi.cacr.caltech.edu/DataRelease/"target="_blank">CRTS</a> and <a href="https://www.ztf.caltech.edu/"target="_blank">ZTF</a> light curves for 25,000 of these variable stars with spectra. My research aims to analyze this sample to understand how the combination of spectra and light curves can aid in the classification of stellar variables. More information can be found in my <a href="#varstar">Research</a> section.</p>
-							<p align="justify">If you have any interest in my research or questions, feel free to contact me at the email address below. I am always looking to share my interests with people and to help spread astronomy to everyone!</p>
-					</section>
-
-
-					<section id="research">
-						<header class="major">
-							<h1>Research</h1>
-						</header>
-
-
-						<h2 id="dC">Dwarf Carbon Stars</h2>
-
-							<div class="box alt">
-								<div class="row gtr-50 gtr-uniform">
-									<div class="col-12"><span class="image fit"><img src="images/research/C_temp_plot.png" alt="" /></span></div>
-								</div>
-							</div>
-							<p align="justify">Dwarf carbon (dC) stars <em>are main-sequence</em> stars that have carbon-to-oxygen ratios greater than one (C/O > 1). This gives these stars the unique characteristic molecular bands of C<sub>2</sub>, CN, and CH in their optical spectra. The figure here shows examples of different kinds of dCs, with varying strengths of their carbon bands. </p>
-							<p align="justify">As main-sequence stars, dCs cannot have created this carbon excess themselves and must have received this enhancement from a companion. My work has used repeat spectroscopy from the SDSS to find radial velocity variations showing dCs as a population must all be in binaries. </p>
-							<p align="justify">Although there are around 1000 known dCs, only a handful have had measured periods. Therefore, I searched for more dC periods using the ZTF survey, finding 34 new photometric periods. Surprisingly, 82% of these have periods of less than two days! These short periods were surprising as they imply that they experienced a  common-envelope phase.  It was thought that any dC that experienced a common-envelope during formation would have truncated the thermal pulses of the previous AGB companion, stopping any carbon enhancement. However, my work showed that instead, dCs could, and most seem to, enter a common-envelope phase after the carbon enhancement has already taken place. This showed that dCs are a prime candidate for post-wind-Roche lobe overflow systems, and follow-up observations and simulations can be used to constrain efficiencies of wind-Roche lobe overflow and common-envelopes.</p>
-							<p align="justify">As post-mass transfer systems, dCs have accreted significant amounts of mass and angular momentum. Thus dCs may show signs of spin-up and magnetic rejuvenation. I observed dCs with the <em>Chandra X-ray Observatory</em>. I found that dCs show X-ray emissions that are consistent with chromospheric activity and fast rotations. </p>
-							<p align="justify"> If you want to read more about my research on these stars, my papers are available below.</p>
-							dC Papers:<br>
-							<a href="https://ui.adsabs.harvard.edu/abs/2019ApJ...877...44R/abstract"target="_blank">Roulston+2019, ApJ, The Time-Domain Spectroscopic Survey: Radial Velocity Variability in Dwarf Carbon Stars </a><br>
-							<a href="https://ui.adsabs.harvard.edu/abs/2020ApJS..249...34R/abstract"target="_blank">Roulston+2020, ApJS, Classifying Single Stars and Spectroscopic Binaries Using Optical Stellar Templates </a><br>
-							<a href="https://ui.adsabs.harvard.edu/abs/2021ApJ...922...33R/abstract"target="_blank">Roulston+2021, ApJ, Unexpected Short-Period Variability in Dwarf Carbon Stars from the Zwicky Transient Facility </a><br>
-							<a href="https://ui.adsabs.harvard.edu/abs/2022ApJ...926..210R/abstract"target="_blank">Roulston+2022, ApJ, New Clues to the Evolution of Dwarf Carbon Stars From Their Variability and X-Ray Emission </a><br>
-							<P></P>
-						<h2 id="varstar">TDSS Variable Stars</h2>
-
-							<div class="box alt">
-								<div class="row gtr-50 gtr-uniform">
-									<div class="col-12"><span class="image fit"><img src="images/research/VarStar_Vi.png" alt="" /></span></div>
-								</div>
-							</div>
-						    <p align="justify"> Another of my projects focuses on variable stars in the TDSS survey. This project consists of approximately 50,000 stars that were selected from SDSS and PanSTARRS photometry based on variability. Our TDSS program got spectra for all of these 50,000 variable stars. I have also collected <a href="http://nesssi.cacr.caltech.edu/DataRelease/"target="_blank">CRTS</a> and <a href="https://www.ztf.caltech.edu/"target="_blank">ZTF</a> light curves for about 25,000 of these. My research aims to analyze this sample to understand how the combination of spectra and light curves can aid in the classification of stellar variables. This project is ongoing, and if you would like more information at this time feel free to contact me!</p>
-					</section>
-
-
-					<section id="teaching">
-						<header class="major">
-							<h1>Teaching</h1>
-						</header>
-
-						<div class="box alt">
-							<div class="row gtr-50 gtr-uniform">
-								<div class="col-12"><span class="image fit"><img src="images/teaching.jpg" alt="Teaching astronomy students about variable stars" /></span></div>
-							</div>
-							</div>
-							<p align="justify"> As teachers, we influence more than just the direct education of our students. For some, we are their first introduction to higher education or a particular field. For others, we may be the last science course they take in their formal education. For hopefully a few, we may inspire them to pursue a lifelong career in our fields, which undoubtedly happened to each of us at some point. Whatever the outcome, students' interactions with their professors and classes undoubtedly leave a mark on their education and future. As such, it is imperative that we not only be their teachers, but also their mentors and guides, in exploring their education. </p>
-							<p align="justify"> My teaching philosophy centers around the idea that <B><em>students learn more effectively when they are engaged with the material and participate in their education.</em></B> The key here is constructing classes in such a way as to cover the typical material needed (think usual lectures of the needed concepts, equations, theorems, derivations) combined with example use of those principles, so students see and, most importantly, <em>do</em> the real-world analysis needed. My goal as an instructor is <B><em>to instill a sense of appreciation and confidence in students' science abilities and to give them the reasoning and analytical skills necessary to understand and partake in astronomy or physics.</em></B></p>
-							<p align="justify"> Below, I include anonymous student teaching evaluations for myself from all courses that I have been a teaching assistant for. </p>
-
-
-						    <table class="table">
-						  	<caption>Course Evaluations for Courses as Teaching Assistant</caption>
-							<tr>
-								<tr>
-									<th>Course Number</th>
-									<th>Semester</th>
-									<th>University</th>
-								</tr>
-								<tr>
-									<td><a href="evaluations/2015_SPRING_CourseEval_PH131_Roulston_SEC30.pdf">PH131</a></td>
-									<td>Spring 2015</td>
-									<td>Clarkson University</td>
-								</tr>
-								<tr>
-									<td>PH131</td>
-									<!--<td><a href="evaluations/2015_SPRING_CourseEval_PH131_Roulston_SEC30.pdf">PH131</a></td>-->
-									<td>Fall 2015</td>
-									<td>Clarkson University</td>
-								</tr>
-								<tr>
-									<td><a href="evaluations/2016_SPRING_CourseEval_PH131_Roulston_SEC96.pdf">PH131</a></td>
-									<td>Spring 2016</td>
-									<td>Clarkson University</td>
-								</tr>
-								<tr>
-									<td><a href="evaluations/2016_FALL_CourseEval_AS202_Roulston_A2-A3-A4-A5.pdf">AS202</a></td>
-									<td>Fall 2016</td>
-									<td>Boston University</td>
-								</tr>
-								<tr>
-									<td><a href="evaluations/2017_FALL_CourseEval_AS202_Roulston_A2-A5.pdf">AS202</a></td>
-									<td>Spring 2017</td>
-									<td>Boston University</td>
-								</tr>
-								<tr>
-									<td><a href="evaluations/2017_SPRING_CourseEval_AS101_Roulston_A4-A6-A8.pdf">AS101</a></td>
-									<td>Fall 2017</td>
-									<td>Boston University</td>
-								</tr>
-								<tr>
-									<td><a href="evaluations/2018_SPRING_CourseEval_AS203_Roulston_A3-A4.pdf">AS203</a></td>
-									<td>Spring 2018</td>
-									<td>Boston University</td>
-								</tr>  
-							</tr>
-						    </table>
-					</section>	
-
-
-				
-
-
-
-				<!-- Two -->
-<!-- 					<section id="two">
-						<h2>Recent Work</h2>
-						<div class="row">
-							<article class="col-6 col-12-xsmall work-item">
-								<a href="images/fulls/01.jpg" class="image fit thumb"><img src="images/thumbs/01.jpg" alt="" /></a>
-								<h3>Magna sed consequat tempus</h3>
-								<p>Lorem ipsum dolor sit amet nisl sed nullam feugiat.</p>
-							</article>
-							<article class="col-6 col-12-xsmall work-item">
-								<a href="images/fulls/02.jpg" class="image fit thumb"><img src="images/thumbs/02.jpg" alt="" /></a>
-								<h3>Ultricies lacinia interdum</h3>
-								<p>Lorem ipsum dolor sit amet nisl sed nullam feugiat.</p>
-							</article>
-							<article class="col-6 col-12-xsmall work-item">
-								<a href="images/fulls/03.jpg" class="image fit thumb"><img src="images/thumbs/03.jpg" alt="" /></a>
-								<h3>Tortor metus commodo</h3>
-								<p>Lorem ipsum dolor sit amet nisl sed nullam feugiat.</p>
-							</article>
-							<article class="col-6 col-12-xsmall work-item">
-								<a href="images/fulls/04.jpg" class="image fit thumb"><img src="images/thumbs/04.jpg" alt="" /></a>
-								<h3>Quam neque phasellus</h3>
-								<p>Lorem ipsum dolor sit amet nisl sed nullam feugiat.</p>
-							</article>
-							<article class="col-6 col-12-xsmall work-item">
-								<a href="images/fulls/05.jpg" class="image fit thumb"><img src="images/thumbs/05.jpg" alt="" /></a>
-								<h3>Nunc enim commodo aliquet</h3>
-								<p>Lorem ipsum dolor sit amet nisl sed nullam feugiat.</p>
-							</article>
-							<article class="col-6 col-12-xsmall work-item">
-								<a href="images/fulls/06.jpg" class="image fit thumb"><img src="images/thumbs/06.jpg" alt="" /></a>
-								<h3>Risus ornare lacinia</h3>
-								<p>Lorem ipsum dolor sit amet nisl sed nullam feugiat.</p>
-							</article>
-						</div>
-						<ul class="actions">
-							<li><a href="#" class="button">Full Portfolio</a></li>
-						</ul>
-					</section> -->
-
-				<!-- Three -->
-<!-- 					<section id="three">
-						<h2>Get In Touch</h2>
-						<p>Accumsan pellentesque commodo blandit enim arcu non at amet id arcu magna. Accumsan orci faucibus id eu lorem semper nunc nisi lorem vulputate lorem neque lorem ipsum dolor.</p>
-						<div class="row">
-							<div class="col-8 col-12-small">
-								<form method="post" action="#">
-									<div class="row gtr-uniform gtr-50">
-										<div class="col-6 col-12-xsmall"><input type="text" name="name" id="name" placeholder="Name" /></div>
-										<div class="col-6 col-12-xsmall"><input type="email" name="email" id="email" placeholder="Email" /></div>
-										<div class="col-12"><textarea name="message" id="message" placeholder="Message" rows="4"></textarea></div>
-									</div>
-								</form>
-								<ul class="actions">
-									<li><input type="submit" value="Send Message" /></li>
-								</ul>
-							</div>
-							<div class="col-4 col-12-small">
-								<ul class="labeled-icons">
-									<li>
-										<h3 class="icon solid fa-home"><span class="label">Address</span></h3>
-										1234 Somewhere Rd.<br />
-										Nashville, TN 00000<br />
-										United States
-									</li>
-									<li>
-										<h3 class="icon solid fa-mobile-alt"><span class="label">Phone</span></h3>
-										000-000-0000
-									</li>
-									<li>
-										<h3 class="icon solid fa-envelope"><span class="label">Email</span></h3>
-										<a href="#">hello@untitled.tld</a>
-									</li>
-								</ul>
-							</div>
-						</div>
-					</section> -->
-
-				<!-- Four -->
-				<!-- 
-					<section id="four">
-						<h2>Elements</h2>
-
-						<section>
-							<h4>Text</h4>
-							<p>This is <b>bold</b> and this is <strong>strong</strong>. This is <i>italic</i> and this is <em>emphasized</em>.
-							This is <sup>superscript</sup> text and this is <sub>subscript</sub> text.
-							This is <u>underlined</u> and this is code: <code>for (;;) { ... }</code>. Finally, <a href="#">this is a link</a>.</p>
-							<hr />
-							<header>
-								<h4>Heading with a Subtitle</h4>
-								<p>Lorem ipsum dolor sit amet nullam id egestas urna aliquam</p>
-							</header>
-							<p>Nunc lacinia ante nunc ac lobortis. Interdum adipiscing gravida odio porttitor sem non mi integer non faucibus ornare mi ut ante amet placerat aliquet. Volutpat eu sed ante lacinia sapien lorem accumsan varius montes viverra nibh in adipiscing blandit tempus accumsan.</p>
-							<header>
-								<h5>Heading with a Subtitle</h5>
-								<p>Lorem ipsum dolor sit amet nullam id egestas urna aliquam</p>
-							</header>
-							<p>Nunc lacinia ante nunc ac lobortis. Interdum adipiscing gravida odio porttitor sem non mi integer non faucibus ornare mi ut ante amet placerat aliquet. Volutpat eu sed ante lacinia sapien lorem accumsan varius montes viverra nibh in adipiscing blandit tempus accumsan.</p>
-							<hr />
-							<h2>Heading Level 2</h2>
-							<h3>Heading Level 3</h3>
-							<h4>Heading Level 4</h4>
-							<h5>Heading Level 5</h5>
-							<h6>Heading Level 6</h6>
-							<hr />
-							<h5>Blockquote</h5>
-							<blockquote>Fringilla nisl. Donec accumsan interdum nisi, quis tincidunt felis sagittis eget tempus euismod. Vestibulum ante ipsum primis in faucibus vestibulum. Blandit adipiscing eu felis iaculis volutpat ac adipiscing accumsan faucibus. Vestibulum ante ipsum primis in faucibus lorem ipsum dolor sit amet nullam adipiscing eu felis.</blockquote>
-							<h5>Preformatted</h5>
-							<pre><code>i = 0;
-
-while (!deck.isInOrder()) {
-print 'Iteration ' + i;
-deck.shuffle();
-i++;
-}
-
-print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
-						</section>
-
-						<section>
-							<h4>Lists</h4>
-							<div class="row">
-								<div class="col-6 col-12-xsmall">
-									<h5>Unordered</h5>
-									<ul>
-										<li>Dolor pulvinar etiam magna etiam.</li>
-										<li>Sagittis adipiscing lorem eleifend.</li>
-										<li>Felis enim feugiat dolore viverra.</li>
-									</ul>
-									<h5>Alternate</h5>
-									<ul class="alt">
-										<li>Dolor pulvinar etiam magna etiam.</li>
-										<li>Sagittis adipiscing lorem eleifend.</li>
-										<li>Felis enim feugiat dolore viverra.</li>
-									</ul>
-								</div>
-								<div class="col-6 col-12-xsmall">
-									<h5>Ordered</h5>
-									<ol>
-										<li>Dolor pulvinar etiam magna etiam.</li>
-										<li>Etiam vel felis at lorem sed viverra.</li>
-										<li>Felis enim feugiat dolore viverra.</li>
-										<li>Dolor pulvinar etiam magna etiam.</li>
-										<li>Etiam vel felis at lorem sed viverra.</li>
-										<li>Felis enim feugiat dolore viverra.</li>
-									</ol>
-									<h5>Icons</h5>
-									<ul class="icons">
-										<li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
-										<li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
-										<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
-										<li><a href="#" class="icon brands fa-github"><span class="label">Github</span></a></li>
-										<li><a href="#" class="icon brands fa-dribbble"><span class="label">Dribbble</span></a></li>
-										<li><a href="#" class="icon brands fa-tumblr"><span class="label">Tumblr</span></a></li>
-									</ul>
-								</div>
-							</div>
-							<h5>Actions</h5>
-							<ul class="actions">
-								<li><a href="#" class="button primary">Default</a></li>
-								<li><a href="#" class="button">Default</a></li>
-							</ul>
-							<ul class="actions small">
-								<li><a href="#" class="button primary small">Small</a></li>
-								<li><a href="#" class="button small">Small</a></li>
-							</ul>
-							<div class="row">
-								<div class="col-6 col-12-small">
-									<ul class="actions stacked">
-										<li><a href="#" class="button primary">Default</a></li>
-										<li><a href="#" class="button">Default</a></li>
-									</ul>
-								</div>
-								<div class="col-6 col-12-small">
-									<ul class="actions stacked">
-										<li><a href="#" class="button primary small">Small</a></li>
-										<li><a href="#" class="button small">Small</a></li>
-									</ul>
-								</div>
-								<div class="col-6 col-12-small">
-									<ul class="actions stacked">
-										<li><a href="#" class="button primary fit">Default</a></li>
-										<li><a href="#" class="button fit">Default</a></li>
-									</ul>
-								</div>
-								<div class="col-6 col-12-small">
-									<ul class="actions stacked">
-										<li><a href="#" class="button primary small fit">Small</a></li>
-										<li><a href="#" class="button small fit">Small</a></li>
-									</ul>
-								</div>
-							</div>
-						</section>
-
-						<section>
-							<h4>Table</h4>
-							<h5>Default</h5>
-							<div class="table-wrapper">
-								<table>
-									<thead>
-										<tr>
-											<th>Name</th>
-											<th>Description</th>
-											<th>Price</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr>
-											<td>Item One</td>
-											<td>Ante turpis integer aliquet porttitor.</td>
-											<td>29.99</td>
-										</tr>
-										<tr>
-											<td>Item Two</td>
-											<td>Vis ac commodo adipiscing arcu aliquet.</td>
-											<td>19.99</td>
-										</tr>
-										<tr>
-											<td>Item Three</td>
-											<td> Morbi faucibus arcu accumsan lorem.</td>
-											<td>29.99</td>
-										</tr>
-										<tr>
-											<td>Item Four</td>
-											<td>Vitae integer tempus condimentum.</td>
-											<td>19.99</td>
-										</tr>
-										<tr>
-											<td>Item Five</td>
-											<td>Ante turpis integer aliquet porttitor.</td>
-											<td>29.99</td>
-										</tr>
-									</tbody>
-									<tfoot>
-										<tr>
-											<td colspan="2"></td>
-											<td>100.00</td>
-										</tr>
-									</tfoot>
-								</table>
-							</div>
-
-							<h5>Alternate</h5>
-							<div class="table-wrapper">
-								<table class="alt">
-									<thead>
-										<tr>
-											<th>Name</th>
-											<th>Description</th>
-											<th>Price</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr>
-											<td>Item One</td>
-											<td>Ante turpis integer aliquet porttitor.</td>
-											<td>29.99</td>
-										</tr>
-										<tr>
-											<td>Item Two</td>
-											<td>Vis ac commodo adipiscing arcu aliquet.</td>
-											<td>19.99</td>
-										</tr>
-										<tr>
-											<td>Item Three</td>
-											<td> Morbi faucibus arcu accumsan lorem.</td>
-											<td>29.99</td>
-										</tr>
-										<tr>
-											<td>Item Four</td>
-											<td>Vitae integer tempus condimentum.</td>
-											<td>19.99</td>
-										</tr>
-										<tr>
-											<td>Item Five</td>
-											<td>Ante turpis integer aliquet porttitor.</td>
-											<td>29.99</td>
-										</tr>
-									</tbody>
-									<tfoot>
-										<tr>
-											<td colspan="2"></td>
-											<td>100.00</td>
-										</tr>
-									</tfoot>
-								</table>
-							</div>
-						</section>
-
-						<section>
-							<h4>Buttons</h4>
-							<ul class="actions">
-								<li><a href="#" class="button primary">Primary</a></li>
-								<li><a href="#" class="button">Default</a></li>
-							</ul>
-							<ul class="actions">
-								<li><a href="#" class="button large">Large</a></li>
-								<li><a href="#" class="button">Default</a></li>
-								<li><a href="#" class="button small">Small</a></li>
-							</ul>
-							<ul class="actions fit">
-								<li><a href="#" class="button primary fit">Fit</a></li>
-								<li><a href="#" class="button fit">Fit</a></li>
-							</ul>
-							<ul class="actions fit small">
-								<li><a href="#" class="button primary fit small">Fit + Small</a></li>
-								<li><a href="#" class="button fit small">Fit + Small</a></li>
-							</ul>
-							<ul class="actions">
-								<li><a href="#" class="button primary icon solid fa-download">Icon</a></li>
-								<li><a href="#" class="button icon solid fa-download">Icon</a></li>
-							</ul>
-							<ul class="actions">
-								<li><span class="button primary disabled">Primary</span></li>
-								<li><span class="button disabled">Default</span></li>
-							</ul>
-						</section>
-
-						<section>
-							<h4>Form</h4>
-							<form method="post" action="#">
-								<div class="row gtr-uniform gtr-50">
-									<div class="col-6 col-12-xsmall">
-										<input type="text" name="demo-name" id="demo-name" value="" placeholder="Name" />
-									</div>
-									<div class="col-6 col-12-xsmall">
-										<input type="email" name="demo-email" id="demo-email" value="" placeholder="Email" />
-									</div>
-									<div class="col-12">
-										<select name="demo-category" id="demo-category">
-											<option value="">- Category -</option>
-											<option value="1">Manufacturing</option>
-											<option value="1">Shipping</option>
-											<option value="1">Administration</option>
-											<option value="1">Human Resources</option>
-										</select>
-									</div>
-									<div class="col-4 col-12-small">
-										<input type="radio" id="demo-priority-low" name="demo-priority" checked>
-										<label for="demo-priority-low">Low Priority</label>
-									</div>
-									<div class="col-4 col-12-small">
-										<input type="radio" id="demo-priority-normal" name="demo-priority">
-										<label for="demo-priority-normal">Normal Priority</label>
-									</div>
-									<div class="col-4 col-12-small">
-										<input type="radio" id="demo-priority-high" name="demo-priority">
-										<label for="demo-priority-high">High Priority</label>
-									</div>
-									<div class="col-6 col-12-small">
-										<input type="checkbox" id="demo-copy" name="demo-copy">
-										<label for="demo-copy">Email me a copy of this message</label>
-									</div>
-									<div class="col-6 col-12-small">
-										<input type="checkbox" id="demo-human" name="demo-human" checked>
-										<label for="demo-human">I am a human and not a robot</label>
-									</div>
-									<div class="col-12">
-										<textarea name="demo-message" id="demo-message" placeholder="Enter your message" rows="6"></textarea>
-									</div>
-									<div class="col-12">
-										<ul class="actions">
-											<li><input type="submit" value="Send Message" class="primary" /></li>
-											<li><input type="reset" value="Reset" /></li>
-										</ul>
-									</div>
-								</div>
-							</form>
-						</section>
-
-						<section>
-							<h4>Image</h4>
-							<h5>Fit</h5>
-							<div class="box alt">
-								<div class="row gtr-50 gtr-uniform">
-									<div class="col-12"><span class="image fit"><img src="images/fulls/05.jpg" alt="" /></span></div>
-									<div class="col-4"><span class="image fit"><img src="images/thumbs/01.jpg" alt="" /></span></div>
-									<div class="col-4"><span class="image fit"><img src="images/thumbs/02.jpg" alt="" /></span></div>
-									<div class="col-4"><span class="image fit"><img src="images/thumbs/03.jpg" alt="" /></span></div>
-									<div class="col-4"><span class="image fit"><img src="images/thumbs/04.jpg" alt="" /></span></div>
-									<div class="col-4"><span class="image fit"><img src="images/thumbs/05.jpg" alt="" /></span></div>
-									<div class="col-4"><span class="image fit"><img src="images/thumbs/06.jpg" alt="" /></span></div>
-									<div class="col-4"><span class="image fit"><img src="images/thumbs/03.jpg" alt="" /></span></div>
-									<div class="col-4"><span class="image fit"><img src="images/thumbs/02.jpg" alt="" /></span></div>
-									<div class="col-4"><span class="image fit"><img src="images/thumbs/01.jpg" alt="" /></span></div>
-								</div>
-							</div>
-							<h5>Left &amp; Right</h5>
-							<p><span class="image left"><img src="images/avatar.jpg" alt="" /></span>Fringilla nisl. Donec accumsan interdum nisi, quis tincidunt felis sagittis eget. tempus euismod. Vestibulum ante ipsum primis in faucibus vestibulum. Blandit adipiscing eu felis iaculis volutpat ac adipiscing accumsan eu faucibus. Integer ac pellentesque praesent tincidunt felis sagittis eget. tempus euismod. Vestibulum ante ipsum primis in faucibus vestibulum. Blandit adipiscing eu felis iaculis volutpat ac adipiscing accumsan eu faucibus. Integer ac pellentesque praesent. Donec accumsan interdum nisi, quis tincidunt felis sagittis eget. tempus euismod. Vestibulum ante ipsum primis in faucibus vestibulum. Blandit adipiscing eu felis iaculis volutpat ac adipiscing accumsan eu faucibus. Integer ac pellentesque praesent tincidunt felis sagittis eget. tempus euismod. Vestibulum ante ipsum primis in faucibus vestibulum. Blandit adipiscing eu felis iaculis volutpat ac adipiscing accumsan eu faucibus. Integer ac pellentesque praesent.</p>
-							<p><span class="image right"><img src="images/avatar.jpg" alt="" /></span>Fringilla nisl. Donec accumsan interdum nisi, quis tincidunt felis sagittis eget. tempus euismod. Vestibulum ante ipsum primis in faucibus vestibulum. Blandit adipiscing eu felis iaculis volutpat ac adipiscing accumsan eu faucibus. Integer ac pellentesque praesent tincidunt felis sagittis eget. tempus euismod. Vestibulum ante ipsum primis in faucibus vestibulum. Blandit adipiscing eu felis iaculis volutpat ac adipiscing accumsan eu faucibus. Integer ac pellentesque praesent. Donec accumsan interdum nisi, quis tincidunt felis sagittis eget. tempus euismod. Vestibulum ante ipsum primis in faucibus vestibulum. Blandit adipiscing eu felis iaculis volutpat ac adipiscing accumsan eu faucibus. Integer ac pellentesque praesent tincidunt felis sagittis eget. tempus euismod. Vestibulum ante ipsum primis in faucibus vestibulum. Blandit adipiscing eu felis iaculis volutpat ac adipiscing accumsan eu faucibus. Integer ac pellentesque praesent.</p>
-						</section>
-
-					</section> -->
-				
-
-			</div>
-
-		<!-- Footer -->
-			<footer id="footer">
-				<div class="inner">
-					<div class="contact">
-						Benjamin R. Roulston, Ph.D.<br>
-					    Division of Physics, Mathematics and Astronomy <br>
-					    California Institute of Technology <br>
-					    1200 E. California Blvd <br>
-					    Pasadena, CA 91125<br>
-
-						<a href="mailto:roulston@caltech.edu" target="_top">roulston@caltech.edu</a><br>
-                        <P></P>
-					</div>
-					<ul class="icons">
-						<!-- <li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li> -->
-						<li><a href="https://github.com/broulston" class="icon brands fa-github"><span class="label">Github</span></a></li>
-						<!-- <li><a href="#" class="icon brands fa-dribbble"><span class="label">Dribbble</span></a></li> -->
-						<!-- <li><a href="mailto:broulston@cfa.harvard.edu" class="icon solid fa-envelope"><span class="label">Email</span></a></li> -->
-					</ul>
-					<ul class="copyright">
-						<li>&copy; Benjamin Roulston 2022</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
-						<li>This page was last updated on: August 28, 2022</li> 
-					</ul>
 				</div>
-			</footer>
+			</section>
 
-		<!-- Scripts -->
-			<script src="assets/js/jquery.min.js"></script>
-			<script src="assets/js/jquery.poptrox.min.js"></script>
-			<script src="assets/js/browser.min.js"></script>
-			<script src="assets/js/breakpoints.min.js"></script>
-			<script src="assets/js/util.js"></script>
-			<script src="assets/js/main.js"></script>
+			<!-- Skills -->
+			<section>
+				<h2 class="text-xl font-bold mb-3 border-b pb-1">Skills</h2>
+				<div class="mb-3">
+					<h3 class="font-semibold text-sm">Programming</h3>
+					<p class="text-sm text-gray-600">Python, Julia, Fortran, MATLAB</p>
+				</div>
+				<div class="mb-3">
+					<h3 class="font-semibold text-sm">Scientific Computing & Modeling</h3>
+					<p class="text-sm text-gray-600">Numerical simulation, MCMC & Bayesian inference, Physical modeling,
+						HPC computing</p>
+				</div>
+				<div class="mb-3">
+					<h3 class="font-semibold text-sm">Data Analysis & Visualization</h3>
+					<p class="text-sm text-gray-600">Machine learning & classification, Large-scale datasets,
+						Statistical analysis, Time-series analysis</p>
+				</div>
+				<div class="mb-3">
+					<h3 class="font-semibold text-sm">Astrophysics</h3>
+					<p class="text-sm text-gray-600">Stellar astrophysics, Binary stars, Spectroscopy, Photometry,
+						Optical/UV/X-ray</p>
+				</div>
+				<div class="mb-3">
+					<h3 class="font-semibold text-sm">Teaching & Curriculum Development</h3>
+					<p class="text-sm text-gray-600">Active learning design, Lab development, Course redesign, STEM
+						outreach</p>
+				</div>
+				<div class="mb-3">
+					<h3 class="font-semibold text-sm">Technical Tools & Platforms</h3>
+					<p class="text-sm text-gray-600">Linux, Git, LaTeX, Jupyter, Cluster computing</p>
+				</div>
+			</section>
 
-	</body>
+
+
+			<!-- Interests -->
+			<section>
+				<h2 class="text-xl font-bold mb-3 border-b pb-1">Interests</h2>
+				<p class="text-sm">Reading, cooking & baking, swimming, kayaking, hiking, trumpet</p>
+			</section>
+		</aside>
+
+		<!-- Main Content -->
+		<main class="lg:col-span-2 space-y-12">
+
+			<!-- About -->
+			<section id="about">
+				<h2 class="text-3xl font-bold mb-4">About Me:</h2>
+				<p class="mb-3 text-lg font-medium">
+					I'm an astrophysicist with a passion for understanding the Universe through observations, data, and
+					computation.
+				</p>
+				<blockquote class="bg-gray-50 border-l-4 border-blue-600 rounded-lg p-4 italic text-gray-700 shadow-sm">
+					“If the stars should appear one night in a thousand years, how would men believe and adore; and
+					preserve for many generations the remembrance of the city of God which had been shown! But every
+					night come out these envoys of beauty, and light the universe with their admonishing smile.”
+					<footer class="mt-2 text-sm font-semibold text-gray-600">— Ralph Waldo Emerson</footer>
+				</blockquote>
+				<div class="bg-gray-50 p-4 rounded-lg border border-gray-100 my-4">
+					<p class="mb-2"><strong>Currently:</strong> Assistant Professor of Physics & Director of Reynold's
+						Observatory</p>
+					<p class="mb-2"><strong>Focus:</strong> Binary stars, common-envelope evolution, chemically peculiar
+						stars, stellar evolution with MESA</p>
+				</div>
+				<!-- <p class="mb-3">
+					Some text can go here.
+				</p>
+				<h3 class="text-xl font-semibold mt-6 mb-2">TITLE</h3>
+				<p>Some text can go here..</p> -->
+			</section>
+
+			<!-- Experience -->
+			<section id="experience">
+				<h2 class="text-2xl font-bold mb-4 border-b pb-2">Professional Appointments</h2>
+				<ul class="space-y-6">
+					<li>
+					<li class="flex items-start space-x-4">
+						<img src="images/clarkson_seal_green.jpeg" alt="Clarkson University Logo"
+							class="w-16 h-auto object-contain mt-1">
+						<div>
+							<div class="font-bold text-lg">Assistant Professor of Physics</div>
+							<div class="text-gray-600 mb-1">Clarkson University - Department of Physics (2023–Present)
+							</div>
+							<p>As a faculty member at Clarkson University, I lead a research program centered on the
+								evolution and observational signatures of close binary systems and chemically peculiar
+								stars, working closely with undergraduate researchers on computational modeling and
+								data-driven analysis. I design and teach a range of physics and astronomy courses,
+								integrating hands-on, inquiry-based labs and real scientific data into the curriculum to
+								help students engage with modern research methods.
+
+								In parallel, I am actively involved in outreach and engagement initiatives, including
+								leading programs through the IMPETUS project that connect K–12 students with coding,
+								robotics, and physics through interactive, project-based activities. Through these
+								efforts, I focus on broadening participation in STEM and building pathways for students
+								to engage with science both on campus and in the wider community.</p>
+
+							<div class="font-bold text-lg">Director of Reynolds Observatory</div>
+							<div class="text-gray-600 mb-1">Clarkson University (2023–Present)</div>
+							<p>I oversee the scientific and technical operation of the facility, including telescope
+								systems, instrumentation, and data infrastructure. My work spans observatory planning
+								and scheduling, maintenance and upgrades of control and imaging systems, and the
+								development of end-to-end data acquisition and reduction workflows to support both
+								research and instructional use. I also lead projects to expand the observatory’s
+								observational capabilities, integrating new hardware and software to improve
+								reliability, automation, and data quality.</p>
+					</li>
+					<li class="flex items-start space-x-4">
+						<img src="images/Caltech_logo.png" alt="Caltech Logo" class="w-16 h-auto object-contain mt-1">
+						<div>
+							<div class="font-bold text-lg">Postdoctoral Scholar Research Associate in Astronomy</div>
+							<div class="text-gray-600 mb-1">California Institute of Technology - Department of Astronomy
+								(2022–2023)</div>
+							<div class="text-gray-600 mb-1">Sponsor: Prof. Shri Kulkarni</div>
+							<p>During my time at Caltech, I worked with the Zwicky Transient Facility (ZTF) team on
+								survey performance and science. I contributed to the MIRAR photometric reduction
+								pipeline, improving data quality and processing reliability, and was involved with the
+								SEDMv2 instrument on the Kitt Peak 2.1-meter telescope, working on control systems and
+								end-to-end data reduction workflows. In parallel, I advanced my own research program by
+								leading undergraduate projects focused on modeling the formation and evolution of dwarf
+								carbon stars.</p>
+						</div>
+					</li>
+					<li class="flex items-start space-x-4">
+						<img src="images/CfA_Logo_Vertical_CMYK.jpg" alt="Center for Astrophysics Logo"
+							class="w-16 h-auto object-contain mt-1">
+						<div>
+							<div class="font-bold text-lg">SAO Predoctoral Fellow</div>
+							<div class="text-gray-600 mb-1">Center for Astrophysics | Harvard & Smithsonian (2017 -
+								2022)</div>
+							<div class="text-gray-600 mb-1">Advisor: Dr. Paul Green</div>
+							<p>I studied post-mass transfer binary systems and variable stars. My main research focused
+								on dwarf carbon stars, where I conducted observational studies using SDSS, ZTF, Chandra,
+								Hubble, as well as my own follow-up using the MMT and Magellan telescopes.
+								I found that dwarf carbon stars have a binary fraction of 100% and that many of them are
+								in close post-common-envelope binaries. </p>
+						</div>
+					</li>
+					<li class="flex items-start space-x-4">
+						<img src="images/Boston-University-Seal-Logo.jpg" alt="Boston University Logo"
+							class="w-16 h-auto object-contain mt-1">
+						<div>
+							<div class="font-bold text-lg">Graduate Researcher</div>
+							<div class="text-gray-600 mb-1">Boston University (Summer 2017)</div>
+							<div class="text-gray-600 mb-1">Advisor: Prof. Wen Li</div>
+							<p>Space Physics - Van Allen Radiation Belt Electron Storms</p>
+						</div>
+					</li>
+					<li class="flex items-start space-x-4">
+						<img src="images/clarkson_seal_green.jpeg" alt="Clarkson University Logo"
+							class="w-16 h-auto object-contain mt-1">
+						<div>
+							<div class="font-bold text-lg">Undergraduate Researcher &amp; Teaching Assistant</div>
+							<div class="text-gray-600 mb-1">Clarkson University (2014–2016)</div>
+							<p>Undergraduate Researcher - Astrophysics (2014–2016).</p>
+							<p>Undergraduate Physics TA
+								(2015–2016).</p>
+						</div>
+					</li>
+				</ul>
+			</section>
+
+
+			<!-- Projects Section -->
+			<section id="research">
+				<h2 class="text-2xl font-bold mb-6 border-b pb-2">Research</h2>
+				<img src="images/research.jpg" alt="Research Overview"
+					class="rounded-lg shadow-md w-full h-auto object-cover border border-gray-100">
+				<p class="mb-3 text-gray-700">
+					My research centers on modeling the evolution of close binary star systems and connecting their
+					observed properties to theory and the current populations of close binary systems. I develop
+					physically motivated, data-driven models that integrate large astronomical surveys with detailed
+					stellar and galactic simulations, with a focus on common-envelope evolution, chemically peculiar
+					stars, and stellar evolution using the MESA framework. My work emphasizes forward modeling, Bayesian
+					inference, and rigorous uncertainty quantification to link observations to theory.
+				</p>
+				<p class="mb-3 text-gray-700">
+					I lead and contribute to projects spanning the full research pipeline, from target selection and
+					observing strategy to data reduction, statistical analysis, and high-performance computing. This
+					includes building scalable workflows for survey and spectroscopic data, fitting multi-component
+					disk–halo models to stellar populations, and developing reproducible computational tools for
+					parameter estimation and model validation to extract robust physical insight from complex,
+					high-dimensional data.
+				</p>
+				<a href="research.html" class="text-blue-600 hover:underline">See more about my research here</a>
+
+
+			</section>
+
+
+			<section id="teaching">
+				<h2 class="text-2xl font-bold mb-6 border-b pb-2">Teaching</h2>
+				<img src="images/teaching.jpg" alt="Teaching Overview"
+					class="rounded-lg shadow-md w-full h-auto object-cover border border-gray-100">
+
+				<p class="mb-3 text-gray-700">
+					As teachers, we influence more than just the direct education of our students. For some, we are
+					their
+					first introduction to higher education or a particular field. For others, we may be the last science
+					course they take in their formal education. For hopefully a few, we may inspire them to pursue a
+					lifelong
+					career in our fields, which undoubtedly happened to each of us at some point. Whatever the outcome,
+					students'
+					interactions with their professors and classes undoubtedly leave a mark on their education and
+					future.
+					As such, it is imperative that we not only be their teachers, but also their mentors and guides, in
+					exploring
+					their education.
+				</p>
+				<p class="mb-3 text-gray-700">
+					My teaching philosophy centers around the idea that <B><em>students learn more effectively when they
+							are
+							engaged with the material and participate in their education.</em></B> The key here is
+					constructing classes
+					in such a way as to cover the typical material needed (think usual lectures of the needed concepts,
+					equations, theorems, derivations) combined with example use of those principles, so students see
+					and, most
+					importantly, <em>do</em> the real-world analysis needed. My goal as an instructor is <B><em>to
+							instill a
+							sense of appreciation and confidence in students' science abilities and to give them the
+							reasoning and
+							analytical skills necessary to understand and partake in astronomy or physics.</em></B>
+				</p>
+
+				<a href="teaching.html" class="text-blue-600 hover:underline">See more about my teaching here</a>
+
+			</section>
+
+			<!-- <section id="random">
+				<h2 class="text-2xl font-bold mb-6 border-b pb-2">Random Thoughts</h2>
+				<img src="images/Random_Thoughts_Cover_Photo.png" alt="Random Thoughts Overview"
+					class="rounded-lg shadow-md w-full h-auto object-cover border border-gray-100">
+				<p class="mb-3 text-gray-700">
+					This section is a place for me to think out loud about AI, learning, and building things that
+					actually work. I write about technical ideas, career strategy, and a few broader observations that
+					don’t fit neatly anywhere else.
+				</p>
+				<a href="random.html" class="text-blue-600 hover:underline">See More Random Thoughts</a>
+			</section> -->
+
+		</main>
+	</div>
+
+	<!-- Footer -->
+	<footer class="p-6 text-center text-gray-500 border-t mt-12">
+		© 2026 Benjamin Roulston. All rights reserved.
+	</footer>
+</body>
+
 </html>
