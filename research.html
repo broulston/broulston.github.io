@@ -7,6 +7,15 @@
   <title>Research Overview | Benjamin Roulston</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-163ZQGF3WY"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag('js', new Date());
+
+  gtag('config', 'G-163ZQGF3WY');
+</script>
 
 <body class="bg-white text-gray-800 font-sans">
   <!-- Header -->
@@ -26,12 +35,175 @@
   <div class="max-w-4xl mx-auto p-6">
     <main class="space-y-12">
 
-      <!-- Projects Section -->
-      <section id="Projects">
-        <h2 class="text-3xl font-bold mb-6 border-b pb-2">Research Overview</h2>
+      <section id="research">
+        <h2 class="text-3xl font-bold mb-6 border-b pb-2"> Research Overview</h2>
 
+        <p class="mb-3 text-gray-700 text-justify">
+          My research focuses on the evolution of stars in close binary systems and the observational
+          signatures of chemically peculiar stars, combining physical modeling, statistical inference,
+          and large astronomical datasets.
+        </p>
+
+        <!-- Research Overview -->
+        <div class="bg-gray-50 p-5 rounded-lg border border-gray-100 mb-8">
+          <h3 class="text-xl font-semibold mb-2">Research Overview</h3>
+          <p class="text-justify">
+            <!-- Drop in high-level research summary -->
+            I develop physically motivated, data-driven models to connect observations of stellar
+            populations to the underlying processes that govern binary evolution. My work emphasizes
+            forward modeling, uncertainty quantification, and reproducible computational workflows.
+          </p>
+        </div>
+
+        <!-- Research Themes -->
+        <div class="mb-10">
+          <h3 class="text-xl font-semibold mb-3">Research Themes</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+              <h4 class="font-semibold mb-1">Close Binary Star Evolution</h4>
+              <p class="text-sm">
+                Common-envelope evolution, mass transfer, binary population modeling,
+                and connections between theory and observed stellar populations.
+              </p>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+              <h4 class="font-semibold mb-1">Chemically Peculiar & Dwarf Carbon Stars</h4>
+              <p class="text-sm">
+                Formation channels, binary origins, and observational constraints
+                on chemically peculiar stellar systems.
+              </p>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+              <h4 class="font-semibold mb-1">Stellar Evolution Modeling</h4>
+              <p class="text-sm">
+                Detailed stellar evolution calculations using MESA, including
+                parameter studies and model validation against observations.
+              </p>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+              <h4 class="font-semibold mb-1">Statistical & Computational Methods</h4>
+              <p class="text-sm">
+                Bayesian inference, MCMC, hierarchical modeling, and uncertainty
+                quantification for high-dimensional astrophysical problems.
+              </p>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Active & Recent Projects -->
+        <div class="mb-10">
+          <h3 class="text-xl font-semibold mb-3">Active & Recent Projects</h3>
+          <div class="space-y-4">
+
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+              <p class="font-semibold">Modeling the Formation of Dwarf Carbon Stars</p>
+              <p class="text-sm mb-2">
+                Description of the project, scientific motivation, and key results or goals.
+              </p>
+              <div class="flex flex-wrap gap-4 text-sm">
+                <a href="#" class="text-blue-600 hover:underline">Project overview →</a>
+                <a href="#" class="text-blue-600 hover:underline">Code repository →</a>
+                <a href="#" class="text-blue-600 hover:underline">Related publication →</a>
+              </div>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+              <p class="font-semibold">Binary Population Modeling & Survey Constraints</p>
+              <p class="text-sm mb-2">
+                Forward modeling of binary populations constrained by survey data,
+                with emphasis on selection effects and uncertainties.
+              </p>
+              <div class="flex flex-wrap gap-4 text-sm">
+                <a href="#" class="text-blue-600 hover:underline">Data & methods →</a>
+                <a href="#" class="text-blue-600 hover:underline">Figures & results →</a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Methods & Tools -->
+        <div class="mb-10">
+          <h3 class="text-xl font-semibold mb-3">Methods & Tools</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+              <p class="font-semibold mb-1">Modeling</p>
+              <ul class="list-disc list-inside space-y-1">
+                <li>MESA stellar evolution</li>
+                <li>Forward population modeling</li>
+                <li>Physical parameter estimation</li>
+              </ul>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+              <p class="font-semibold mb-1">Statistics</p>
+              <ul class="list-disc list-inside space-y-1">
+                <li>Bayesian inference</li>
+                <li>MCMC & hierarchical models</li>
+                <li>Uncertainty quantification</li>
+              </ul>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+              <p class="font-semibold mb-1">Computation</p>
+              <ul class="list-disc list-inside space-y-1">
+                <li>HPC & cluster computing</li>
+                <li>Python, Julia, Fortran</li>
+                <li>Reproducible workflows</li>
+              </ul>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Publications -->
+        <div class="mb-10">
+          <h3 class="text-xl font-semibold mb-3">Publications</h3>
+          <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+            <!-- Replace with dynamic publication list or links -->
+            <p class="text-sm">
+              Selected publications related to binary star evolution, chemically peculiar stars,
+              and stellar modeling.
+            </p>
+            <a href="#" class="text-sm text-blue-600 hover:underline mt-2 inline-block">
+              Full publication list →
+            </a>
+          </div>
+        </div>
+
+        <!-- Students & Collaboration -->
+        <div class="mb-10">
+          <h3 class="text-xl font-semibold mb-3">Students & Collaboration</h3>
+          <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+            <p>
+              I work closely with undergraduate researchers on computational and observational
+              projects and actively collaborate with colleagues across institutions on survey,
+              instrumentation, and modeling efforts.
+            </p>
+          </div>
+        </div>
+
+        <!-- Data, Code & Resources -->
+        <div class="mb-16">
+          <h3 class="text-xl font-semibold mb-3">Data, Code & Resources</h3>
+          <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+            <ul class="list-disc list-inside text-sm space-y-1">
+              <li><a href="#" class="text-blue-600 hover:underline">Code repositories</a></li>
+              <li><a href="#" class="text-blue-600 hover:underline">Data products</a></li>
+              <li><a href="#" class="text-blue-600 hover:underline">Figures & visualizations</a></li>
+              <li><a href="#" class="text-blue-600 hover:underline">Preprints</a></li>
+            </ul>
+          </div>
+        </div>
 
       </section>
+
     </main>
   </div>
 
