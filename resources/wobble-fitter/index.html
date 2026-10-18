@@ -1,7 +1,9 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Wobble Fitter</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -224,7 +226,7 @@ footer a{color:var(--data)}
       <li><b>A shortcut using Earth.</b> Earth's density is 5.51 g/cm³. Measuring mass and radius in Earth units:
         <br><span class="eq">density = 5.51 g/cm³ × (M ÷ M<sub>Earth</sub>) ÷ (R ÷ R<sub>Earth</sub>)³</span>
         <br>Because the radius is cubed, a planet twice Earth's size has 8 times Earth's volume. It needs 8 Earth masses just to match Earth's density.</li>
-      <li><b>Compare with materials.</b> Water is 1.0 g/cm³, rock is about 3–5.5, iron is about 8 (more when squeezed inside a planet). Gas giants are mostly hydrogen and helium, so they come out around 0.3–1.5.</li>
+      <li><b>Compare with materials, but use the mass too.</b> Water is 1.0 g/cm³, rock is about 3–5.5, iron is about 8. For small planets (up to about 10 Earth masses), density is a good clue to rock versus water versus gas. Giant planets are mostly hydrogen and helium, usually 0.3–1.5 g/cm³. But a very massive one gets squeezed by its own gravity: WASP-18 b, at 10 Jupiter masses, comes out denser than Earth. A rock planet that heavy would be far smaller than Jupiter, so its Jupiter-like size tells us it is mostly gas, compressed by its own weight.</li>
     </ol>
     <span class="live" id="w3live"></span>
   </details>
@@ -309,7 +311,7 @@ function demoFrame(ts){
   y.font="12px "+css("--mono");y.fillStyle=css("--muted");y.textAlign="left";y.fillText("bluer",4,SH-6);y.textAlign="right";y.fillText("redder",SW-4,SH-6);
   y.textAlign="center";y.fillStyle=starCol;y.fillText(vr>0.1?"moving toward us: lines shift blue":vr<-0.1?"moving away: lines shift red":"moving sideways: no shift",SW/2,SH-6);
   // trace
-  traceHist.push([demoT,-vr*f]);while(traceHist.length&&traceHist[0][0]<demoT-2.2)traceHist.shift();
+  if(!traceHist.length||demoT>traceHist[traceHist.length-1][0])traceHist.push([demoT,-vr*f]);while(traceHist.length&&traceHist[0][0]<demoT-2.2)traceHist.shift();
   const tc=$("trace"),z=setup(tc);const A=axes(z,tc,demoT-2.2,demoT,-1.1,1.1,"time →","away ↑  /  toward ↓",v=>"");
   z.strokeStyle=css("--accent");z.lineWidth=2.5;z.beginPath();traceHist.forEach((p,i)=>{const X=A.X(p[0]),Y=A.Y(p[1]);i?z.lineTo(X,Y):z.moveTo(X,Y);});z.stroke();
   requestAnimationFrame(demoFrame);
@@ -456,8 +458,17 @@ function drawMR(){
   if(!S)return;
   if(!(rad>0)){v.textContent=S.rp?"Type the radius you measured in Transit Detective (or use the published one) to place this planet on the diagram.":"51 Peg b doesn't transit, so we can't measure its size. Radial velocity alone also gives only a minimum mass, since we don't know how the orbit is tilted.";return;}
   const rho=density(me,rad);
-  let words=rho>7?"denser than rock: probably a big iron core":rho>3.5?"about as dense as rock, like Earth":rho>1.8?"too light to be solid rock: rock plus lots of water or a thick gas envelope":rho>0.8?"like Jupiter: mostly hydrogen and helium gas":"less dense than water: a puffed-up gas giant that would float in a big enough bathtub";
-  v.textContent="Density ≈ "+rho.toFixed(2)+" g/cm³ — "+words+". (Water is 1.0, Earth is 5.5, Jupiter is 1.3.)";
+  let words;
+  if(me>=50){ // giant planets: too massive to be rock, whatever the density
+    words=rho>2.5?"far too massive to be a rocky planet, so this is a gas giant, mostly hydrogen and helium. Its own enormous gravity squeezes it so hard that it ends up denser than rock. Density alone can fool you for planets this heavy"
+      :rho>0.8?"a gas giant like Jupiter or Saturn, mostly hydrogen and helium"
+      :"a puffed-up gas giant, less dense than water: it would float in a big enough bathtub. Starlight heating it from close by makes it swell";
+  }else if(me>=10){
+    words=rho>3?"between a super-Earth and Neptune: a big rocky core, possibly with a thin atmosphere":"Neptune-like: rock and ice wrapped in a thick hydrogen-helium envelope";
+  }else{
+    words=rho>7?"denser than Earth: probably a large iron core":rho>3.5?"about as dense as rock, so likely a rocky world like Earth":rho>1.8?"too light to be solid rock: rock plus lots of water, or a thick gas envelope":"very low density for its size: it must have a deep, puffy atmosphere";
+  }
+  v.textContent="Mass ≈ "+(me<100?me.toFixed(1)+" Earth masses":(me/317.8).toFixed(2)+" Jupiter masses")+", density ≈ "+rho.toFixed(2)+" g/cm³: "+words+". (Water is 1.0, Earth is 5.5, Jupiter is 1.3.)";
 }
 $("rad").addEventListener("input",()=>{drawMR();liveMethod();});
 $("pubrad").onclick=()=>{if(!S)return;if(S.rp){$("rad").value=S.rp.toFixed(2);drawMR();liveMethod();}else{$("verdict").textContent="51 Peg b doesn't transit, so nobody has measured its radius.";}};
