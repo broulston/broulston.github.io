@@ -1,0 +1,778 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<title>Transit Detective</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: observing logbook — a target strip, then four numbered stations (scan → fold → measure → verdict) down one column. */
+:root{
+  --bg:#eef1f5; --panel:#ffffff; --ink:#18233a; --muted:#5b6780; --line:#d5dbe6;
+  --data:#2c4a86; --accent:#c9761a; --accent-soft:#f6e5cf; --good:#2f7d4f; --warn:#a8461f;
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1524; --panel:#172036; --ink:#e4e9f3; --muted:#9aa6bf; --line:#2a3550;
+  --data:#8fb3ff; --accent:#f0a447; --accent-soft:#3a2c1a; --good:#6cc790; --warn:#f08a5d; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1524; --panel:#172036; --ink:#e4e9f3; --muted:#9aa6bf; --line:#2a3550;
+  --data:#8fb3ff; --accent:#f0a447; --accent-soft:#3a2c1a; --good:#6cc790; --warn:#f08a5d; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+.wrap{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+header h1{font-family:var(--display);font-weight:800;font-size:clamp(2.4rem,6vw,3.6rem);line-height:1;margin:0;letter-spacing:.01em;text-wrap:balance}
+header p{margin:.4rem 0 0;max-width:68ch;color:var(--muted)}
+.eyebrow{font-family:var(--mono);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.targets{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.target{font:inherit;text-align:left;background:var(--panel);color:var(--ink);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer;display:flex;flex-direction:column;gap:2px}
+.target:hover{border-color:var(--data)}
+.target[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.target b{font-family:var(--display);font-size:1.5rem;line-height:1}
+.target span{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+.target .lvl{color:var(--accent)}
+.station{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.station h2{font-family:var(--display);font-weight:600;font-size:1.6rem;margin:0;display:flex;gap:.6rem;align-items:baseline;text-wrap:balance}
+.station h2 .n{font-family:var(--mono);font-size:.85rem;color:var(--accent);border:1.5px solid var(--accent);border-radius:99px;padding:0 .5em}
+.station p{margin:0;max-width:72ch}
+.starinfo{display:flex;flex-wrap:wrap;gap:6px 18px;font-family:var(--mono);font-size:.8rem;color:var(--muted)}
+.starinfo b{color:var(--ink);font-weight:600}
+.hint{font-style:italic;color:var(--muted)}
+canvas{width:100%;display:block;border-radius:8px;background:var(--bg);touch-action:none;cursor:crosshair}
+.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px 20px;align-items:end}
+label{display:flex;flex-direction:column;gap:4px;font-size:.85rem;color:var(--muted)}
+label .v{font-family:var(--mono);color:var(--ink);font-size:.9rem}
+input[type=range]{width:100%;accent-color:var(--accent)}
+input[type=number],input[type=text],select{font:inherit;font-family:var(--mono);font-size:.9rem;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px 8px;width:100%}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+button.btn{font:inherit;font-size:.9rem;background:var(--bg);color:var(--ink);border:1.5px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+button.btn:hover{border-color:var(--data)}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#1b1206;font-weight:700}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-family:var(--mono);font-size:.78rem;background:var(--accent-soft);color:var(--ink);border-radius:99px;padding:2px 4px 2px 10px;display:inline-flex;align-items:center;gap:4px}
+.chip button{font:inherit;border:0;background:transparent;color:var(--muted);cursor:pointer;padding:0 6px;border-radius:99px}
+.readout{font-family:var(--mono);font-size:.95rem}
+.readout b{color:var(--accent)}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.stat{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.stat small{display:block;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.stat strong{font-family:var(--display);font-size:1.9rem;line-height:1.1;font-variant-numeric:tabular-nums}
+.stat em{display:block;font-style:normal;font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+.stat .u{font-family:var(--body);font-size:1rem;font-weight:700;margin-left:.3em;color:var(--muted)}
+.verdict{border-left:4px solid var(--accent);padding:8px 12px;background:var(--accent-soft);border-radius:0 8px 8px 0}
+.verdict.bad{border-color:var(--warn)}
+.reveal{border:1px dashed var(--line);border-radius:10px;padding:12px}
+.reveal table{border-collapse:collapse;font-family:var(--mono);font-size:.85rem;width:100%}
+.reveal td,.reveal th{padding:4px 8px;border-bottom:1px solid var(--line);text-align:left}
+.tablewrap{overflow-x:auto}
+.note{font-size:.8rem;color:var(--muted)}
+details summary{cursor:pointer;font-weight:700}
+.method{border:1px solid var(--line);border-left:4px solid var(--data);border-radius:0 10px 10px 0;background:var(--bg);padding:10px 14px}
+.method summary{cursor:pointer;font-weight:700;color:var(--data)}
+.method ol{margin:.6rem 0 0;padding-left:1.4rem;display:flex;flex-direction:column;gap:.55rem;max-width:78ch}
+.method p{margin:.5rem 0 0}
+.eq{font-family:var(--mono);font-size:.88rem;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:4px 10px;display:inline-block;max-width:100%;overflow-x:auto;white-space:nowrap;vertical-align:middle}
+.live{display:block;margin-top:.6rem;font-family:var(--mono);font-size:.85rem;line-height:1.7;background:var(--panel);border:1px dashed var(--accent);border-radius:8px;padding:8px 12px;overflow-x:auto}
+.live b{color:var(--accent)}
+.live .lab{color:var(--muted);font-family:var(--body);font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;display:block}
+.demo2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:720px){.demo2{grid-template-columns:1fr}}
+.facts{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.45rem}
+.quiz{border:1.5px solid var(--accent);border-radius:10px;padding:10px 14px;background:var(--accent-soft);display:flex;flex-direction:column;gap:8px}
+.quiz .qh{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.quiz .qq{font-weight:700}
+.quiz .opts{display:flex;flex-wrap:wrap;gap:8px}
+.quiz .opts button{font:inherit;font-size:.9rem;background:var(--panel);color:var(--ink);border:1.5px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+.quiz .opts button:hover{border-color:var(--data)}
+.quiz .opts button.right{border-color:var(--good);box-shadow:0 0 0 2px var(--good) inset}
+.quiz .opts button.wrong{border-color:var(--warn);opacity:.75}
+.quiz .fb{font-size:.92rem}
+.quiz .fb b.ok{color:var(--good)} .quiz .fb b.no{color:var(--warn)}
+.x{border-bottom:1.5px dotted var(--accent);cursor:help;outline-offset:2px}
+.x:focus-visible{outline:2px solid var(--accent)}
+#xbubble{position:fixed;z-index:50;max-width:min(320px,calc(100vw - 32px));background:var(--ink);color:var(--bg);font-family:var(--body);font-size:.85rem;line-height:1.4;border-radius:8px;padding:8px 10px;box-shadow:0 6px 24px rgba(0,0,0,.25);pointer-events:none}
+.xpl{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:760px){.xpl{grid-template-columns:1fr}}
+.xpl .controls{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.presets{display:flex;flex-wrap:wrap;gap:6px}
+.presets button{font:inherit;font-size:.8rem;background:var(--bg);color:var(--ink);border:1.5px solid var(--line);border-radius:99px;padding:4px 10px;cursor:pointer}
+.presets button:hover{border-color:var(--accent)}
+.presets button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#1b1206;font-weight:700}
+.xres{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+.xres div{border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--bg)}
+.xres small{display:block;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.xres b{font-family:var(--mono);font-size:1rem;font-variant-numeric:tabular-nums}
+.cheat dl{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:6px 14px;margin:.6rem 0 0}
+.cheat dt{font-family:var(--mono);font-weight:600;color:var(--accent)}
+.cheat dd{margin:0}
+footer{font-size:.8rem;color:var(--muted);max-width:80ch}
+footer a{color:var(--data)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<meta name="description" content="Find exoplanets in real TESS light curves: mark transits, fold to find the period, and measure the planet size.">
+<style>
+#br-sitebar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.25rem 1rem;
+  padding:.5rem clamp(1rem,4vw,2rem);background:#f3f4f6;color:#374151;box-shadow:0 1px 3px rgba(0,0,0,.08);
+  font:600 14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;position:relative;z-index:50;margin:0 0 1rem;border-radius:6px}
+#br-sitebar a{color:#2563eb;text-decoration:none}
+#br-sitebar a:hover,#br-sitebar a:focus-visible{text-decoration:underline}
+#br-sitebar span{font-weight:400;opacity:.85}
+@media print{#br-sitebar{display:none}}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-163ZQGF3WY"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-163ZQGF3WY');</script>
+</head>
+<body>
+<nav id="br-sitebar" aria-label="Site"><a href="../../resources.html">&larr; Teaching Resources</a><span><a href="../../index.html">Benjamin Roulston</a> </span></nav>
+<div class="wrap">
+<header>
+  <h1>Transit Detective</h1>
+  <p>Each star below was watched by NASA's TESS satellite for about a month, taking a brightness reading every two minutes. Some of these stars have planets passing in front of them. One of them is an impostor. Find the dips, work out how often they repeat, and measure how big the thing blocking the light must be.</p>
+</header>
+
+<section class="station">
+  <h2>Transit Explorer: how the method works</h2>
+  <p>From many light-years away, a star is just a dot. We can't see its planets, but we can watch its brightness. If a planet's orbit happens to be lined up edge-on with Earth, once per orbit the planet passes in front of the star and blocks a little of its light. Every slider below changes something real about the star or planet. Watch how each one changes the dip.</p>
+  <div class="quiz" data-quiz="x1"></div>
+  <div class="xpl">
+    <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+      <canvas id="tdemo" height="210" aria-label="A planet crossing in front of its star"></canvas>
+      <canvas id="tdemolc" height="200" aria-label="The star's brightness during the transit"></canvas>
+      <div class="presets" aria-label="Plot controls">
+        <button type="button" id="lky" aria-pressed="false">Lock brightness axis</button>
+        <button type="button" id="lkx" aria-pressed="false">Lock time axis</button>
+        <button type="button" id="lkref">Save this curve to compare</button>
+        <button type="button" id="lkclr" hidden>Clear saved curve</button>
+      </div>
+      <p class="note" id="lknote">Axes rescale automatically to fit each dip. Lock them to see the real, absolute changes as you move the sliders.</p>
+      <div class="xres" id="xres"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;min-width:0">
+      <div class="presets" aria-label="Try a real system"><button type="button" data-pre="hj">Hot Jupiter (WASP-18 b)</button><button type="button" data-pre="earth">Earth seen by aliens</button><button type="button" data-pre="rd">Earth-size around a red dwarf</button><button type="button" data-pre="graze">Grazing transit</button><button type="button" data-pre="pimen">Shallow super-Earth (pi Men c)</button></div>
+      <div class="controls">
+        <label for="xk">Planet size (width compared to the star) <span class="v" id="xkv"></span><input id="xk" type="range" min="0" max="1000" value="663"></label>
+        <label for="xb">Path across the star (impact parameter) <span class="v" id="xbv"></span><input id="xb" type="range" min="0" max="1000" value="300"></label>
+        <label for="xr">Star size <span class="v" id="xrv"></span><input id="xr" type="range" min="10" max="300" value="100"></label>
+        <label for="xm">Star mass <span class="v" id="xmv"></span><input id="xm" type="range" min="8" max="200" value="100"></label>
+        <label for="xp">Orbital period <span class="v" id="xpv"></span><input id="xp" type="range" min="0" max="1000" value="350"></label>
+        <label for="xu">Limb darkening (how much darker the star's edge is) <span class="v" id="xuv"></span><input id="xu" type="range" min="0" max="100" value="60"></label>
+        <label for="xn">Measurement noise <span class="v" id="xnv"></span><input id="xn" type="range" min="0" max="3000" value="300" step="10"></label>
+      </div>
+      <details class="method">
+        <summary>What each slider does</summary>
+        <ol>
+          <li><b>Planet size</b> sets the depth: depth ≈ (R<sub>planet</sub> ÷ R<sub>star</sub>)². Twice as wide means four times deeper. It also sets how long the planet takes to cover the edge of the star (the sloped "ingress" and "egress").</li>
+          <li><b>Path across the star</b> (astronomers call it the impact parameter, <i>b</i>): 0 is straight through the middle, 1 is skimming the edge. Off-center paths are shorter chords, so the transit is shorter. Near the edge the planet never fully fits on the star, giving a V shape.</li>
+          <li><b>Star size</b>: a bigger star is a longer path to cross (longer transit) and a bigger disk to cover (shallower dip for the same planet).</li>
+          <li><b>Star mass and period</b> set the orbit through Kepler's third law: a = ∛(M<sub>star</sub> × P²). A wider orbit means a slower planet, so the transit lasts longer, and the planet is less likely to be lined up with us.</li>
+          <li><b>Limb darkening</b>: stars look darker near their edges because we see cooler, higher layers there. That rounds off the bottom of the dip into a U shape.</li>
+          <li><b>Noise</b>: every real measurement scatters a little. When the noise is bigger than the dip, one transit can't be seen, and you need to fold many together.</li>
+        </ol>
+      </details>
+      <div class="quiz" data-quiz="x2"></div>
+    </div>
+  </div>
+</section>
+
+<section class="station cheat">
+  <details>
+    <summary><b>Units cheat sheet</b>: what do R☉, AU, ppm and K mean? (Tip: tap any underlined value on this page for a plain-language translation.)</summary>
+    <dl>
+      <dt>R☉</dt><dd>One Sun radius, 696,000 km. The Sun is 109 times wider than Earth.</dd>
+      <dt>R⊕ / Earth radii</dt><dd>One Earth radius, 6,371 km. Jupiter is 11.2 Earth radii, Neptune 3.9.</dd>
+      <dt>M☉</dt><dd>One Sun mass, 333,000 Earths.</dd>
+      <dt>AU</dt><dd>Astronomical unit: the Earth–Sun distance, 150 million km. Mercury orbits at 0.39 AU.</dd>
+      <dt>pc</dt><dd>Parsec: 3.26 light-years, or 31 trillion km. The nearest star is 1.3 pc away.</dd>
+      <dt>ppm</dt><dd>Parts per million. 10,000 ppm = 1%. A 100 ppm dip means 1 in every 10,000 photons is blocked.</dd>
+      <dt>K</dt><dd>Kelvin. Same size steps as °C, but starting from absolute zero: °C = K − 273. Water boils at 373 K; the Sun's surface is 5,772 K.</dd>
+      <dt>d, h</dt><dd>Days and hours. TESS times are in days since it began watching that patch of sky.</dd>
+    </dl>
+  </details>
+</section>
+
+<section aria-label="Choose a star">
+  <div class="targets" id="targets"></div>
+</section>
+
+<section class="station">
+  <h2><span class="n">1</span>Scan the light curve</h2>
+  <div class="starinfo" id="starinfo"></div>
+  <p class="hint" id="hint"></p>
+  <canvas id="lc" height="300" aria-label="Brightness of the star versus time"></canvas>
+  <div class="controls">
+    <label for="zoom">Days shown <span class="v" id="zoomv"></span><input id="zoom" type="range" min="0" max="1000" value="1000"></label>
+    <label for="pan">Slide along the month <span class="v" id="panv"></span><input id="pan" type="range" min="0" max="1000" value="0"></label>
+  </div>
+  <p><b>Click the bottom of each dip</b> to mark it. Mark at least three dips that look alike.</p>
+  <div class="row"><div class="chips" id="marks"></div><button class="btn" id="clearmarks" type="button">Clear marks</button></div>
+  <div class="readout" id="spacing">No dips marked yet.</div>
+  <details class="method" open>
+    <summary>How the math works: reading a light curve</summary>
+    <ol>
+      <li><b>Each dot is one brightness measurement.</b> TESS took a picture every 2 minutes. We averaged them into 10-minute chunks to cut down the noise. The vertical axis shows how much brighter or dimmer the star was than usual: 0% is normal, −1% means 1% of the light was missing.</li>
+      <li><b>A transit is a short, repeating dip.</b> Real dips all have about the same depth and the same length. Single low dots scattered around are just noise.</li>
+      <li><b>The time between dips is the orbital period.</b> If you mark the first and last dip, and there are <i>N</i> dips from first to last, then
+        <br><span class="eq">P = (t<sub>last</sub> − t<sub>first</sub>) ÷ (N − 1)</span>
+        <br>Watch for gaps in the data (like TESS pausing to send data home): a missing dip still counts as a step.</li>
+    </ol>
+    <span class="live" id="m1live"></span>
+  </details>
+</section>
+
+<section class="station">
+  <h2><span class="n">2</span>Fold the data on the orbital period</h2>
+  <p>If the dips repeat every <i>P</i> days, stacking the data in chunks of <i>P</i> days lines all the dips up on top of each other. When the period is right, the dip snaps into one sharp shape.</p>
+  <div class="row"><button class="btn primary" id="usemarks" type="button">Use the spacing of my marked dips</button><span class="note" id="usenote"></span></div>
+  <canvas id="fold" height="300" aria-label="Folded light curve"></canvas>
+  <div class="controls">
+    <label for="per">Period (days) <span class="v" id="perv"></span><input id="per" type="range" min="0" max="10000" value="5000"></label>
+    <label for="pernum">Type an exact period (days)<input id="pernum" type="number" step="0.0001" min="0.2" max="30"></label>
+    <label for="shift">Shift the dip to the center <span class="v" id="shiftv"></span><input id="shift" type="range" min="-500" max="500" value="0"></label>
+    <div class="row">
+      <button class="btn" type="button" data-nudge="-0.01">−0.01 d</button><button class="btn" type="button" data-nudge="-0.001">−0.001</button>
+      <button class="btn" type="button" data-nudge="0.001">+0.001</button><button class="btn" type="button" data-nudge="0.01">+0.01 d</button>
+      <label class="row" style="flex-direction:row;align-items:center;gap:6px"><input type="checkbox" id="closeup" checked> Close-up on the dip</label>
+    </div>
+  </div>
+  <div class="quiz" data-quiz="q2"></div>
+  <details class="method" open>
+    <summary>How the math works: folding</summary>
+    <ol>
+      <li><b>Pick a starting transit.</b> Call its time T<sub>0</sub>, the middle of one dip.</li>
+      <li><b>For every measurement, count how many orbits have passed since T<sub>0</sub>.</b>
+        <br><span class="eq">orbits = (t − T<sub>0</sub>) ÷ P</span>
+        <br>Keep only the leftover fraction (the part after the decimal point). That's how far the planet is around its orbit, like reading the minutes on a clock and ignoring the hour.</li>
+      <li><b>Plot every point at its leftover fraction.</b> We convert it to hours from the middle of the dip so the axis is easy to read. If P is right, every transit lands in the same spot and the dips stack into one sharp shape. If P is a little off, each transit lands slightly shifted and the stack smears out.</li>
+      <li><b>Stacking beats noise.</b> Averaging <i>N</i> transits together shrinks the random scatter by about √N. The dark line is that average. It's how TESS finds dips far too small to see in a single transit.</li>
+    </ol>
+    <span class="live" id="m2live"></span>
+  </details>
+</section>
+
+<section class="station">
+  <h2><span class="n">3</span>Measure the depth</h2>
+  <p>Drag the amber line on the folded plot (or use the slider) to the <b>bottom of the dip</b>. The fraction of starlight blocked equals the area of the planet's disk divided by the area of the star's disk.</p>
+  <div class="controls">
+    <label for="depth">Dip depth <span class="v" id="depthv"></span><input id="depth" type="range" min="0" max="1000" value="0"></label>
+  </div>
+  <div class="quiz" data-quiz="q3"></div>
+  <details class="method" open>
+    <summary>How the math works: from depth to size</summary>
+    <ol>
+      <li><b>The dip is an area ratio.</b> Seen from Earth, the star and the planet are both circles. A circle's area is π R², so the fraction of starlight blocked is
+        <br><span class="eq">depth = (π R<sub>planet</sub>²) ÷ (π R<sub>star</sub>²) = (R<sub>planet</sub> ÷ R<sub>star</sub>)²</span></li>
+      <li><b>Undo the square.</b> Taking the square root tells you how wide the planet is compared to the star:
+        <br><span class="eq">R<sub>planet</sub> ÷ R<sub>star</sub> = √depth</span></li>
+      <li><b>Multiply by the star's size.</b> Astronomers know each star's radius from its brightness, temperature and distance (measured by the Gaia satellite). One Sun radius equals 109 Earth radii, or 9.7 Jupiter radii.
+        <br><span class="eq">R<sub>planet</sub> = R<sub>star</sub> × √depth × 109 Earth radii per Sun radius</span></li>
+    </ol>
+    <span class="live" id="m3live"></span>
+    <p class="note">Real stars look a little darker near their edges ("limb darkening"), which makes the middle of a transit slightly deeper than the simple formula assumes. Your answer may come out 5–10% bigger than the published value. That's normal.</p>
+  </details>
+</section>
+
+<section class="station">
+  <h2><span class="n">4</span>What did you find?</h2>
+  <div class="results" id="results"></div>
+  <canvas id="sizes" height="170" aria-label="Your object compared to Earth, Neptune and Jupiter, drawn to scale"></canvas>
+  <div class="verdict" id="verdict"></div>
+  <div class="quiz" data-quiz="q4"></div>
+  <details class="method" open>
+    <summary>How the math works: how far, how hot, and how lucky?</summary>
+    <ol>
+      <li><b>Kepler's third law gives the orbit's size.</b> A planet with a longer year orbits farther out. With the period in years, the distance in AU (1 AU = Earth–Sun distance) and the star's mass in Sun masses:
+        <br><span class="eq">a³ = M<sub>star</sub> × P²</span> &nbsp;so&nbsp; <span class="eq">a = ∛(M<sub>star</sub> × P²)</span></li>
+      <li><b>Closer means hotter.</b> A planet's temperature depends on how hot its star is and how much of the sky the star fills. Ignoring clouds and greenhouse gases:
+        <br><span class="eq">T<sub>planet</sub> ≈ T<sub>star</sub> × √(R<sub>star</sub> ÷ 2a)</span>
+        <br>For comparison, Earth would be about 280 K (7 °C) by this formula and Mercury about 450 K.</li>
+      <li><b>Why don't we see every planet transit?</b> Orbits point in random directions. We only see a transit if we happen to sit close to the plane of the orbit. The chance is about
+        <br><span class="eq">chance ≈ (R<sub>star</sub> + R<sub>planet</sub>) ÷ a</span>
+        <br>Close-in planets have a much better chance. For Earth seen from a random star, it's only about 0.5%, so for every Earth twin that transits, about 200 others are hidden from us. That's why TESS watches hundreds of thousands of stars.</li>
+    </ol>
+    <span class="live" id="m4live"></span>
+  </details>
+  <div class="row"><button class="btn" id="copy" type="button">Copy my results</button><button class="btn" id="revealbtn" type="button">Reveal the answer</button><span class="note" id="copynote"></span></div>
+  <div class="reveal" id="reveal" hidden></div>
+</section>
+
+<section class="station">
+  <details id="livebox">
+    <summary>Bonus: load any star TESS has observed</summary>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:10px">
+      <p>Type a star name (like <span class="readout">WASP-126</span>, <span class="readout">TOI-700</span>, <span class="readout">HD 209458</span>) or a TIC number, then pick a sector. The page downloads the real light curve from NASA's MAST archive.</p>
+      <div class="controls">
+        <label for="livename">Star name or TIC number<input id="livename" type="text" value="HD 209458"></label>
+        <div class="row"><button class="btn" id="livefind" type="button">Find sectors</button></div>
+        <label for="livesec">Sector<select id="livesec" disabled></select></label>
+        <div class="row"><button class="btn primary" id="liveload" type="button" disabled>Load light curve</button></div>
+      </div>
+      <div class="note" id="livestatus">Try a planet from <a href="https://exoplanetarchive.ipac.caltech.edu/" target="_blank" rel="noopener">the NASA Exoplanet Archive</a> or a TESS Object of Interest (TOI) from <a href="https://exofop.ipac.caltech.edu/tess/" target="_blank" rel="noopener">ExoFOP</a>.</div>
+    </div>
+  </details>
+</section>
+
+<footer>Data: TESS 2-minute light curves (SPOC pipeline, PDCSAP flux) from the Mikulski Archive for Space Telescopes (MAST), binned to 10 minutes and flattened. Star sizes from the TESS Input Catalog / NASA Exoplanet Archive.</footer>
+</div>
+
+<script src="tess_data.js"></script>
+<script>
+(function(){
+"use strict";
+const RSUN_RE=109.08, RJ_RE=11.21;
+const $=id=>document.getElementById(id);
+const stars=(window.TESS_DATA||[]).slice();
+const levels={A:"Warm-up",B:"Patience",C:"Noisy",D:"Puzzle",E:"Expert",F:"Suspicious"};
+let S=null, marks=[], P=1, T0=0, depth=0, revealed=false;
+let view={w:1,c:0};
+
+function css(name){return getComputedStyle(document.documentElement).getPropertyValue(name).trim();}
+function pct(arr,q){const a=arr.slice().sort((x,y)=>x-y);return a[Math.max(0,Math.min(a.length-1,Math.floor(q*(a.length-1))))];}
+function fmt(x,d){return (x===null||!isFinite(x))?"—":x.toFixed(d);}
+
+/* ---------- targets ---------- */
+function renderTargets(){
+  const box=$("targets");box.innerHTML="";
+  stars.forEach(s=>{
+    const b=document.createElement("button");b.type="button";b.className="target";
+    b.setAttribute("aria-pressed",S===s?"true":"false");
+    const title=s.live?s.name:("Star "+s.key);
+    b.innerHTML="<b></b><span class='lvl'></span><span></span>";
+    b.children[0].textContent=title;
+    b.children[1].textContent=s.live?"Live download":(levels[s.key]||"");
+    b.children[2].textContent="TIC "+s.tic+" · Sector "+s.sector;
+    b.onclick=()=>select(s);box.appendChild(b);
+  });
+}
+function select(s){
+  S=s;marks=[];revealed=false;$("reveal").hidden=true;
+  const span=s.t[s.t.length-1]-s.t[0];
+  view={w:span,c:s.t[0]+span/2};$("zoom").value=1000;$("pan").value=500;
+  const fl=s.f;s._lo=Math.min(pct(fl,0.0005),1-0.0005);s._hi=pct(fl,0.998);
+  if(!s._noise){const med=pct(fl,0.5);const dev=fl.map(v=>Math.abs(v-med)).sort((a,b)=>a-b);s._noise=dev[dev.length>>1]*1.4826;}
+  // default fold: a plausible period, centered on the deepest point
+  let iMin=0;for(let i=1;i<fl.length;i++)if(fl[i]<fl[iMin])iMin=i;
+  T0=s.t[iMin];setP(Math.min(3,span/4));
+  depth=0;$("depth").value=0;
+  $("starinfo").innerHTML="";
+  const ly=s.dist?s.dist*3.2616:null;
+  const info=[["Star",s.live?s.name:"Star "+s.key],["TIC",s.tic,"TIC = TESS Input Catalog, a list of about 1.7 billion stars. This is the star's catalog number."],["TESS sector",s.sector,"TESS watches one strip of sky (a 'sector') for about 27 days, then moves on. Sector "+s.sector+" is the strip it watched."],
+    ["Star radius",fmt(s.rstar,2)+" R☉",tipStarR(s.rstar)],["Temperature",s.teff?Math.round(s.teff)+" K":"—",s.teff?tipTemp(s.teff,true):null],["Distance",s.dist?fmt(s.dist,1)+" pc":"—",ly?"= "+Math.round(ly).toLocaleString()+" light-years. The light you're analyzing left this star "+(ly<2026?"around the year "+Math.round(2026-ly):Math.round(ly).toLocaleString()+" years ago")+".":null]];
+  info.forEach(([k,v,t])=>{const e=document.createElement("span");e.innerHTML=k+": <b></b>";const bb=e.querySelector("b");bb.textContent=v;if(t)makeTip(bb,t);$("starinfo").appendChild(e);});
+  $("hint").textContent=s.hint||"";
+  renderTargets();renderMarks();drawAll();
+}
+
+/* ---------- canvases ---------- */
+function setupCanvas(c){
+  const dpr=window.devicePixelRatio||1;const r=c.getBoundingClientRect();
+  if(!c.dataset.h)c.dataset.h=c.getAttribute("height");const h=+c.dataset.h;c._h=h;
+  c.width=Math.round(r.width*dpr);c.height=Math.round(h*dpr);c.style.height=h+"px";
+  const ctx=c.getContext("2d");ctx.setTransform(dpr,0,0,dpr,0,0);c._w=r.width;return ctx;
+}
+const PAD={l:58,r:14,t:14,b:38};
+function axes(ctx,c,x0,x1,y0,y1,xlab,ylab,yfmt){
+  const W=c._w,H=c._h;ctx.clearRect(0,0,W,H);
+  ctx.font="12px "+css("--mono");ctx.fillStyle=css("--muted");ctx.strokeStyle=css("--line");ctx.lineWidth=1;
+  const X=v=>PAD.l+(v-x0)/(x1-x0)*(W-PAD.l-PAD.r), Y=v=>PAD.t+(y1-v)/(y1-y0)*(H-PAD.t-PAD.b);
+  const nice=(span,n)=>{const raw=span/n,p=Math.pow(10,Math.floor(Math.log10(raw)));const m=raw/p;return (m<1.5?1:m<3.5?2:m<7.5?5:10)*p;};
+  const dx=nice(x1-x0,6), dy=nice(y1-y0,5);
+  ctx.textAlign="center";ctx.textBaseline="top";
+  for(let v=Math.ceil(x0/dx)*dx;v<=x1+1e-9;v+=dx){const x=X(v);ctx.beginPath();ctx.moveTo(x,PAD.t);ctx.lineTo(x,H-PAD.b);ctx.stroke();ctx.fillText(+v.toFixed(6)+"",x,H-PAD.b+5);}
+  ctx.textAlign="right";ctx.textBaseline="middle";
+  for(let v=Math.ceil(y0/dy)*dy;v<=y1+1e-12;v+=dy){const y=Y(v);ctx.beginPath();ctx.moveTo(PAD.l,y);ctx.lineTo(W-PAD.r,y);ctx.stroke();ctx.fillText(yfmt(v),PAD.l-6,y);}
+  ctx.textAlign="center";ctx.textBaseline="bottom";ctx.fillText(xlab,PAD.l+(W-PAD.l-PAD.r)/2,H-2);
+  ctx.save();ctx.translate(12,PAD.t+(H-PAD.t-PAD.b)/2);ctx.rotate(-Math.PI/2);ctx.textBaseline="middle";ctx.fillText(ylab,0,0);ctx.restore();
+  return {X,Y,W,H};
+}
+const yPct=v=>((v-1)*100).toFixed(Math.abs(v-1)<0.002?2:1)+"%";
+function yLim(lo,hi){const pad=(hi-lo)*0.08;return [lo-pad,hi+pad];}
+
+function drawLC(){
+  const c=$("lc"),ctx=setupCanvas(c);if(!S)return;
+  const t0=S.t[0],x0=view.c-view.w/2,x1=view.c+view.w/2;
+  const [y0,y1]=yLim(S._lo,S._hi);
+  const A=axes(ctx,c,x0-t0,x1-t0,y0,y1,"days since TESS started watching","brightness change",yPct);
+  ctx.save();ctx.beginPath();ctx.rect(PAD.l,PAD.t,A.W-PAD.l-PAD.r,A.H-PAD.t-PAD.b);ctx.clip();
+  ctx.fillStyle=css("--data");const r=view.w<4?2:1.4;
+  for(let i=0;i<S.t.length;i++){const t=S.t[i];if(t<x0||t>x1)continue;ctx.fillRect(A.X(t-t0)-r/2,A.Y(S.f[i])-r/2,r,r);}
+  ctx.strokeStyle=css("--accent");ctx.lineWidth=2;
+  marks.forEach(m=>{const x=A.X(m-t0);ctx.beginPath();ctx.moveTo(x,PAD.t);ctx.lineTo(x,PAD.t+16);ctx.stroke();ctx.beginPath();ctx.moveTo(x-5,PAD.t+10);ctx.lineTo(x,PAD.t+18);ctx.lineTo(x+5,PAD.t+10);ctx.stroke();});
+  ctx.restore();c._map={A,t0,x0,x1};
+}
+function foldData(){const out=[];for(let i=0;i<S.t.length;i++){let ph=((S.t[i]-T0)/P)%1;if(ph<-0.5)ph+=1;if(ph>=0.5)ph-=1;out.push([ph*P*24,S.f[i]]);}return out;}
+function foldWindow(){const half=P*12;return $("closeup").checked?Math.min(half,Math.max(4,Math.min(10,P*24*0.12))):half;}
+function drawFold(){
+  const c=$("fold"),ctx=setupCanvas(c);if(!S)return;
+  const hw=foldWindow();const [y0,y1]=yLim(S._lo,S._hi);
+  const A=axes(ctx,c,-hw,hw,y0,y1,"hours from the middle of the dip","brightness change",yPct);
+  ctx.save();ctx.beginPath();ctx.rect(PAD.l,PAD.t,A.W-PAD.l-PAD.r,A.H-PAD.t-PAD.b);ctx.clip();
+  const pts=foldData();ctx.globalAlpha=.55;ctx.fillStyle=css("--data");
+  pts.forEach(([h,f])=>{if(h<-hw||h>hw)return;ctx.fillRect(A.X(h)-1,A.Y(f)-1,2,2);});
+  ctx.globalAlpha=1;
+  // binned average
+  const nb=70,sum=new Float64Array(nb),cnt=new Int32Array(nb);
+  pts.forEach(([h,f])=>{if(h<-hw||h>=hw)return;const k=Math.floor((h+hw)/(2*hw)*nb);sum[k]+=f;cnt[k]++;});
+  ctx.strokeStyle=css("--ink");ctx.lineWidth=2.2;ctx.beginPath();let started=false;
+  for(let k=0;k<nb;k++){if(cnt[k]<2){started=false;continue;}const x=A.X(-hw+(k+.5)*2*hw/nb),y=A.Y(sum[k]/cnt[k]);if(!started){ctx.moveTo(x,y);started=true;}else ctx.lineTo(x,y);}
+  ctx.stroke();
+  // depth line
+  const yl=A.Y(1-depth);ctx.strokeStyle=css("--accent");ctx.lineWidth=2.5;ctx.setLineDash([8,5]);
+  ctx.beginPath();ctx.moveTo(PAD.l,yl);ctx.lineTo(A.W-PAD.r,yl);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle=css("--accent");ctx.font="bold 12px "+css("--mono");ctx.textAlign="right";ctx.textBaseline="bottom";
+  ctx.fillText("depth "+(depth*100).toFixed(3)+"%  ⇕ drag",A.W-PAD.r-4,yl-3);
+  ctx.restore();c._map={A,y0,y1};
+}
+function planetRadius(){if(!S||depth<=0)return null;return S.rstar*Math.sqrt(depth)*RSUN_RE;}
+function drawSizes(){
+  const c=$("sizes"),ctx=setupCanvas(c);const W=c._w,H=c._h;ctx.clearRect(0,0,W,H);
+  const rp=planetRadius();
+  const bodies=[{n:"Earth",r:1,col:css("--data")},{n:"Neptune",r:3.88,col:css("--data")},{n:"Jupiter",r:11.21,col:css("--data")}];
+  if(rp)bodies.push({n:"Your object",r:rp,col:css("--accent"),me:true});
+  bodies.sort((a,b)=>a.r-b.r);
+  const maxR=Math.max(...bodies.map(b=>b.r));const GAP=10,MINSLOT=Math.min(84,(W-8)/bodies.length-GAP);
+  let scale=(H-46)/2/maxR;
+  const totalW=sc=>bodies.reduce((s,b)=>s+Math.max(MINSLOT,2*b.r*sc)+GAP,0);
+  while(totalW(scale)>W-8&&scale>0.01)scale*=0.92;
+  let x=Math.max(4,(W-totalW(scale))/2);ctx.font="12px "+css("--mono");ctx.textAlign="center";
+  bodies.forEach(b=>{const slot=Math.max(MINSLOT,2*b.r*scale);const r=Math.max(1.5,b.r*scale);const cx=x+slot/2;const cy=(H-30)/2+4;
+    ctx.beginPath();ctx.arc(cx,cy,r,0,2*Math.PI);ctx.fillStyle=b.col;ctx.globalAlpha=b.me?1:.35;ctx.fill();ctx.globalAlpha=1;
+    if(b.me){ctx.lineWidth=2;ctx.strokeStyle=css("--ink");ctx.stroke();}
+    ctx.fillStyle=b.me?css("--accent"):css("--muted");ctx.textBaseline="top";ctx.fillText(b.n,cx,H-26);
+    ctx.fillText(b.r.toFixed(1)+" × Earth",cx,H-12);x+=slot+GAP;});
+  if(!rp){ctx.fillStyle=css("--muted");ctx.textAlign="right";ctx.textBaseline="top";ctx.fillText("Set the depth in step 3 to add your object",W-6,6);}
+}
+function drawAll(){drawLC();drawFold();drawSizes();updateReadouts();}
+
+/* ---------- controls ---------- */
+const PMIN=0.2,PMAX=30;
+function p2s(p){return Math.round(Math.log(p/PMIN)/Math.log(PMAX/PMIN)*10000);}
+function s2p(v){return PMIN*Math.pow(PMAX/PMIN,v/10000);}
+function setP(p,keepInput){P=Math.max(PMIN,Math.min(PMAX,p));$("per").value=p2s(P);if(!keepInput)$("pernum").value=P.toFixed(5);$("shift").value=0;baseT0=T0;}
+let baseT0=0;
+$("per").addEventListener("input",e=>{P=s2p(+e.target.value);$("pernum").value=P.toFixed(5);drawFold();updateReadouts();});
+$("pernum").addEventListener("input",e=>{const v=+e.target.value;if(v>=PMIN&&v<=PMAX){P=v;$("per").value=p2s(P);drawFold();updateReadouts();}});
+$("shift").addEventListener("input",e=>{T0=baseT0+(+e.target.value/1000)*P;drawFold();updateReadouts();});
+document.querySelectorAll("[data-nudge]").forEach(b=>b.addEventListener("click",()=>{setP(P+ +b.dataset.nudge);drawFold();updateReadouts();}));
+$("closeup").addEventListener("change",drawFold);
+$("depth").addEventListener("input",e=>{depth=depthMax()* +e.target.value/1000;drawFold();drawSizes();updateReadouts();});
+function depthMax(){return S?Math.max(0.002,(1-S._lo)*1.05):0.02;}
+function setDepth(d){depth=Math.max(0,Math.min(depthMax(),d));$("depth").value=Math.round(depth/depthMax()*1000);}
+
+$("zoom").addEventListener("input",()=>{if(!S)return;const span=S.t[S.t.length-1]-S.t[0];const f=+$("zoom").value/1000;view.w=0.5+(span-0.5)*f*f;clampView();drawLC();updateReadouts();});
+$("pan").addEventListener("input",()=>{if(!S)return;const a=S.t[0],b=S.t[S.t.length-1];view.c=a+view.w/2+(b-a-view.w)*(+$("pan").value/1000);clampView();drawLC();updateReadouts();});
+function clampView(){const a=S.t[0],b=S.t[S.t.length-1];view.w=Math.min(view.w,b-a);view.c=Math.max(a+view.w/2,Math.min(b-view.w/2,view.c));}
+
+// marking dips
+$("lc").addEventListener("pointerdown",e=>{
+  if(!S)return;const c=$("lc"),m=c._map;const r=c.getBoundingClientRect();const px=e.clientX-r.left;
+  if(px<PAD.l||px>m.A.W-PAD.r)return;
+  const t=m.x0+(px-PAD.l)/(m.A.W-PAD.l-PAD.r)*(m.x1-m.x0);
+  const win=Math.max(0.03,view.w/40);let best=null,bv=Infinity;
+  for(let i=1;i<S.t.length-1;i++){if(Math.abs(S.t[i]-t)>win)continue;const v=(S.f[i-1]+S.f[i]+S.f[i+1])/3;if(v<bv){bv=v;best=S.t[i];}}
+  if(best===null)return;
+  const near=marks.findIndex(x=>Math.abs(x-best)<0.05);
+  if(near>=0)marks.splice(near,1);else if(marks.length<30)marks.push(best);
+  marks.sort((a,b)=>a-b);renderMarks();drawLC();updateReadouts();
+});
+$("clearmarks").onclick=()=>{marks=[];renderMarks();drawLC();updateReadouts();};
+function renderMarks(){
+  const box=$("marks");box.innerHTML="";if(!S)return;
+  marks.forEach((m,i)=>{const c=document.createElement("span");c.className="chip";c.textContent="day "+(m-S.t[0]).toFixed(2);
+    const x=document.createElement("button");x.type="button";x.setAttribute("aria-label","Remove this mark");x.textContent="×";
+    x.onclick=()=>{marks.splice(i,1);renderMarks();drawLC();updateReadouts();};c.appendChild(x);box.appendChild(c);});
+}
+function periodFromMarks(){
+  if(marks.length<2)return null;const d=[];for(let i=1;i<marks.length;i++)d.push(marks[i]-marks[i-1]);
+  const base=Math.min(...d);if(base<0.1)return null;let n=0,s=0;d.forEach(x=>{const k=Math.max(1,Math.round(x/base));n+=k;s+=x;});
+  return {P:s/n,base,n:marks.length};
+}
+$("usemarks").onclick=()=>{
+  const r=periodFromMarks();
+  if(!r){$("usenote").textContent="Mark at least two dips in step 1 first.";return;}
+  T0=marks[0];setP(r.P);$("usenote").textContent="Folded at "+r.P.toFixed(4)+" days. Now fine-tune with the slider or the ± buttons.";
+  drawFold();updateReadouts();
+};
+// drag depth line on fold plot
+let dragging=false;
+function foldPointer(e){const c=$("fold"),m=c._map;if(!m)return;const r=c.getBoundingClientRect();const py=e.clientY-r.top;
+  const v=m.y1-(py-PAD.t)/(c._h-PAD.t-PAD.b)*(m.y1-m.y0);setDepth(1-v);drawFold();drawSizes();updateReadouts();}
+$("fold").addEventListener("pointerdown",e=>{if(!S)return;dragging=true;$("fold").setPointerCapture(e.pointerId);foldPointer(e);});
+$("fold").addEventListener("pointermove",e=>{if(dragging)foldPointer(e);});
+$("fold").addEventListener("pointerup",()=>{dragging=false;});
+
+/* ---------- readouts ---------- */
+function updateReadouts(){
+  if(!S)return;
+  $("zoomv").textContent=view.w.toFixed(1)+" d";$("panv").textContent="day "+(view.c-view.w/2-S.t[0]).toFixed(1)+" – "+(view.c+view.w/2-S.t[0]).toFixed(1);
+  $("perv").textContent=P.toFixed(4)+" d = "+(P*24).toFixed(1)+" h";$("shiftv").textContent=(((T0-baseT0)*24)).toFixed(1)+" h";
+  $("depthv").textContent=(depth*100).toFixed(3)+" % of the light ("+Math.round(depth*1e6)+" ppm)";
+  const r=periodFromMarks();
+  $("spacing").innerHTML=marks.length===0?"No dips marked yet.":marks.length===1?"1 dip marked. Mark another one.":
+    marks.length+" dips marked. They repeat about every <b>"+r.P.toFixed(3)+" days</b>"+(r.base<r.P*0.9?"":"")+".";
+  const rp=planetRadius();
+  updateMethod(rp);
+  const orb=orbitInfo();
+  const res=[["Orbital period",P.toFixed(4),"days",(P*24).toFixed(1)+" hours per orbit"],
+             ["Distance from star",orb.a.toFixed(orb.a<0.1?4:3),"AU",(orb.a/0.387).toFixed(2)+" × Mercury's distance"],
+             ["Estimated temperature",orb.T?Math.round(orb.T).toLocaleString():"—","K",orb.T?Math.round(orb.T-273).toLocaleString()+" °C":"no star temperature"],
+             ["Dip depth",(depth*100).toFixed(3),"%",Math.round(depth*1e6)+" parts per million"],
+             ["Size of the object",rp?rp.toFixed(2):"—",rp?"Earth radii":"",rp?(rp/RJ_RE).toFixed(2)+" × Jupiter's radius":"set the depth in step 3"],
+             ["Star size used",S.rstar.toFixed(3),"Sun radii",(S.rstar*RSUN_RE).toFixed(0)+" × Earth's radius"],
+             ["Chance we'd see it transit",orb.prob<0.1?(orb.prob*100).toFixed(1):Math.round(orb.prob*100),"%","about 1 in "+Math.max(1,Math.round(1/orb.prob)).toLocaleString()+" random views"]];
+  const tips={"Orbital period":"One 'year' on this planet lasts "+(P<2?(P*24).toFixed(1)+" hours":P.toFixed(1)+" days")+". Earth's year is 365.25 days; Mercury's is 88.",
+    "Distance from star":orb.a?tipAU(orb.a):"","Estimated temperature":orb.T?tipTemp(orb.T,false):"",
+    "Dip depth":depth>0?"1 in every "+Math.round(1/depth).toLocaleString()+" photons from the star is blocked. 1% = 10,000 ppm.":"",
+    "Size of the object":rp?tipRE(rp):"","Star size used":tipStarR(S.rstar),
+    "Chance we'd see it transit":"If this planet's orbit were tilted at random, the chance Earth would sit close enough to its orbital plane to see transits. Earth itself has a 0.5% chance."};
+  $("results").innerHTML="";res.forEach(([a,b,u,c])=>{const d=document.createElement("div");d.className="stat";d.innerHTML="<small></small><strong></strong><em></em>";d.children[0].textContent=a;d.children[1].textContent=b;
+    const us=document.createElement("span");us.className="u";us.textContent=u;d.children[1].appendChild(us);d.children[2].textContent=c;if(tips[a])makeTip(d.children[1],tips[a]);$("results").appendChild(d);});
+  const v=$("verdict");v.classList.remove("bad");
+  if(!rp)v.textContent="Fold the data and set the depth to get a size.";
+  else if(depth>0.08||rp>22){v.classList.add("bad");v.textContent="Suspicious! Something is blocking "+(depth*100).toFixed(0)+"% of the light, which makes it "+(rp/RJ_RE).toFixed(1)+" times the size of Jupiter and "+Math.round(rp/(S.rstar*RSUN_RE)*100)+"% as wide as the star itself. The biggest known planets are about 2 Jupiters across, and a dip this deep usually means a second star is passing in front of the first. Look at the shape of the dips (flat-bottomed or V-shaped?) and whether every other dip is a different depth.";}
+  else if(rp>6)v.textContent="About the size of a giant planet like Jupiter or Saturn. With a period this short it would be scorching hot: a 'hot Jupiter'.";
+  else if(rp>2.2)v.textContent="Between Earth and Neptune in size: a 'sub-Neptune'. Our Solar System has none of these, yet they are the most common kind of planet TESS and Kepler find.";
+  else if(rp>1.5)v.textContent="A 'super-Earth': bigger than Earth but smaller than Neptune. Is it rocky, or does it have a thick atmosphere? We'd need its mass to tell: try the Wobble Fitter activity.";
+  else v.textContent="Roughly Earth-sized! Planets this small are only detectable because the star is small or very bright.";
+  drawSizes();
+}
+
+/* ---------- live worked examples ---------- */
+const RSUN_AU=0.00465;
+function orbitInfo(){const m=S.mstar||1;const a=Math.cbrt(m*Math.pow(P/365.25,2));const T=S.teff?S.teff*Math.sqrt(S.rstar*RSUN_AU/(2*a)):null;const rp=planetRadius()||0;const prob=Math.min(1,(S.rstar*RSUN_AU+rp/RSUN_RE*RSUN_AU)/a);return {a,T,m,prob};}
+function setLive(id,html){const e=$(id);if(e)e.innerHTML=html;}
+function f(x,d){return Number(x).toFixed(d);}
+function updateMethod(rp){
+  const t0=S.t[0];
+  // 1 — period from marks
+  if(marks.length>=2){const r=periodFromMarks();const first=marks[0]-t0,last=marks[marks.length-1]-t0;const steps=Math.round((last-first)/r.P);
+    setLive("m1live","<span class='lab'>Your numbers</span>First dip at day <b>"+f(first,2)+"</b>, last dip at day <b>"+f(last,2)+"</b>, which is <b>"+steps+"</b> orbit"+(steps===1?"":"s")+" apart.<br>P = ("+f(last,2)+" − "+f(first,2)+") ÷ "+steps+" = <b>"+f((last-first)/steps,3)+" days</b>"+(steps+1!==marks.length?"<br>(You marked "+marks.length+" dips, but they span "+steps+" orbits, so some dips were skipped or fell in a gap.)":""));}
+  else setLive("m1live","<span class='lab'>Your numbers</span>Mark at least two dips in the plot above and the calculation will appear here.");
+  // 2 — folding example on a real data point
+  const target=T0+(Math.floor((S.t[S.t.length-1]-T0)/P*0.6)+0.13)*P;let i0=0;for(let i=0;i<S.t.length;i++){if(Math.abs(S.t[i]-target)<Math.abs(S.t[i0]-target))i0=i;}const t=S.t[i0];const orbits=(t-T0)/P;let frac=orbits-Math.floor(orbits);if(frac>=0.5)frac-=1;
+  const nTr=Math.max(1,Math.floor((S.t[S.t.length-1]-t0)/P));const noise=S._noise||0;
+  setLive("m2live","<span class='lab'>Your numbers, using one real measurement</span>This point was taken on day <b>"+f(t-t0,3)+"</b>. With T<sub>0</sub> = day "+f(T0-t0,3)+" and P = "+f(P,4)+" d:<br>orbits = ("+f(t-t0,3)+" − "+f(T0-t0,3)+") ÷ "+f(P,4)+" = <b>"+f(orbits,3)+"</b> → leftover <b>"+f(frac,3)+"</b> of an orbit → plotted at <b>"+f(frac*P*24,1)+" hours</b> from the dip's middle.<br>"+
+    "This sector holds about <b>"+nTr+"</b> transits at this period. One 10-minute point scatters by about <b>"+Math.round(noise*1e6)+" ppm</b>; averaging "+nTr+" transits cuts that to about "+Math.round(noise*1e6)+" ÷ √"+nTr+" ≈ <b>"+Math.round(noise*1e6/Math.sqrt(nTr))+" ppm</b>.");
+  // 3 — depth to radius
+  if(depth>0){const sq=Math.sqrt(depth),Rs=S.rstar*RSUN_RE;
+    setLive("m3live","<span class='lab'>Your numbers</span>depth = "+f(depth*100,3)+"% = <b>"+depth.toFixed(5)+"</b> (as a decimal)<br>√"+depth.toFixed(5)+" = <b>"+f(sq,4)+"</b> → the object is "+f(sq*100,1)+"% as wide as its star<br>R<sub>star</sub> = "+f(S.rstar,3)+" Sun radii × 109 = <b>"+f(Rs,1)+" Earth radii</b><br>R<sub>planet</sub> = "+f(Rs,1)+" × "+f(sq,4)+" = <b>"+f(rp,2)+" Earth radii</b> = "+f(rp/RJ_RE,2)+" Jupiter radii");}
+  else setLive("m3live","<span class='lab'>Your numbers</span>Set the depth (drag the amber line) and the calculation will appear here.");
+  // 4 — Kepler + temperature
+  const o=orbitInfo();const Py=P/365.25;
+  setLive("m4live","<span class='lab'>Your numbers</span>P = "+f(P,4)+" days ÷ 365.25 = <b>"+Py.toPrecision(3)+" years</b>; M<sub>star</sub> = "+f(o.m,2)+" Sun masses"+(S.mstar?"":" (assumed)")+"<br>a = ∛("+f(o.m,2)+" × ("+Py.toPrecision(3)+")²) = <b>"+f(o.a,4)+" AU</b> = "+Math.round(o.a*149.6e6).toLocaleString()+" km"+
+    (o.T?"<br>T<sub>planet</sub> ≈ "+Math.round(S.teff)+" K × √("+f(S.rstar,3)+" × 0.00465 AU ÷ (2 × "+f(o.a,4)+" AU)) = <b>"+Math.round(o.T).toLocaleString()+" K</b> ("+Math.round(o.T-273).toLocaleString()+" °C)":"")+
+    "<br>chance ≈ ("+f(S.rstar*RSUN_AU,5)+" AU + planet) ÷ "+f(o.a,4)+" AU = <b>"+(o.prob*100).toFixed(1)+"%</b>: about 1 in "+Math.max(1,Math.round(1/o.prob)).toLocaleString()+" planets like this one would transit for us");
+}
+
+/* ---------- tap-to-translate units ---------- */
+let xb=null;
+function makeTip(el,text){el.classList.add("x");el.setAttribute("tabindex","0");el.dataset.tip=text;el.setAttribute("aria-label",(el.textContent||"")+". "+text);}
+function showTip(el){if(!xb){xb=document.createElement("div");xb.id="xbubble";xb.setAttribute("role","tooltip");document.body.appendChild(xb);}
+  xb.textContent=el.dataset.tip;xb.hidden=false;const r=el.getBoundingClientRect();const bw=xb.offsetWidth,bh=xb.offsetHeight;
+  let left=Math.min(window.innerWidth-bw-12,Math.max(12,r.left+r.width/2-bw/2));let top=r.top-bh-8;if(top<8)top=r.bottom+8;xb.style.left=left+"px";xb.style.top=top+"px";}
+function hideTip(){if(xb)xb.hidden=true;}
+document.addEventListener("pointerover",e=>{const t=e.target.closest&&e.target.closest(".x");if(t&&e.pointerType==="mouse")showTip(t);});
+document.addEventListener("pointerout",e=>{const t=e.target.closest&&e.target.closest(".x");if(t&&e.pointerType==="mouse")hideTip();});
+document.addEventListener("click",e=>{const t=e.target.closest&&e.target.closest(".x");if(t)showTip(t);else hideTip();});
+document.addEventListener("focusin",e=>{if(e.target.classList&&e.target.classList.contains("x"))showTip(e.target);});
+document.addEventListener("focusout",hideTip);window.addEventListener("scroll",hideTip,{passive:true});
+function tipStarR(r){return "This star is "+(r>=1?(r).toFixed(2)+"× as wide as":(1/r).toFixed(1)+"× narrower than")+" the Sun, or "+Math.round(r*109)+"× as wide as Earth ("+Math.round(r*696000).toLocaleString()+" km across its radius).";}
+function tipTemp(T,star){const c=Math.round(T-273);let cmp;
+  if(star)cmp=T<3900?"a cool red dwarf, glowing orange-red":T<5300?"cooler and more orange than the Sun":T<6000?"close to the Sun (5,772 K)":"hotter and whiter than the Sun (5,772 K)";
+  else cmp=T<273?"below freezing":T<373?"between freezing and boiling: liquid water is possible":T<600?"hotter than a pizza oven":T<1000?"hot enough to melt lead":T<1800?"as hot as lava":"hotter than molten iron (1,811 K)";
+  return Math.round(T).toLocaleString()+" K = "+c.toLocaleString()+" °C: "+cmp+".";}
+function tipAU(a){const km=a*149.6e6;return a.toFixed(4)+" AU = "+Math.round(km).toLocaleString()+" km. "+(a<0.39?"That's "+(0.387/a).toFixed(0)+"× closer to its star than Mercury is to the Sun.":"That's "+(a/1).toFixed(2)+"× Earth's distance from the Sun.");}
+function tipRE(r){const km=r*6371;const cmp=r<1.25?"about Earth's size":r<2?"a bit bigger than Earth":r<3.5?"between Earth and Neptune":r<6?"about Neptune's size (3.9)":r<15?"about Jupiter's size (11.2)":"bigger than Jupiter";return r.toFixed(2)+" × Earth's radius = "+Math.round(km).toLocaleString()+" km: "+cmp+".";}
+
+/* ---------- predict-then-check questions ---------- */
+const QUIZ={
+ x1:{q:"Predict: if a planet were twice as wide, its dip would be…",o:["2× deeper","4× deeper","8× deeper"],a:1,why:"The dip depends on the planet's area, and area grows with width squared: 2² = 4. Try it with the planet-size slider."},
+ x2:{q:"Predict: if the same planet orbited farther from its star (a longer period), the transit would last…",o:["less time","the same time","more time"],a:2,why:"Farther out, the planet moves more slowly along its orbit, so crossing the star takes longer. Slide the period up and watch the duration."},
+ q2:{q:"Predict: if you fold on a period that's slightly wrong, the stacked dip will…",o:["get deeper","smear out and look shallower","vanish completely"],a:1,why:"Each transit lands at a slightly different spot, so the dips spread out instead of stacking. Nudge the period by +0.01 d to see it happen."},
+ q3:{q:"Predict: an Earth-sized planet around a small red dwarf makes a dip that is ___ than the same planet around the Sun.",o:["shallower","the same","deeper"],a:2,why:"The planet covers a bigger fraction of a small star's disk. That's how TESS found Earth-sized LHS 3844 b (Star C)."},
+ q4:{q:"Predict: which planet is most likely to have its orbit lined up so we can see it transit?",o:["one far from its star","one close to its star","they're equally likely"],a:1,why:"From a close-in orbit, the star blocks a wide range of viewing angles. Check the 'Chance we'd see it transit' result below."}};
+function renderQuiz(el){const Q=QUIZ[el.dataset.quiz];if(!Q)return;el.innerHTML="<div class='qh'>Predict, then check</div><div class='qq'></div><div class='opts'></div><div class='fb' aria-live='polite'></div>";
+  el.querySelector(".qq").textContent=Q.q;const opts=el.querySelector(".opts"),fb=el.querySelector(".fb");
+  Q.o.forEach((t,i)=>{const b=document.createElement("button");b.type="button";b.textContent=t;b.onclick=()=>{opts.querySelectorAll("button").forEach(x=>x.classList.remove("wrong"));
+    if(i===Q.a){b.classList.add("right");fb.innerHTML="<b class='ok'>Yes!</b> ";}else{b.classList.add("wrong");fb.innerHTML="<b class='no'>Not quite.</b> ";}
+    fb.appendChild(document.createTextNode(Q.why));};opts.appendChild(b);});}
+document.querySelectorAll(".quiz").forEach(renderQuiz);
+
+/* ---------- Transit Explorer ---------- */
+const X={k:0.1,b:0.3,rs:1,ms:1,P:3.5,u:0.6,noise:300};
+const XL={lockY:false,lockX:false,top:1,bot:0.99,win:2,ref:null,cur:null};
+function lockNote(){const n=$("lknote");if(!n)return;n.textContent=(XL.lockY||XL.lockX)?"Locked: the "+(XL.lockY&&XL.lockX?"brightness and time axes stay":XL.lockY?"brightness axis stays":"time axis stays")+" fixed, so every slider change shows its true size. Parts that run off the plot are outside the locked range.":"Axes rescale automatically to fit each dip. Lock them to see the real, absolute changes as you move the sliders.";}
+function lockToggle(which){const b=$(which==="y"?"lky":"lkx");const on=b.getAttribute("aria-pressed")!=="true";b.setAttribute("aria-pressed",on?"true":"false");
+  if(which==="y"){XL.lockY=on;if(on&&XL.cur){XL.top=XL.cur.top;XL.bot=XL.cur.bot;}}else{XL.lockX=on;if(on&&XL.cur){XL.win=XL.cur.win;}xChanged();}lockNote();}
+document.addEventListener("click",e=>{const id=e.target&&e.target.id;
+  if(id==="lky")lockToggle("y");else if(id==="lkx")lockToggle("x");
+  else if(id==="lkref"&&XM){XL.ref=XM.curve.map(p=>p.slice());$("lkclr").hidden=false;}
+  else if(id==="lkclr"){XL.ref=null;$("lkclr").hidden=true;}});
+const kFromS=v=>Math.pow(10,-2.3+v/1000*2.3), sFromK=k=>Math.round((Math.log10(k)+2.3)/2.3*1000);
+const pFromS=v=>Math.pow(10,Math.log10(0.2)+v/1000*(Math.log10(400)-Math.log10(0.2))), sFromP=p=>Math.round((Math.log10(p)-Math.log10(0.2))/(Math.log10(400)-Math.log10(0.2))*1000);
+function readX(){X.k=kFromS(+$("xk").value);X.b=(+$("xb").value/1000)*(1+X.k)*0.98;X.rs=+$("xr").value/100;X.ms=+$("xm").value/100;X.P=pFromS(+$("xp").value);X.u=+$("xu").value/100;X.noise=+$("xn").value/1e6;}
+function setX(o){if(o.k!=null)$("xk").value=sFromK(o.k);if(o.b!=null)$("xb").value=Math.round(o.b/((1+(o.k||X.k))*0.98)*1000);if(o.rs!=null)$("xr").value=Math.round(o.rs*100);if(o.ms!=null)$("xm").value=Math.round(o.ms*100);if(o.P!=null)$("xp").value=sFromP(o.P);if(o.u!=null)$("xu").value=Math.round(o.u*100);if(o.noise!=null)$("xn").value=Math.round(o.noise*1e6);xChanged();}
+const PRESETS={hj:{k:0.1018,b:0.36,rs:1.32,ms:1.29,P:0.9415,u:0.55,noise:370e-6},earth:{k:0.00917,b:0,rs:1,ms:1,P:365.25,u:0.6,noise:60e-6},rd:{k:0.0626,b:0.2,rs:0.19,ms:0.15,P:0.4629,u:0.4,noise:1500e-6},graze:{k:0.1,b:1.02,rs:1,ms:1,P:3.5,u:0.6,noise:200e-6},pimen:{k:0.0158,b:0.59,rs:1.17,ms:1.07,P:6.268,u:0.6,noise:64e-6}};
+document.querySelectorAll("[data-pre]").forEach(b=>b.onclick=()=>setX(PRESETS[b.dataset.pre]));
+["xk","xb","xr","xm","xp","xu","xn"].forEach(id=>$(id).addEventListener("input",xChanged));
+// limb-darkened flux blocked by a planet of radius k at separation d (all in star radii)
+const RING=[];(function(){const nr=10,nt=28;for(let i=0;i<nr;i++){const r0=(i+0.5)/nr;for(let j=0;j<nt;j++){const th=(j+0.5)/nt*2*Math.PI;RING.push([r0*Math.cos(th),r0*Math.sin(th),r0/nr*2*Math.PI/nt]);}}})();
+function fluxAt(d,k,u){if(d>=1+k)return 1;let s=0;for(const [px,py,w] of RING){const x=d+px*k,y=py*k;const r2=x*x+y*y;if(r2<1){s+=w*(1-u*(1-Math.sqrt(1-r2)));}}return 1-s*k*k/(Math.PI*(1-u/3));}
+let XM=null;
+function xModel(){readX();const a=Math.cbrt(X.ms*Math.pow(X.P/365.25,2));const aR=a/(X.rs*RSUN_AU);const Ph=X.P*24;
+  const as=v=>Math.asin(Math.min(1,v));const t14=(X.b<1+X.k)?Ph/Math.PI*as(Math.sqrt(Math.max(0,(1+X.k)**2-X.b**2))/aR):0;
+  const t23=(X.b<1-X.k)?Ph/Math.PI*as(Math.sqrt(Math.max(0,(1-X.k)**2-X.b**2))/aR):0;
+  const win=XL.lockX?XL.win:Math.max(t14*0.85,1.2);const pos=t=>aR*Math.sin(2*Math.PI*t/Ph);
+  const curve=[];let fmin=1;for(let i=0;i<=240;i++){const t=-win+2*win*i/240;const d=Math.hypot(pos(t),X.b);const fl=fluxAt(d,X.k,X.u);curve.push([t,fl]);fmin=Math.min(fmin,fl);}
+  // noisy 10-minute measurements, fixed random pattern
+  const pts=[];let seed=7;const rnd=()=>{seed=(seed*16807)%2147483647;return seed/2147483647;};const g=()=>{let q=0;for(let i=0;i<6;i++)q+=rnd();return (q-3)*Math.SQRT2;};
+  const step=Math.max(1/6,2*win/160);for(let t=-win;t<=win;t+=step){const d=Math.hypot(pos(t),X.b);pts.push([t,fluxAt(d,X.k,X.u)+g()*X.noise]);}
+  XM={a,aR,t14,t23,win,curve,fmin,pts,pos,prob:Math.min(1,(1+X.k)/aR)};}
+function xChanged(){xModel();
+  $("xkv").textContent=(X.k*100).toFixed(X.k<0.05?1:0)+"% of the star's width = "+(X.k*X.rs*109).toFixed(X.k*X.rs*109<10?2:1)+" Earth radii";
+  $("xbv").textContent="b = "+X.b.toFixed(2)+(X.b<0.1?" (through the middle)":X.b<1-X.k?" (off-center)":X.b<1+X.k?" (grazing the edge)":" (misses the star!)");
+  $("xrv").textContent=X.rs.toFixed(2)+" × the Sun";$("xmv").textContent=X.ms.toFixed(2)+" × the Sun";
+  $("xpv").textContent=X.P<2?(X.P*24).toFixed(1)+" hours ("+X.P.toFixed(3)+" d)":X.P.toFixed(X.P<20?2:0)+" days";
+  $("xuv").textContent=X.u<0.05?"none (evenly bright disk)":X.u<0.4?"weak":X.u<0.75?"Sun-like":"strong";
+  $("xnv").textContent=Math.round(X.noise*1e6)+" ppm per point";
+  const dep=1-XM.fmin;const box=$("xres");box.innerHTML="";
+  const shape=XM.t14===0?"no transit":XM.t23>0?"flat-bottomed (U)":"V-shaped (grazing)";
+  const rows=[["Depth",(dep*100).toFixed(dep<0.001?4:2)+"%",dep>0?"1 in "+Math.round(1/dep).toLocaleString()+" photons blocked":"No light blocked"],
+    ["Duration",XM.t14?XM.t14.toFixed(1)+" h":"—",XM.t14?"From first touch to last touch. Ingress and egress each take about "+Math.round((XM.t14-XM.t23)/2*60)+" minutes.":"The planet misses the star."],
+    ["Shape",shape,"Grazing paths never fully overlap the star, so the dip has no flat bottom."],
+    ["Planet radius",(X.k*X.rs*109).toFixed(2)+" R⊕",tipRE(X.k*X.rs*109)],
+    ["Orbit size",XM.a.toFixed(XM.a<0.1?4:3)+" AU",tipAU(XM.a)],
+    ["Chance to transit",(XM.prob*100).toFixed(XM.prob<0.1?2:1)+"%","Chance a random observer sits close enough to the orbit's plane to see transits: (R★ + R_planet) ÷ a."],
+    ["Signal ÷ noise",X.noise>0?(dep/X.noise).toFixed(1):"∞","Depth divided by the noise in one point. Below about 1, a single transit is invisible: fold many together."]];
+  rows.forEach(([l,v,t])=>{const d=document.createElement("div");d.innerHTML="<small></small><b></b>";d.children[0].textContent=l;d.children[1].textContent=v;makeTip(d.children[1],t);box.appendChild(d);});
+  if(XM.aR<2){const d=document.createElement("div");d.style.gridColumn="1/-1";d.innerHTML="<small>Warning</small>";d.appendChild(document.createTextNode("This orbit is so tight the planet would almost skim the star's surface. Real planets can't orbit that close."));box.appendChild(d);}
+}
+let tdT=0,tdLast=null;
+function tdemo(ts){
+  if(tdLast===null)tdLast=ts;const dt=Math.min(0.05,(ts-tdLast)/1000);tdLast=ts;if(!XM)xChanged();
+  if(!window.matchMedia||!window.matchMedia("(prefers-reduced-motion: reduce)").matches)tdT=(tdT+dt*0.16)%1;
+  const tnow=-XM.win+2*XM.win*tdT;
+  const c=$("tdemo"),x=setupCanvas(c),W=c._w,H=c._h;x.clearRect(0,0,W,H);
+  const R=Math.min(H*0.4,W*0.2),cx=W/2,cy=H/2;
+  // limb-darkened star
+  const g=x.createRadialGradient(cx,cy,0,cx,cy,R);for(let i=0;i<=10;i++){const r=i/10;const I=1-X.u*(1-Math.sqrt(Math.max(0,1-r*r)));const L=Math.round(55+40*I),S2=Math.round(255*(0.55+0.45*I));g.addColorStop(r,"hsl("+(30+12*I)+",95%,"+L+"%)");}
+  x.beginPath();x.arc(cx,cy,R,0,2*Math.PI);x.fillStyle=g;x.fill();
+  // path line and planet
+  const py=cy+X.b*R;const span=XM.pos(XM.win);
+  x.setLineDash([4,5]);x.strokeStyle=css("--muted");x.beginPath();x.moveTo(cx-span*R,py);x.lineTo(cx+span*R,py);x.stroke();x.setLineDash([]);
+  const px=cx+XM.pos(tnow)*R;x.beginPath();x.arc(px,py,Math.max(1.2,X.k*R),0,2*Math.PI);x.fillStyle="#141a2b";x.fill();
+  if(X.k*R<3){x.strokeStyle=css("--accent");x.lineWidth=1.5;x.beginPath();x.arc(px,py,8,0,2*Math.PI);x.stroke();}
+  x.font="12px "+css("--mono");x.fillStyle=css("--muted");x.textAlign="left";x.fillText("star (seen from Earth)",8,16);
+  x.textAlign="right";x.fillText("planet path: b = "+X.b.toFixed(2),W-8,16);
+  // light curve
+  const lc=$("tdemolc"),y=setupCanvas(lc);const LW=lc._w,LH=lc._h;y.clearRect(0,0,LW,LH);
+  const dep=1-XM.fmin;const span2=Math.max(dep*1.25,4*X.noise,0.0004);let top=1+Math.max(span2*0.15,3*X.noise),bot=1-span2;if(XL.lockY){top=XL.top;bot=XL.bot;}XL.cur={top,bot,win:XM.win};
+  const L=52,Rr=10,T=12,B=30;const Xp=t=>L+(t+XM.win)/(2*XM.win)*(LW-L-Rr),Yp=v=>T+(top-v)/(top-bot)*(LH-T-B);
+  y.font="11px "+css("--mono");y.textBaseline="middle";y.textAlign="right";
+  const nice=(sp)=>{const raw=sp/4,p=Math.pow(10,Math.floor(Math.log10(raw)));const m=raw/p;return (m<1.5?1:m<3.5?2:m<7.5?5:10)*p;};const st=nice(top-bot);
+  for(let v=0;v>=bot-1-1e-12;v-=st){const yy=Yp(1+v);y.strokeStyle=css("--line");y.lineWidth=1;y.beginPath();y.moveTo(L,yy);y.lineTo(LW-Rr,yy);y.stroke();y.fillStyle=css("--muted");y.fillText((v*100).toFixed(st<0.001?3:st<0.01?2:1)+"%",L-4,yy);}
+  y.textAlign="center";y.textBaseline="top";const ht=nice(2*XM.win);for(let t=Math.ceil(-XM.win/ht)*ht;t<=XM.win;t+=ht){y.fillStyle=css("--muted");y.fillText((+t.toFixed(2))+" h",Xp(t),LH-B+6);}
+  y.save();y.beginPath();y.rect(L,T,LW-L-Rr,LH-T-B);y.clip();
+  y.fillStyle=css("--data");y.globalAlpha=.6;XM.pts.forEach(([t,v])=>{if(t<=tnow)y.fillRect(Xp(t)-1.5,Yp(v)-1.5,3,3);});y.globalAlpha=1;
+  if(XL.ref){y.strokeStyle=css("--data");y.lineWidth=2;y.setLineDash([6,4]);y.beginPath();XL.ref.forEach(([t,v],i)=>i?y.lineTo(Xp(t),Yp(v)):y.moveTo(Xp(t),Yp(v)));y.stroke();y.setLineDash([]);}
+  y.strokeStyle=css("--line");y.lineWidth=1.5;y.beginPath();XM.curve.forEach(([t,v],i)=>i?y.lineTo(Xp(t),Yp(v)):y.moveTo(Xp(t),Yp(v)));y.stroke();
+  y.strokeStyle=css("--accent");y.lineWidth=2.5;y.beginPath();let st2=false;XM.curve.forEach(([t,v])=>{if(t>tnow)return;st2?y.lineTo(Xp(t),Yp(v)):y.moveTo(Xp(t),Yp(v));st2=true;});y.stroke();
+  const vnow=fluxAt(Math.hypot(XM.pos(tnow),X.b),X.k,X.u);y.fillStyle=css("--accent");y.beginPath();y.arc(Xp(tnow),Yp(vnow),4,0,2*Math.PI);y.fill();y.restore();
+  y.textBaseline="alphabetic";y.textAlign="left";y.fillStyle=css("--muted");y.fillText((LW<520?"hours from mid-transit":"brightness change · hours from mid-transit · dots = measurements")+(XL.ref?" · dashed = saved":""),L,LH-2);
+  if(XL.lockX||XL.lockY){y.textAlign="right";y.fillStyle=css("--accent");y.fillText("Locked: "+(XL.lockY&&XL.lockX?"both axes":XL.lockY?"brightness axis":"time axis"),LW-Rr,T+10);}
+  requestAnimationFrame(tdemo);
+}
+xChanged();
+
+/* ---------- copy + reveal ---------- */
+$("copy").onclick=()=>{
+  if(!S)return;const rp=planetRadius();
+  const txt=(S.live?S.name:"Star "+S.key)+" (TIC "+S.tic+", sector "+S.sector+")\nDips marked: "+marks.length+"\nPeriod: "+P.toFixed(4)+" days\nDepth: "+(depth*100).toFixed(3)+"%\nStar radius: "+S.rstar.toFixed(3)+" Rsun\nObject radius: "+(rp?rp.toFixed(2)+" Earth radii ("+(rp/RJ_RE).toFixed(2)+" Jupiter radii)":"not measured");
+  const done=()=>{$("copynote").textContent="Copied. Paste it into your worksheet.";};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done,()=>{$("copynote").textContent=txt.replace(/\n/g," · ");});}else $("copynote").textContent=txt.replace(/\n/g," · ");
+};
+$("revealbtn").onclick=()=>{
+  if(!S)return;const box=$("reveal");box.hidden=!box.hidden;if(box.hidden)return;
+  box.innerHTML="";
+  if(S.live||!S.truth){box.textContent="This star came from the live archive, so there's no answer key. Look it up on the NASA Exoplanet Archive or ExoFOP and compare.";return;}
+  const T=S.truth,rp=planetRadius();
+  const h=document.createElement("p");h.innerHTML="<b></b> — <span></span>";h.children[0].textContent=S.name;h.children[1].textContent=T.pl+". Discovered by "+T.disc+".";box.appendChild(h);
+  const rows=[["","Your measurement","Published value"]];
+  if(T.all){T.all.forEach(p=>rows.push([p.pl,"",p.P.toFixed(4)+" d, "+p.rp_re.toFixed(2)+" R⊕"]));rows.push(["You",P.toFixed(4)+" d, "+(rp?rp.toFixed(2)+" R⊕":"—"),""]);}
+  else{rows.push(["Period",P.toFixed(4)+" d",T.P.toFixed(4)+" d"]);rows.push(["Depth",(depth*100).toFixed(3)+"%","≈ "+T.depth_pct+"%"]);
+    rows.push(["Radius",rp?rp.toFixed(2)+" R⊕":"—",T.rp_re?T.rp_re.toFixed(2)+" R⊕ ("+T.rp_rj.toFixed(2)+" R♃)":"not a planet"]);}
+  const tw=document.createElement("div");tw.className="tablewrap";const tb=document.createElement("table");
+  rows.forEach((r,i)=>{const tr=document.createElement("tr");r.forEach(c=>{const td=document.createElement(i?"td":"th");td.textContent=c;tr.appendChild(td);});tb.appendChild(tr);});
+  tw.appendChild(tb);box.appendChild(tw);
+  const n=document.createElement("p");n.className="note";
+  n.textContent=T.all?"TOI-270 has three known transiting planets, so the dips come from three different periods. Try folding on each one.":
+    !T.planet?"CM Draconis is two red dwarf stars eclipsing each other. Notice that every other dip is a slightly different depth and that the dips are V-shaped: telltale signs of an eclipsing binary. If you folded on 0.634 days you were folding on half the true period.":
+    "Within about 10% of the published value is excellent work for a by-eye measurement. If your period is half or double the real one, check whether you skipped a dip or marked an extra one.";
+  box.appendChild(n);
+};
+
+/* ---------- live loading from MAST ---------- */
+async function mast(req){const r=await fetch("https://mast.stsci.edu/api/v0/invoke",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"request="+encodeURIComponent(JSON.stringify(req))});if(!r.ok)throw new Error("MAST returned "+r.status);return r.json();}
+function parseFITS(buf){
+  const dv=new DataView(buf),u8=new Uint8Array(buf);let pos=0;
+  function hdr(){const h={};for(;;){const blk=new TextDecoder().decode(u8.slice(pos,pos+2880));pos+=2880;for(let i=0;i<36;i++){const card=blk.slice(i*80,i*80+80);const k=card.slice(0,8).trim();if(k==="END")return h;if(card[8]==="="){const raw=card.slice(10);h[k]=raw.trim().startsWith("'")?raw.match(/'([^']*)'/)[1].trim():Number(raw.split("/")[0].trim());}}}}
+  const h0=hdr(),h1=hdr();const sz={D:8,E:4,J:4,I:2,B:1,L:1,K:8,A:1};const cols={};let off=0;
+  for(let i=1;i<=h1.TFIELDS;i++){const m=h1["TFORM"+i].match(/^(\d*)([A-Z])/);const rep=m[1]?+m[1]:1;cols[h1["TTYPE"+i]]={off,t:m[2]};off+=rep*sz[m[2]];}
+  const g=(c,r)=>{const o=pos+r*h1.NAXIS1+cols[c].off,t=cols[c].t;return t==="D"?dv.getFloat64(o):t==="E"?dv.getFloat32(o):dv.getInt32(o);};
+  const T=[],F=[];for(let r=0;r<h1.NAXIS2;r++){const q=g("QUALITY",r),t=g("TIME",r),f=g("PDCSAP_FLUX",r);if(q===0&&isFinite(t)&&isFinite(f)){T.push(t);F.push(f);}}
+  return {T,F,h0};
+}
+function binFlatten(T,F){
+  const dt=10/1440,t0=T[0],nb=Math.ceil((T[T.length-1]-t0)/dt)+1;const s=new Float64Array(nb),c=new Int32Array(nb);
+  T.forEach((t,i)=>{const k=Math.floor((t-t0)/dt);s[k]+=F[i];c[k]++;});
+  const f=Array.from(s,(v,i)=>c[i]?v/c[i]:null);const hw=Math.round(0.5/dt);const tt=[],ff=[];
+  for(let i=0;i<nb;i++){if(f[i]===null)continue;const w=[];for(let j=Math.max(0,i-hw);j<=Math.min(nb-1,i+hw);j++)if(f[j]!==null)w.push(f[j]);w.sort((a,b)=>a-b);tt.push(t0+i*dt);ff.push(f[i]/w[w.length>>1]);}
+  return {t:tt,f:ff};
+}
+let liveTic=null,liveInfo=null,liveObs=[];
+function liveFail(e){$("livestatus").textContent="Couldn't reach the TESS archive from this page ("+(e&&e.message||"blocked")+"). Live downloads work when you open the standalone copy of this page (Transit_Detective.html) directly in a web browser.";}
+$("livefind").onclick=async()=>{
+  const q=$("livename").value.trim();if(!q)return;$("livestatus").textContent="Looking up "+q+"…";$("livesec").disabled=true;$("liveload").disabled=true;
+  try{
+    let tic=null;const m=q.match(/^(?:TIC\s*)?(\d{5,})$/i);
+    if(m)tic=+m[1];else{const r=await mast({service:"Mast.Name.Lookup",params:{input:q,format:"json"}});const c=r.resolvedCoordinate&&r.resolvedCoordinate[0];if(!c)throw new Error("no star named "+q);
+      const t=await mast({service:"Mast.Catalogs.Tic.Cone",format:"json",params:{ra:c.ra,dec:c.decl,radius:0.005}});const d=(t.data||[]).sort((a,b)=>a.Tmag-b.Tmag)[0];if(!d)throw new Error("not in the TESS catalog");tic=d.ID;}
+    const ti=await mast({service:"Mast.Catalogs.Filtered.Tic",format:"json",params:{columns:"ID,rad,mass,Teff,Tmag,d",filters:[{paramName:"ID",values:[String(tic)]}]}});
+    liveInfo=(ti.data&&ti.data[0])||{};liveTic=tic;
+    const r=await mast({service:"Mast.Caom.Filtered",format:"json",params:{columns:"obsid,sequence_number,t_exptime",filters:[{paramName:"obs_collection",values:["TESS"]},{paramName:"dataproduct_type",values:["timeseries"]},{paramName:"target_name",values:[String(tic)]},{paramName:"t_exptime",values:[{min:110,max:130}]}]}});
+    liveObs=(r.data||[]).filter(d=>d.t_exptime==120&&d.sequence_number<500).sort((a,b)=>a.sequence_number-b.sequence_number);
+    if(!liveObs.length){$("livestatus").textContent="TIC "+tic+" has no 2-minute TESS light curves. Try another star.";return;}
+    const sel=$("livesec");sel.innerHTML="";liveObs.forEach((o,i)=>{const op=document.createElement("option");op.value=i;op.textContent="Sector "+o.sequence_number;sel.appendChild(op);});
+    sel.disabled=false;$("liveload").disabled=false;$("livestatus").textContent="TIC "+tic+": "+liveObs.length+" sectors available. Star radius "+(liveInfo.rad?(+liveInfo.rad).toFixed(2)+" R☉":"unknown")+".";
+  }catch(e){liveFail(e);}
+};
+$("liveload").onclick=async()=>{
+  const o=liveObs[+$("livesec").value];if(!o)return;$("livestatus").textContent="Downloading sector "+o.sequence_number+"…";
+  try{
+    const p=await mast({service:"Mast.Caom.Products",format:"json",params:{obsid:o.obsid}});const lc=(p.data||[]).find(d=>/_lc\.fits$/.test(d.productFilename));
+    if(!lc)throw new Error("no light curve file in that sector");
+    const t=String(liveTic).padStart(16,"0"),sec="s"+String(o.sequence_number).padStart(4,"0");
+    const url="https://archive.stsci.edu/missions/tess/tid/"+sec+"/"+t.slice(0,4)+"/"+t.slice(4,8)+"/"+t.slice(8,12)+"/"+t.slice(12)+"/"+lc.productFilename;
+    const buf=await (await fetch(url)).arrayBuffer();const d=parseFITS(buf);if(d.T.length<100)throw new Error("too few good data points");
+    const b=binFlatten(d.T,d.F);
+    const s={key:"L",live:true,name:$("livename").value.trim(),tic:liveTic,sector:o.sequence_number,t:b.t,f:b.f,rstar:liveInfo.rad?+liveInfo.rad:1,mstar:liveInfo.mass?+liveInfo.mass:null,teff:liveInfo.Teff?+liveInfo.Teff:null,dist:liveInfo.d?+liveInfo.d:null,hint:liveInfo.rad?"":"No radius in the TESS catalog for this star, so 1 R☉ is assumed."};
+    const old=stars.findIndex(x=>x.live);if(old>=0)stars.splice(old,1);stars.push(s);select(s);
+    $("livestatus").textContent="Loaded "+b.t.length+" points from sector "+o.sequence_number+". Scroll up to start scanning.";
+  }catch(e){liveFail(e);}
+};
+
+/* ---------- boot ---------- */
+window.addEventListener("resize",()=>{clearTimeout(window._rt);window._rt=setTimeout(drawAll,120);});
+try{window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",drawAll);}catch(e){}
+new MutationObserver(drawAll).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+if(stars.length){select(stars[0]);}
+requestAnimationFrame(tdemo);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(drawAll);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,890 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Light Detectives</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Big+Shoulders+Display:wght@600;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#eef1f5; --panel:#ffffff; --ink:#1b2a44; --ink2:#4a5a74; --muted:#7a879b; --line:#d7dde6;
+  --amber:#e8a020; --amber-ink:#8a5a00; --amber-soft:#fff4dc; --good:#1f8a5b; --good-soft:#e3f5ec; --bad:#c2413b; --bad-soft:#fde9e7;
+  --plot-bg:#0e1424; --plot-grid:#26304a; --plot-text:#aab4c8; --chip:#f2f4f8; --shadow:0 1px 2px rgba(20,30,50,.06),0 4px 14px rgba(20,30,50,.06);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0f1420; --panel:#182032; --ink:#e7ecf5; --ink2:#b5c0d3; --muted:#8a96ab; --line:#2a3550;
+  --amber:#f2b441; --amber-ink:#f6c86a; --amber-soft:#2f2614; --good:#4cc68e; --good-soft:#15301f; --bad:#ef7a73; --bad-soft:#3a1c1b;
+  --plot-bg:#0a0f1b; --plot-grid:#222c44; --plot-text:#9aa6bd; --chip:#202a40; --shadow:none;
+}}
+:root[data-theme="dark"]{
+  --bg:#0f1420; --panel:#182032; --ink:#e7ecf5; --ink2:#b5c0d3; --muted:#8a96ab; --line:#2a3550;
+  --amber:#f2b441; --amber-ink:#f6c86a; --amber-soft:#2f2614; --good:#4cc68e; --good-soft:#15301f; --bad:#ef7a73; --bad-soft:#3a1c1b;
+  --plot-bg:#0a0f1b; --plot-grid:#222c44; --plot-text:#9aa6bd; --chip:#202a40; --shadow:none;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,sans-serif;font-size:17px;line-height:1.5;overflow-x:hidden}
+.wrap{max-width:880px;margin:0 auto;padding:0 16px 60px}
+h1,h2,h3{font-family:"Big Shoulders Display",Impact,sans-serif;letter-spacing:.01em;line-height:1.05;margin:0}
+h1{font-size:clamp(46px,11vw,84px);font-weight:800}
+h2{font-size:clamp(30px,7vw,40px);font-weight:800}
+h3{font-size:24px;font-weight:600;margin-top:18px}
+p{margin:.5em 0}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.92em}
+header.hero{padding:28px 0 8px}
+.eyebrow{font-family:"JetBrains Mono",monospace;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--amber-ink)}
+.hero .rain{height:10px;border-radius:6px;margin:14px 0 12px;background:linear-gradient(90deg,#7a00c8,#2a3cff,#00b7ff,#00d27a,#c8e600,#ffd000,#ff7a00,#e00000)}
+.lede{font-size:19px;color:var(--ink2);max-width:640px}
+.missionnav{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px}
+.missionnav a{display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:var(--ink);background:var(--panel);border:1px solid var(--line);padding:8px 12px;border-radius:999px;font-weight:700;font-size:15px;min-height:44px}
+.missionnav a .dot{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.missionnav a.done .dot{background:var(--good)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;margin:18px 0;box-shadow:var(--shadow)}
+.mission-head{display:flex;gap:12px;align-items:flex-start;margin-bottom:8px}
+.badge{flex:none;width:46px;height:46px;border-radius:12px;background:var(--ink);color:var(--panel);display:grid;place-items:center;font-family:"Big Shoulders Display";font-size:28px;font-weight:800}
+.mission-head .sub{color:var(--ink2);margin-top:4px}
+.tag{display:inline-block;font-family:"JetBrains Mono",monospace;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:6px;background:var(--amber-soft);color:var(--amber-ink);margin-right:6px}
+.tag.sim{background:var(--chip);color:var(--ink2)}
+.tag.real{background:var(--good-soft);color:var(--good)}
+canvas{display:block;width:100%;border-radius:10px;background:var(--plot-bg);touch-action:manipulation}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+button,.btn{font:inherit;font-weight:700;font-size:16px;border-radius:10px;border:1px solid var(--line);background:var(--chip);color:var(--ink);padding:10px 14px;min-height:44px;cursor:pointer}
+button:hover{border-color:var(--ink2)}
+button.on{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+button.primary{background:var(--amber);color:#1b1300;border-color:var(--amber)}
+button:disabled{opacity:.45;cursor:default}
+.chip{font-size:15px;padding:8px 12px;min-height:44px}
+.sw{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+input[type=range]{width:100%;accent-color:var(--amber);height:34px}
+.slider-row{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center;margin:8px 0}
+.slider-row label{font-weight:700}
+.slider-row output{font-family:"JetBrains Mono",monospace;font-size:15px;color:var(--amber-ink);text-align:right}
+.slider-row input{grid-column:1 / -1}
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px 0}
+.tile{background:var(--chip);border-radius:12px;padding:10px 12px}
+.tile .k{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.tile .v{font-family:"JetBrains Mono",monospace;font-size:20px;margin-top:2px}
+.predict{border:2px dashed var(--amber);border-radius:14px;padding:14px;margin:14px 0;background:var(--amber-soft)}
+.predict .q{font-weight:700;margin-bottom:8px}
+.predict .opts{display:grid;gap:8px}
+.predict .opts button{text-align:left;background:var(--panel)}
+.predict .opts button.right{background:var(--good-soft);border-color:var(--good)}
+.predict .opts button.wrong{background:var(--bad-soft);border-color:var(--bad)}
+.fb{margin-top:8px;font-weight:700}
+.fb.good{color:var(--good)} .fb.bad{color:var(--bad)}
+details.math{border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin:14px 0;background:var(--panel)}
+details.math summary{cursor:pointer;font-weight:700;min-height:32px;display:flex;align-items:center}
+.eq{display:inline-block;font-family:"JetBrains Mono",monospace;font-size:15px;background:var(--chip);border-radius:8px;padding:4px 10px;margin:4px 0}
+.yours{background:var(--amber-soft);border-radius:10px;padding:10px 12px;margin-top:8px}
+.yours b{color:var(--amber-ink)}
+.u{border-bottom:2px dotted var(--amber);cursor:help;white-space:nowrap}
+#bubble{position:fixed;z-index:50;max-width:min(320px,calc(100vw - 32px));background:var(--ink);color:var(--panel);padding:10px 12px;border-radius:10px;font-size:15px;box-shadow:0 6px 20px rgba(0,0,0,.25);display:none}
+.callout{border-left:4px solid var(--amber);background:var(--chip);padding:10px 14px;border-radius:0 10px 10px 0;margin:12px 0}
+.story{background:var(--plot-bg);color:#e7ecf5;border-radius:14px;padding:14px 16px;margin:14px 0}
+.story h3{margin:0 0 6px;color:var(--amber)}
+.step-done{color:var(--good);font-weight:700}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:14px;color:var(--ink2);margin-top:6px}
+.legend i{display:inline-block;width:14px;height:4px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.grid2{display:grid;grid-template-columns:1fr;gap:14px}
+@media(min-width:720px){.grid2{grid-template-columns:1fr 1fr}}
+.starcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-top:10px}
+.starcard{border:2px solid var(--line);border-radius:12px;padding:8px;background:var(--panel);cursor:pointer;text-align:left;font:inherit;color:var(--ink)}
+.starcard.picked{border-color:var(--amber)}
+.starcard.ok{border-color:var(--good)} .starcard.no{border-color:var(--bad)}
+.starcard .top{display:flex;justify-content:space-between;align-items:center;font-weight:700;margin-bottom:6px}
+.rank{font-family:"JetBrains Mono",monospace;background:var(--amber);color:#1b1300;border-radius:8px;padding:0 8px;min-width:30px;text-align:center}
+.matchbars .mb{display:grid;grid-template-columns:90px 1fr 48px;gap:8px;align-items:center;margin:6px 0;font-size:15px}
+.matchbars .bar{height:14px;background:var(--chip);border-radius:7px;overflow:hidden}
+.matchbars .bar span{display:block;height:100%;background:var(--amber)}
+textarea,input[type=text]{width:100%;font:inherit;font-family:"JetBrains Mono",monospace;font-size:16px;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+.units{margin:8px 0}
+.units table{border-collapse:collapse;width:100%;font-size:15px}
+.units td{border-top:1px solid var(--line);padding:6px 4px;vertical-align:top}
+.units td:first-child{font-family:"JetBrains Mono",monospace;white-space:nowrap;color:var(--amber-ink)}
+footer{color:var(--muted);font-size:14px;margin-top:30px}
+footer a{color:var(--ink2)}
+.results .tile .v{font-size:17px}
+.hide{display:none!important}
+.small{font-size:14px;color:var(--muted)}
+.tubewrap{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.tube{width:100%;max-width:300px;height:30px;border-radius:15px;border:2px solid #556;transition:background .3s, box-shadow .3s}
+.check{list-style:none;padding:0;margin:8px 0}
+.check li{padding:4px 0}
+.check li::before{content:"○ ";color:var(--muted)}
+.check li.done::before{content:"● ";color:var(--good)}
+</style>
+<meta name="description" content="Learn to read starlight: blackbody glow, atomic fingerprints, measuring spectral lines, and reading real stellar spectra.">
+<style>
+#br-sitebar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.25rem 1rem;
+  padding:.5rem clamp(1rem,4vw,2rem);background:#f3f4f6;color:#374151;box-shadow:0 1px 3px rgba(0,0,0,.08);
+  font:600 14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;position:relative;z-index:50;margin:0 0 1rem;border-radius:6px}
+#br-sitebar a{color:#2563eb;text-decoration:none}
+#br-sitebar a:hover,#br-sitebar a:focus-visible{text-decoration:underline}
+#br-sitebar span{font-weight:400;opacity:.85}
+@media print{#br-sitebar{display:none}}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-163ZQGF3WY"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-163ZQGF3WY');</script>
+</head>
+<body>
+<nav id="br-sitebar" aria-label="Site"><a href="../../resources.html">&larr; Teaching Resources</a><span><a href="../../index.html">Benjamin Roulston</a> </span></nav>
+<div id="bubble" role="status"></div>
+<div class="wrap">
+
+<header class="hero">
+  <h1>Light Detectives</h1>
+  <div class="rain"></div>
+  <p class="lede">We can never visit a star. But its light carries a hidden message about what it's made of, how hot it is, and how fast it's moving. Your mission: learn to read that message.</p>
+  <nav class="missionnav" aria-label="Missions">
+    <a href="#m1" id="nav1"><span class="dot"></span>1 · Glow</a>
+    <a href="#m2" id="nav2"><span class="dot"></span>2 · Atoms</a>
+    <a href="#m3" id="nav3"><span class="dot"></span>3 · Measure</a>
+    <a href="#m4" id="nav4"><span class="dot"></span>4 · Fingerprints</a>
+    <a href="#m5" id="nav5"><span class="dot"></span>5 · Starlight</a>
+    <a href="#results" id="nav6"><span class="dot"></span>My results</a>
+  </nav>
+  <details class="math units">
+    <summary>Units cheat sheet</summary>
+    <p class="small">Tip: tap any <span class="u" data-u="nm">underlined</span> number on this page to translate it.</p>
+    <table>
+      <tr><td>nm</td><td><b>nanometer</b>, a billionth of a meter. Visible light runs from about 400 nm (violet) to 700 nm (red). A human hair is about 70,000 nm wide.</td></tr>
+      <tr><td>K</td><td><b>kelvin</b>, a temperature scale that starts at absolute zero. Add 273 to °C. The Sun's surface, 5,800 K, is about 10,000 °F.</td></tr>
+      <tr><td>km/s</td><td><b>kilometers per second</b>. 1 km/s is about 2,200 mph.</td></tr>
+      <tr><td>eV</td><td><b>electron-volt</b>, a tiny unit of energy used for atoms and light.</td></tr>
+      <tr><td>spectrum</td><td>light spread out by color (wavelength). Plural: <b>spectra</b>.</td></tr>
+    </table>
+  </details>
+</header>
+
+<!-- ============ MISSION 1 ============ -->
+<section class="panel" id="m1">
+  <div class="mission-head"><div class="badge">1</div><div><h2>Hidden rainbows</h2><div class="sub">White light is a mix of every color. A diffraction grating spreads the mix out so you can see it.</div></div></div>
+  <p><span class="tag sim">Simulation</span>Anything hot glows: a stove burner, a light bulb, a star. Slide the temperature and watch the glow change.</p>
+
+  <div class="predict" id="p1">
+    <div class="q">Predict first: as something gets hotter, what color does it glow?</div>
+    <div class="opts">
+      <button data-a="0">Redder</button>
+      <button data-a="1">Red → yellow-white → blue-white</button>
+      <button data-a="2">It stays the same color, just brighter</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+
+  <canvas id="bbCanvas" height="230" aria-label="Glow spectrum plot"></canvas>
+  <div class="slider-row">
+    <label for="bbT">Temperature</label><output id="bbTout"></output>
+    <input type="range" id="bbT" min="2000" max="30000" step="100" value="5800">
+  </div>
+  <div class="row" id="bbPresets"></div>
+  <div class="readouts">
+    <div class="tile"><div class="k">Glows</div><div class="v" id="bbColor">—</div></div>
+    <div class="tile"><div class="k">Brightest color</div><div class="v" id="bbPeak">—</div></div>
+    <div class="tile"><div class="k">Light per m² vs Sun</div><div class="v" id="bbPow">—</div></div>
+  </div>
+  <div class="callout"><b>Notice:</b> a hot glowing thing makes a <b>continuous</b> rainbow with no gaps. Hotter objects pump out more blue light. That's why the hottest stars look blue-white and cooler stars look orange-red.</div>
+  <details class="math"><summary>For the curious: how the math works</summary>
+    <p>The color where the glow is brightest moves with temperature (Wien's law):</p>
+    <div class="eq">peak wavelength = 2,898,000 nm·K ÷ temperature</div>
+    <p>And hotter objects give off far more light per square meter: double the temperature means 2⁴ = 16× more light (Stefan–Boltzmann law).</p>
+    <div class="eq">light per m² ∝ temperature⁴</div>
+    <div class="yours" id="bbYours"></div>
+  </details>
+</section>
+
+<!-- ============ MISSION 2 ============ -->
+<section class="panel" id="m2">
+  <div class="mission-head"><div class="badge">2</div><div><h2>Where colors come from</h2><div class="sub">Glowing gas is different. It only gives off a few exact colors. Why?</div></div></div>
+  <p><span class="tag sim">Model</span>Electrons in an atom can only sit on certain "steps" (energy levels), like a ladder. When an electron <b>jumps down</b>, the atom shoots out a bit of light (a photon). Bigger jump = more energy = bluer light.</p>
+  <canvas id="atomCanvas" height="300" aria-label="Hydrogen atom model"></canvas>
+  <div class="row"><b style="min-width:110px">Start on step</b><span id="fromBtns" class="row" style="margin:0"></span></div>
+  <div class="row"><b style="min-width:110px">Jump down to</b><span id="toBtns" class="row" style="margin:0"></span></div>
+  <div class="row"><button class="primary" id="jumpBtn">⚡ Make the jump</button><button id="atomReset">Reset</button></div>
+  <div class="callout" id="jumpMsg">Pick a start step and an end step, then make the jump.</div>
+  <h3>Your hydrogen spectrum</h3>
+  <canvas id="hStrip" height="70" aria-label="Hydrogen lines found"></canvas>
+  <p id="hFound"><b>Challenge:</b> find all <b>4</b> jumps that make <b>visible</b> light. <span class="mono" id="hCount">0 / 4</span></p>
+  <div class="story hide" id="hWin"><h3>You built hydrogen's fingerprint!</h3>These 4 lines are the same ones you see in the hydrogen tube. Every hydrogen atom in the universe makes exactly these colors. Other elements have different ladders, so they make different patterns.</div>
+  <details class="math"><summary>For the curious: how the math works</summary>
+    <p>Hydrogen's steps have energies E = −13.6 eV ÷ n². The light's energy is the gap between the steps, and its wavelength is:</p>
+    <div class="eq">wavelength (nm) = 1240 ÷ energy gap (eV)</div>
+    <div class="yours" id="atomYours">Make a jump to see your numbers.</div>
+  </details>
+</section>
+
+<!-- ============ MISSION 3 ============ -->
+<section class="panel" id="m3">
+  <div class="mission-head"><div class="badge">3</div><div><h2>Measure it like a scientist</h2><div class="sub">Turn your phone into a spectrometer with phyphox.</div></div></div>
+  <p>Your eye sees the colors. A phone camera behind the grating can <b>measure</b> them. phyphox's <b>Spectroscopy</b> experiment averages the picture into a graph: brightness vs. position on the camera chip (in pixels). But pixels aren't colors yet. You have to <b>calibrate</b>: teach the graph which pixel is which wavelength, using lines you already know.</p>
+  <div class="callout"><b>The trick:</b> use the hydrogen lines you already built in Mission 2. Hydrogen's aqua Hβ line is at <span class="u" data-l="486">486 nm</span> and its bright red Hα line is at <span class="u" data-l="656">656 nm</span>. Find them, tell the graph, and every other pixel falls into place.</div>
+  <p><span class="tag sim">Simulated phone screen</span>The hydrogen tube seen through a grating: the four <b>Balmer lines</b> you made in Mission 2. Hα is red, Hβ is aqua, Hγ and Hδ are violet. The graph only knows pixels, not colors. Tap a peak, then pick which Balmer line it is. (Tip: use the two brightest lines; they're far apart, so your scale comes out most accurate.)</p>
+  <canvas id="calCanvas" height="300" aria-label="Simulated phyphox brightness vs pixel graph"></canvas>
+  <div class="row" id="calAssign">
+    <span id="calSel" class="mono">Tap a peak on the graph.</span>
+  </div>
+  <div class="row">
+    <button class="chip" data-w="410.2"><span class="sw" style="background:#7a00d6"></span>Hδ · 6→2 · 410 nm</button>
+    <button class="chip" data-w="434.0"><span class="sw" style="background:#4a24ff"></span>Hγ · 5→2 · 434 nm</button>
+    <button class="chip" data-w="486.1"><span class="sw" style="background:#00d0ff"></span>Hβ · 4→2 · 486 nm</button>
+    <button class="chip" data-w="656.3"><span class="sw" style="background:#ff1a1a"></span>Hα · 3→2 · 656 nm</button>
+    <button id="calReset">Reset</button>
+  </div>
+  <div class="readouts">
+    <div class="tile"><div class="k">Point 1</div><div class="v" id="cal1">—</div></div>
+    <div class="tile"><div class="k">Point 2</div><div class="v" id="cal2">—</div></div>
+    <div class="tile"><div class="k">nm per pixel</div><div class="v" id="calSlope">—</div></div>
+  </div>
+  <div class="callout hide" id="calDone"></div>
+  <div class="predict" id="p3">
+    <div class="q">Check yourself: after calibrating with the red and aqua lines, the small violet peak just left of the aqua one lands at about…</div>
+    <div class="opts">
+      <button data-a="0">400 nm</button>
+      <button data-a="1">434 nm</button>
+      <button data-a="2">500 nm</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+  <details class="math"><summary>Real phyphox tips (for your phone)</summary>
+    <ul>
+      <li>Open phyphox → find the <b>Spectroscopy</b> experiment (camera section). Allow camera access.</li>
+      <li>Rubber-band the phone so the main camera sits flat against the grating, looking down the tube at the slit.</li>
+      <li>Rotate until the rainbow runs <b>across</b> the screen, then lock it in place. If the phone moves, recalibrate.</li>
+      <li>Point at the <b>hydrogen tube</b>, tap its red and aqua peaks, and enter 656 and 486. (The violet lines are faint and may not show up on a phone. That's fine; you only need two.)</li>
+      <li>Backup: the mercury tube's blue 436 nm and green 546 nm lines work too. Old-style fluorescent lights contain mercury; LED lights don't.</li>
+      <li>Now point at other tubes and write down the wavelengths of the peaks. Bring them to Mission 4!</li>
+      <li>No phone? No problem. Use your eyes and your worksheet, or pair up.</li>
+    </ul>
+  </details>
+  <details class="math"><summary>For the curious: how a grating works</summary>
+    <p>A grating has about 1,000 tiny grooves per millimeter, so the grooves are 1,000 nm apart. Light bends by an angle that depends on its wavelength:</p>
+    <div class="eq">sin(angle) = wavelength ÷ groove spacing</div>
+    <div class="slider-row"><label for="grL">Wavelength</label><output id="grLout"></output><input type="range" id="grL" min="400" max="700" value="656"></div>
+    <div class="yours" id="grYours"></div>
+    <p>Red bends more than violet, and that spreads the colors apart.</p>
+  </details>
+</section>
+
+<!-- ============ MISSION 4 ============ -->
+<section class="panel" id="m4">
+  <div class="mission-head"><div class="badge">4</div><div><h2>Element fingerprints</h2><div class="sub">Every element makes its own barcode of bright lines. Match the barcode, name the gas.</div></div></div>
+  <p><span class="tag real">Lab wavelengths</span>Line positions are lab-measured values from the NIST Atomic Spectra Database. Brightness is approximate.</p>
+  <h3>The reference tubes</h3>
+  <div class="row" id="gasBtns"></div>
+  <div class="tubewrap"><div class="tube" id="tube"></div><div id="tubeNote" class="small"></div></div>
+  <canvas id="gasCanvas" height="220" aria-label="Gas emission spectrum"></canvas>
+
+  <h3>Mystery signals</h3>
+  <p>Three unknown glowing gases. Turn on reference fingerprints to compare. When every bright line is explained, pick your answer. <b>Careful:</b> one signal is a <b>mix</b> of two gases.</p>
+  <div class="row" id="mysBtns"></div>
+  <canvas id="mysCanvas" height="220" aria-label="Mystery spectrum with overlays"></canvas>
+  <div class="row"><b>Overlay:</b> <span id="ovBtns" class="row" style="margin:0"></span></div>
+  <div class="row"><b>My answer:</b> <span id="ansBtns" class="row" style="margin:0"></span></div>
+  <div class="row"><button class="primary" id="mysCheck">Check answer</button><span class="fb" id="mysFb"></span></div>
+
+  <h3>Your phone's numbers</h3>
+  <p>Type the wavelengths (in nm) of the peaks your phone found, separated by commas. The matcher compares them with every fingerprint.</p>
+  <input type="text" id="myPeaks" placeholder="e.g. 437, 547, 579" inputmode="decimal" aria-label="Measured peak wavelengths">
+  <div class="row"><button class="primary" id="matchBtn">Find my element</button><button id="tryDemo">Try an example</button></div>
+  <div class="matchbars" id="matchOut"></div>
+  <p class="small">Phone calibrations are usually good to about ±5–10 nm, so the matcher allows some wiggle room.</p>
+</section>
+
+<!-- ============ MISSION 5 ============ -->
+<section class="panel" id="m5">
+  <div class="mission-head"><div class="badge">5</div><div><h2>Reading starlight</h2><div class="sub">Now point it at the sky. These are <b>real</b> spectra of stars.</div></div></div>
+
+  <h3>A. Why stars have dark lines</h3>
+  <p>A star is a hot glowing ball (rainbow) wrapped in a thinner, cooler gas layer. That gas <b>absorbs</b> its own fingerprint colors, leaving <b>dark</b> lines in exactly the spots where it would make bright ones.</p>
+  <div class="row" id="absBtns">
+    <button class="chip on" data-m="0">Hot glow only</button>
+    <button class="chip" data-m="1">Glowing gas only</button>
+    <button class="chip" data-m="2">Hot glow seen through cool gas</button>
+  </div>
+  <canvas id="absCanvas" height="150" aria-label="Kirchhoff demo"></canvas>
+  <p class="small" id="absNote"></p>
+
+  <h3>B. What is the Sun made of?</h3>
+  <p><span class="tag real">Real data</span>Spectrum of a star just like the Sun (type G2). Turn on each element's fingerprint. If its lines land on dark dips, that element is in the star!</p>
+  <canvas id="sunCanvas" height="250" aria-label="Sun-like star spectrum"></canvas>
+  <div class="row" id="sunBtns"></div>
+  <ul class="check" id="sunChecklist"></ul>
+  <div class="story"><h3>The element found in the Sun first</h3>In 1868, astronomers watching a solar eclipse saw a bright yellow line at <span class="u" data-u="587nm">587.6 nm</span> that matched <i>no</i> element known on Earth. They named the mystery element after the Greek word for the Sun, <b>helios</b>. Helium wasn't found on Earth until 1895. Try the helium fingerprint above: it doesn't show up as dips in ordinary sunlight, which is why it hid for so long.</div>
+
+  <h3>C. Sort the stars by temperature</h3>
+  <p><span class="tag real">Real data</span>Seven real star spectra, each scaled so its brightest point reaches the top. Hotter stars give off more <b>blue</b>; cooler stars give off more <b>red</b>. <b>Tap the stars in order from hottest to coolest.</b></p>
+  <div class="starcards" id="starCards"></div>
+  <div class="row"><button class="primary" id="starCheck" disabled>Check my order</button><button id="starReset">Start over</button></div>
+  <div class="fb" id="starFb"></div>
+  <div class="callout hide" id="starReveal"></div>
+
+  <h3>D. A star that breaks the rules</h3>
+  <p><span class="tag real">Real data · SDSS</span>This is <b>SDSS J215018.83+003547.8</b>, a <b>dwarf carbon star</b>. Normal stars have more oxygen than carbon. This one has more carbon, which forms molecules like C₂ that carve wide, sawtooth bands into the spectrum. Dwarf carbon stars probably got their carbon from a companion star that has since died, which makes them clues to how pairs of stars live and die together.</p>
+  <canvas id="dcCanvas" height="230" aria-label="Dwarf carbon star spectrum"></canvas>
+  <div class="row"><button class="chip" id="dcCompare">Compare with the Sun-like star</button><button class="chip" id="dcBands">Show C₂ bands</button></div>
+  <div class="predict" id="p5">
+    <div class="q">The wide dips at 474, 517 and 564 nm come from…</div>
+    <div class="opts">
+      <button data-a="0">Single atoms, like hydrogen</button>
+      <button data-a="1">Carbon molecules (C₂) in the star's atmosphere</button>
+      <button data-a="2">Dust on the telescope</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+
+  <h3>E. Is that star moving?</h3>
+  <p><span class="tag sim">Simulated shift of real data</span>When a star moves away from us, all its lines slide toward <b>red</b>. Moving toward us, they slide toward <b>blue</b> (the Doppler effect, like a passing siren). We took a real hot star and gave it a secret speed. Slide the lab fingerprint until the hydrogen lines line up with the dips.</p>
+  <canvas id="dopCanvas" height="230" aria-label="Doppler shift challenge"></canvas>
+  <div class="slider-row"><label for="dopV">Your guess for its speed</label><output id="dopVout"></output>
+    <input type="range" id="dopV" min="-1500" max="1500" step="50" value="0"></div>
+  <div class="row"><button class="primary" id="dopCheck">Lock in my speed</button><span class="fb" id="dopFb"></span></div>
+  <details class="math"><summary>For the curious: how the math works</summary>
+    <div class="eq">speed = speed of light × (shift ÷ lab wavelength)</div>
+    <p>The speed of light is 300,000 km/s.</p>
+    <div class="yours" id="dopYours"></div>
+  </details>
+</section>
+
+<!-- ============ RESULTS ============ -->
+<section class="panel results" id="results">
+  <div class="mission-head"><div class="badge">★</div><div><h2>My detective report</h2><div class="sub">Fills in as you go.</div></div></div>
+  <div class="readouts" id="resTiles"></div>
+  <div class="row"><button class="primary" id="copyRes">Copy my results</button><span class="small" id="copyMsg"></span></div>
+  <div class="story"><h3>Closing thought</h3>We can't visit a star, but its light tells us what it's made of, how hot it is, and how fast it's moving.</div>
+</section>
+
+<footer>
+  <p><b>Data sources.</b> Star spectra: Pickles (1998), <i>A Stellar Spectral Flux Library: 1150–25000 Å</i>, PASP 110, 863, via the STScI reference atlases (types O5V, B3V, A0V, F5V, G2V, K5V, M5V), binned to 1 nm. Dwarf carbon star: Sloan Digital Sky Survey DR18 spectrum, plate 9231, MJD 58017, fiber 212, binned to 1 nm and lightly smoothed. Line wavelengths: NIST Atomic Spectra Database. Glow curves, the atom model, the phone screen and the Doppler shift are simulations built from the physics described on the page.</p>
+</footer>
+</div>
+
+<script>
+"use strict";
+/* ---------------- DATA ---------------- */
+const STAR = {"O5V":[942,991,1000,951,915,963,957,944,909,835,898,918,891,869,871,881,838,747,800,825,813,801,779,755,768,777,770,758,747,721,653,679,717,716,709,701,697,690,684,669,641,648,651,647,638,634,625,616,612,606,603,601,597,574,516,544,575,573,565,559,557,546,529,511,513,524,525,510,507,507,505,499,494,486,465,470,478,474,470,465,459,457,456,452,451,447,442,439,423,410,424,419,410,406,404,402,393,391,388,386,381,378,376,374,373,359,315,328,348,350,350,351,347,347,345,343,341,336,331,331,330,324,319,317,316,313,311,310,310,307,305,301,298,297,295,293,291,288,287,284,282,279,278,275,273,271,270,267,265,263,260,259,258,256,253,252,251,248,247,245,242,227,230,237,236,233,231,231,229,225,227,224,223,220,218,218,217,216,215,211,210,209,207,206,205,204,202,200,198,199,198,194,194,191,190,188,187,185,179,180,176,175,178,180,179,177,175,172,166,157,159,169,168,167,166,164,163,162,161,160,160,158,157,157,155,155,154,152,151,151,150,149,148,147,147,146,144,141,141,141,141,140,140,138,138,138,138,135,129,129,132,130,130,131,131,130,128,128,126,126,125,123,124,124,123,122,121,121,120,119,119,119,117,115,116,114,102,103,114,115,114,114,112,112,111,110,109,108,104,105,107,106,106,106,105,104,103,103,102,101,101,100,100,100,99,98,97,97,96,96,95,95,94,94,93,93,92,92,93,91,90,90,90,90,89,88,87,86,87,87,87,86,86,87,87,86,85,82,79,79,80],"B3V":[704,902,941,825,706,936,1000,967,874,656,828,967,963,925,943,934,834,613,731,873,889,852,835,795,852,857,850,831,821,770,583,607,743,770,760,750,773,765,759,748,743,737,731,722,717,713,699,689,691,688,688,677,660,608,468,511,623,644,640,603,628,628,619,602,592,606,602,558,561,586,589,584,580,576,569,559,563,558,555,549,546,541,541,533,526,529,529,526,520,517,512,503,493,490,490,490,488,483,475,475,474,471,464,463,455,417,331,354,418,434,437,443,425,428,441,437,433,427,421,423,421,412,399,401,404,401,395,394,395,392,389,384,384,384,380,376,371,370,368,365,366,364,360,356,353,349,345,342,341,340,338,337,332,329,325,323,324,321,320,316,315,314,311,310,306,304,302,301,299,294,296,291,289,287,283,285,282,282,279,278,278,274,270,269,267,267,264,261,260,260,259,254,252,250,247,246,246,244,239,239,239,241,238,238,237,236,236,233,223,222,221,230,228,223,221,220,219,218,215,215,215,218,216,213,211,208,208,208,207,206,204,203,202,202,200,199,197,197,195,195,194,193,192,191,191,190,188,186,180,181,182,181,181,181,178,176,177,176,174,174,174,174,173,173,172,170,169,168,167,165,165,166,165,164,160,151,131,129,148,155,158,158,157,157,155,155,153,151,145,149,150,149,147,146,146,146,145,145,143,143,142,142,140,140,139,139,138,137,137,136,136,135,135,134,133,133,133,132,133,131,130,128,129,130,127,127,126,125,125,126,124,124,123,125,126,124,123,120,117,115,115],"A0V":[492,684,773,593,497,751,903,903,715,484,652,876,970,918,889,887,709,461,609,849,958,990,1000,989,982,979,966,923,852,727,509,521,715,837,907,939,944,934,912,912,921,936,922,900,895,883,879,876,884,875,834,800,765,638,451,488,663,770,797,800,806,808,803,801,793,794,789,775,764,765,773,775,765,751,749,733,732,729,720,711,716,717,711,703,700,699,698,688,683,686,683,678,665,660,654,655,647,639,639,639,632,617,605,582,548,470,343,366,474,540,568,576,574,573,576,582,577,580,576,566,560,556,548,552,551,548,546,545,540,543,538,538,539,532,527,523,515,499,502,500,498,493,499,494,491,490,487,472,470,479,481,472,467,463,463,467,467,455,456,457,450,445,446,441,440,441,440,437,434,433,430,425,425,421,419,419,421,416,414,409,404,404,400,401,401,398,391,390,390,386,383,383,385,382,379,374,374,373,366,364,362,362,362,364,363,360,359,357,351,340,341,345,344,342,340,336,335,334,333,331,331,329,326,325,323,322,321,320,317,314,314,312,311,311,309,304,300,302,303,301,303,299,296,293,291,291,292,287,280,282,282,280,279,280,279,276,277,276,275,273,273,271,270,270,269,266,264,263,260,258,256,256,251,245,236,213,174,173,211,232,241,243,245,245,245,244,243,240,239,240,239,237,236,235,234,233,232,231,230,230,230,229,228,226,225,225,226,224,224,223,219,216,218,218,216,215,216,215,213,213,211,210,208,208,207,207,208,207,206,205,204,202,201,201,201,201,202,197,190,186,185],"F5V":[673,807,769,625,590,820,855,854,769,644,760,795,796,595,525,714,727,540,665,840,913,930,961,956,942,936,919,904,908,920,801,810,915,942,958,966,970,958,931,941,942,968,960,918,928,942,940,928,917,888,833,806,875,878,795,817,914,955,930,914,935,947,961,968,963,950,927,950,968,961,975,1000,985,946,955,948,953,968,966,953,956,970,975,971,958,949,956,941,948,954,936,919,942,942,934,940,923,918,931,922,925,928,932,919,913,871,750,750,834,872,897,900,891,885,885,907,900,902,887,876,882,859,846,862,859,867,884,878,864,876,876,872,877,860,846,849,846,799,804,802,819,826,837,826,835,843,834,794,809,842,841,843,833,805,810,824,832,810,824,826,807,795,807,803,810,815,811,803,790,797,796,789,788,784,791,796,790,778,771,757,754,772,767,768,771,776,757,754,763,755,750,736,747,758,755,748,742,745,743,738,738,742,746,745,745,743,732,737,730,704,694,717,721,717,714,706,708,709,703,701,702,690,680,687,691,691,693,692,687,682,675,679,681,675,664,665,663,655,662,669,673,670,664,660,654,649,648,648,639,642,639,636,633,640,637,635,635,635,637,637,631,627,624,622,622,619,609,609,611,604,598,613,613,615,613,586,516,505,565,590,591,594,597,592,589,594,592,586,581,579,579,576,575,578,572,564,566,572,574,571,572,569,567,561,552,547,542,531,522,526,532,530,526,534,541,537,529,526,533,525,521,520,518,513,517,523,523,518,526,528,526,524,520,512,518,522,517,501,498,488,484],"G2V":[529,580,473,358,368,503,493,504,494,497,561,606,582,367,346,556,545,353,565,740,772,793,826,812,812,792,774,769,791,844,763,794,859,830,835,836,844,836,806,810,794,838,833,769,800,792,783,763,760,741,637,589,777,822,767,799,859,869,811,785,838,860,903,914,908,920,876,916,950,945,968,1000,968,899,928,931,956,973,959,948,943,963,973,975,951,930,950,920,933,943,922,912,956,939,942,962,942,941,971,956,968,959,969,955,942,928,802,822,904,897,941,941,885,918,922,949,925,936,911,905,910,874,863,897,882,891,919,903,877,903,892,889,903,875,859,865,867,746,770,803,854,854,874,848,885,893,870,797,849,901,885,910,897,847,872,885,906,866,883,883,854,846,873,869,885,879,877,878,862,875,879,868,876,862,867,883,874,853,856,828,829,858,845,855,856,859,838,847,854,843,848,822,845,865,863,851,841,852,843,836,849,851,855,859,860,850,829,844,845,783,783,828,827,822,826,816,819,821,811,806,810,798,790,798,810,810,806,807,799,791,785,789,785,783,770,780,764,754,779,777,783,786,772,768,764,759,754,765,755,763,754,755,749,760,752,759,750,753,758,755,744,740,740,746,744,744,736,736,739,731,716,740,736,736,733,715,636,645,713,718,719,721,725,718,712,716,715,711,707,711,707,704,697,701,702,699,699,696,697,697,695,693,693,692,685,683,682,683,683,681,681,681,678,679,679,676,677,678,671,674,669,662,659,661,664,670,664,663,664,657,663,662,658,657,663,655,656,640,628,605,611],"K5V":[114,109,90,73,81,95,90,91,95,100,109,124,128,110,102,123,129,118,157,209,236,253,271,252,218,240,254,243,266,313,321,303,313,315,295,290,314,311,299,308,301,300,271,210,249,288,288,281,275,285,261,299,360,409,456,453,478,491,409,385,411,410,444,460,479,481,455,514,567,563,593,635,621,553,540,599,644,681,676,653,655,676,701,705,684,667,675,684,686,696,668,651,686,687,672,670,636,600,577,598,652,684,680,649,648,676,664,634,637,639,659,666,624,622,642,638,635,647,624,593,577,550,542,569,570,552,560,541,517,520,525,510,507,503,512,509,496,451,403,444,497,505,578,633,669,692,639,577,621,695,720,738,737,678,659,700,761,754,742,760,709,685,743,761,762,773,769,792,776,795,816,785,794,834,849,866,867,836,822,800,758,818,869,853,877,884,882,871,895,900,891,866,876,914,937,940,932,922,916,914,920,937,956,965,964,960,942,893,826,772,756,790,855,914,954,976,983,979,969,961,955,947,943,955,974,984,984,987,986,972,952,945,945,940,925,904,882,869,875,904,936,942,925,907,897,896,901,910,921,931,936,936,932,934,939,943,943,937,928,924,925,930,937,940,941,939,941,948,956,955,952,958,973,990,1000,997,986,977,976,982,989,990,986,985,982,970,959,963,972,969,955,942,933,926,919,915,913,914,917,918,916,908,903,908,914,902,876,848,830,831,844,855,866,880,897,909,917,918,916,912,910,911,917,927,936,939,936,929,922,918,917,914,906,894,888,902,926,945,947,933,914],"M5V":[25,23,25,7,19,21,29,51,20,4,27,29,45,44,39,35,30,46,50,65,61,73,66,48,53,64,69,63,56,58,58,50,47,51,59,57,62,62,54,50,48,56,47,31,40,49,44,40,46,56,58,59,59,68,69,65,72,78,78,77,75,81,90,96,102,102,117,125,125,130,145,156,150,145,152,161,174,178,175,166,167,175,176,174,173,170,174,176,171,179,178,181,183,183,189,199,179,143,140,156,165,153,151,161,167,172,172,179,189,198,209,227,238,248,267,243,193,174,186,201,186,170,175,185,191,205,213,218,223,219,217,216,215,227,230,233,223,177,155,180,196,208,246,271,274,273,273,271,291,312,312,310,304,300,313,333,341,351,370,369,363,370,382,378,376,338,289,279,295,307,291,266,253,247,240,238,260,303,328,313,288,284,296,293,287,309,324,320,323,338,345,361,365,364,387,408,402,382,368,372,380,363,329,322,333,324,295,263,218,167,156,193,228,240,248,251,248,261,287,304,313,320,326,338,353,364,369,366,362,370,383,384,375,380,388,360,299,255,241,233,227,225,218,214,223,237,252,272,292,309,334,373,414,446,468,477,469,450,441,458,501,539,553,560,581,605,624,638,643,641,658,705,755,781,790,778,739,703,696,698,683,649,613,590,575,553,537,530,505,480,480,471,436,425,446,452,451,457,448,432,437,448,450,456,457,452,461,478,480,482,514,558,586,622,680,712,714,746,797,816,833,878,916,954,1000,970,862,798,778,716,672,700,693,613,574,615,657,680,717,753,764],"dC9231":[150,141,130,125,117,105,97,100,123,157,181,195,194,186,206,229,221,218,246,268,272,276,266,254,257,263,265,264,271,286,290,294,288,275,270,270,286,296,285,289,299,319,368,383,357,349,334,299,300,280,212,230,304,311,284,253,227,234,265,299,340,411,488,545,576,597,602,592,603,610,604,603,602,604,597,586,586,582,574,561,528,492,454,415,385,353,315,275,250,272,315,349,390,457,593,737,782,774,771,760,744,728,710,682,664,674,697,724,738,739,718,699,700,695,715,756,763,752,739,720,698,677,650,618,582,546,524,518,505,484,476,446,411,432,465,442,503,709,852,906,933,936,938,936,938,935,914,900,907,910,902,886,867,854,848,839,826,807,783,759,736,711,690,672,659,651,644,648,641,619,626,646,625,601,622,650,637,583,596,707,760,726,681,740,905,990,995,1000,992,986,992,994,988,979,968,959,955,950,944,938,927,921,924,920,905,894,884,868,798,725,770,843,853,853,851,840,842,848,847,842,841,853,859,853,840,836,856,878,879,871,867,865,877,904,916,912,904,908,916,935,972,984,980,982,980,977,973,971,975,974,967,968,969,962,951,939,933,936,942,942,935,927,928,932,930,927,928,929,923,914,912,913,916,920,922,887,849,881,918,923,932,939,939,934,930,927,919,918,928,933,932,931,934,937,938,938,943,953,956,954,950,944,942,943,940,939,944,951,951,951,953,948,940,927,915,909,907,904,901,902,907,910,906,905,913,921,920,912,900,890,883,871,864,870,876,877,876,880,889,891,886]};   // 380..720 nm, 1 nm bins, each normalised to 1000 at its own peak
+const L0 = 380, L1 = 720;
+
+const GAS = {
+  H:  {name:"Hydrogen", glow:"#ff5a8a", lines:[[656.28,1],[486.13,.45],[434.05,.22],[410.17,.12]]},
+  He: {name:"Helium",   glow:"#ffd6a0", lines:[[587.56,1],[667.82,.35],[706.52,.3],[501.57,.35],[492.19,.15],[471.31,.18],[447.15,.45],[438.79,.08],[402.62,.1]]},
+  Ne: {name:"Neon",     glow:"#ff5a1f", lines:[[540.06,.25],[585.25,1],[588.19,.5],[594.48,.6],[597.55,.25],[602.99,.3],[607.43,.5],[609.62,.45],[614.31,.7],[616.36,.35],[621.73,.3],[626.65,.55],[630.48,.35],[633.44,.6],[638.30,.55],[640.22,.8],[650.65,.6],[659.90,.35],[667.83,.3],[671.70,.3],[692.95,.4],[703.24,.5]]},
+  Hg: {name:"Mercury",  glow:"#a9c4ff", lines:[[404.66,.45],[407.78,.1],[435.83,.85],[546.07,1],[576.96,.55],[579.07,.55]]},
+  Na: {name:"Sodium",   glow:"#ffb21f", lines:[[588.995,1],[589.59,.6],[568.8,.06],[498.3,.03]]}
+};
+const GAS_NOTES = {H:"Pink-red glow. 4 visible lines.", He:"Peach-yellow glow. Strong yellow line.", Ne:"Red-orange glow, like a neon sign. Dozens of red & orange lines.", Hg:"Blue-white glow. Bright green line.", Na:"Orange-yellow glow, like old streetlights or salt in a flame."};
+const MYST = [
+  {id:"Signal 1", ans:["He"]},
+  {id:"Signal 2", ans:["Ne"]},
+  {id:"Signal 3", ans:["H","Hg"]}
+];
+const STARS = [
+  {k:"O5V", type:"O5", T:41000, note:"a rare, ultra-hot blue star"},
+  {k:"B3V", type:"B3", T:18000, note:"a hot blue-white star"},
+  {k:"A0V", type:"A0", T:9600,  note:"like Vega: strongest hydrogen lines of all"},
+  {k:"F5V", type:"F5", T:6500,  note:"like Procyon"},
+  {k:"G2V", type:"G2", T:5800,  note:"like our Sun"},
+  {k:"K5V", type:"K5", T:4400,  note:"like 61 Cygni A, an orange dwarf"},
+  {k:"M5V", type:"M5", T:3000,  note:"like Proxima Centauri, the closest star to the Sun; bands from TiO molecules"}
+];
+const STAR_SHUFFLE = [4,0,6,2,5,1,3]; // fixed display order (G,O,M,A,K,B,F)
+const SUN_EL = {
+  H:  {name:"Hydrogen", col:"#ff5a8a", lines:[656.3,486.1,434.0,410.2], inSun:true},
+  Na: {name:"Sodium",   col:"#ffb21f", lines:[589.0,589.6], inSun:true},
+  Mg: {name:"Magnesium",col:"#7ee08a", lines:[516.7,517.3,518.4], inSun:true},
+  Ca: {name:"Calcium",  col:"#c9a6ff", lines:[393.4,396.8,422.7], inSun:true},
+  Fe: {name:"Iron",     col:"#7fd3ff", lines:[438.4,527.0,495.7,404.6], inSun:true},
+  He: {name:"Helium",   col:"#ffd6a0", lines:[587.6,447.1,501.6,667.8], inSun:false}
+};
+const DOP_TRUE = 1150; // km/s, secret speed
+
+/* ---------------- helpers ---------------- */
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const fmt = (x,d=0) => x.toLocaleString("en-US",{maximumFractionDigits:d,minimumFractionDigits:d});
+const state = {done:{}, res:{}};
+
+function setupCanvas(c){
+  if(!c.dataset.h) c.dataset.h = c.getAttribute("height");
+  const h = +c.dataset.h, w = c.clientWidth || 600, dpr = window.devicePixelRatio || 1;
+  c.width = Math.round(w*dpr); c.height = Math.round(h*dpr); c.style.height = h+"px";
+  const ctx = c.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0);
+  return {ctx,w,h};
+}
+// wavelength (nm) -> [r,g,b] 0..255
+function wl2rgb(l){
+  let r=0,g=0,b=0;
+  if(l>=380&&l<440){r=-(l-440)/60;b=1}
+  else if(l<490){g=(l-440)/50;b=1}
+  else if(l<510){g=1;b=-(l-510)/20}
+  else if(l<580){r=(l-510)/70;g=1}
+  else if(l<645){r=1;g=-(l-645)/65}
+  else if(l<=780){r=1}
+  let f=1;
+  if(l<420) f=.3+.7*(l-380)/40; else if(l>700) f=.3+.7*(780-l)/80;
+  if(l<380||l>780) f=0;
+  return [r,g,b].map(c=>Math.round(255*Math.pow(c*f,.8)));
+}
+const rgbStr = (a,al=1)=>`rgba(${a[0]},${a[1]},${a[2]},${al})`;
+// blackbody colour (approximate, Tanner Helland fit)
+function bbRGB(T){
+  const t=T/100; let r,g,b;
+  if(t<=66){r=255; g=99.47*Math.log(t)-161.12; b = t<=19?0:138.52*Math.log(t-10)-305.04;}
+  else {r=329.7*Math.pow(t-60,-.1332); g=288.12*Math.pow(t-60,-.0755); b=255;}
+  return [r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v))));
+}
+function planck(lnm,T){ const l=lnm*1e-9; return 1/(Math.pow(l,5)*(Math.exp(0.0143877735/(l*T))-1)); }
+
+// generic plot frame: returns mapping helpers
+function frame(ctx,w,h,opt){
+  const pad = {l:opt.l??40, r:12, t:opt.t??12, b:opt.b??34};
+  const x0=pad.l, x1=w-pad.r, y0=pad.t, y1=h-pad.b;
+  const xmin=opt.xmin, xmax=opt.xmax, ymin=opt.ymin??0, ymax=opt.ymax??1;
+  const X = v => x0+(v-xmin)/(xmax-xmin)*(x1-x0);
+  const Y = v => y1-(v-ymin)/(ymax-ymin)*(y1-y0);
+  ctx.fillStyle=css("--plot-bg"); ctx.fillRect(0,0,w,h);
+  if(opt.rainbow){ // faint rainbow band under the plot
+    for(let px=Math.max(x0,X(380));px<Math.min(x1,X(720));px++){
+      const l = xmin+(px-x0)/(x1-x0)*(xmax-xmin);
+      ctx.fillStyle=rgbStr(wl2rgb(l),opt.rainbowAlpha??.13); ctx.fillRect(px,y0,1,y1-y0);
+    }
+  }
+  ctx.strokeStyle=css("--plot-grid"); ctx.lineWidth=1; ctx.fillStyle=css("--plot-text");
+  ctx.font='11px "JetBrains Mono", monospace'; ctx.textAlign="center";
+  const step = opt.xstep ?? 50;
+  for(let v=Math.ceil(xmin/step)*step; v<=xmax; v+=step){
+    ctx.beginPath(); ctx.moveTo(X(v),y0); ctx.lineTo(X(v),y1); ctx.stroke();
+    if(w>420 || v% (step*2)===0) ctx.fillText(v, X(v), y1+14);
+  }
+  ctx.fillText(opt.xlabel??"wavelength (nm)", (x0+x1)/2, h-4);
+  if(opt.ylabel){ ctx.save(); ctx.translate(12,(y0+y1)/2); ctx.rotate(-Math.PI/2); ctx.fillText(opt.ylabel,0,0); ctx.restore(); }
+  return {X,Y,x0,x1,y0,y1};
+}
+function strip(ctx,x,y,w,h,fn){ // fn(lambda) -> {rgb, a}
+  for(let px=0;px<w;px++){
+    const l=L0+px/w*(L1-L0); const v=fn(l);
+    ctx.fillStyle = v; ctx.fillRect(x+px,y,1.2,h);
+  }
+}
+function markDone(n){ if(state.done[n]) return; state.done[n]=true; const a=$("#nav"+n); if(a) a.classList.add("done"); renderResults(); }
+
+/* predict-then-check boxes */
+function predict(id, right, msgs){
+  const box=$(id); const fb=box.querySelector(".fb");
+  box.querySelectorAll(".opts button").forEach(b=>b.addEventListener("click",()=>{
+    const a=+b.dataset.a; box.querySelectorAll(".opts button").forEach(x=>x.classList.remove("right","wrong"));
+    b.classList.add(a===right?"right":"wrong");
+    fb.className="fb "+(a===right?"good":"bad"); fb.textContent=msgs[a];
+  }));
+}
+
+/* tap-to-translate units */
+const UNITS = {
+  "nm":"nm = nanometer, one billionth of a meter. Visible light is about 400–700 nm.",
+  "436nm":"436 nm: blue light. About 1/160 the width of a human hair.",
+  "546nm":"546 nm: green light, the color your eyes are most sensitive to.",
+  "587nm":"587.6 nm: yellow light. 587.6 nanometers = 0.0005876 millimeters."
+};
+function tempWords(T){ const C=T-273, F=C*9/5+32; return `${fmt(T)} K = ${fmt(C)} °C = ${fmt(Math.round(F/10)*10)} °F`; }
+function nmWords(l){ const hair=70000/l; return `${fmt(l,0)} nm is ${colorName(l)} light. About 1/${fmt(Math.round(hair/10)*10)} the width of a human hair.`; }
+function speedWords(v){ const mph=Math.abs(v)*2237; return `${fmt(Math.abs(v))} km/s ≈ ${fmt(Math.round(mph/1000)*1000)} mph. At that speed you'd cross the USA in about ${fmt(4500/Math.max(1,Math.abs(v)),1)} seconds.`; }
+document.addEventListener("click",e=>{
+  const u=e.target.closest(".u"); const bub=$("#bubble");
+  if(!u){ bub.style.display="none"; return; }
+  let txt = UNITS[u.dataset.u];
+  if(u.dataset.t) txt = tempWords(+u.dataset.t);
+  if(u.dataset.l) txt = nmWords(+u.dataset.l);
+  if(u.dataset.v) txt = speedWords(+u.dataset.v);
+  bub.textContent=txt; bub.style.display="block";
+  const r=u.getBoundingClientRect(); const bw=bub.offsetWidth;
+  bub.style.left=Math.max(16,Math.min(window.innerWidth-bw-16,r.left))+"px";
+  bub.style.top=(r.bottom+8 > window.innerHeight-90 ? r.top-bub.offsetHeight-8 : r.bottom+8)+"px";
+});
+window.addEventListener("scroll",()=>{$("#bubble").style.display="none";},{passive:true});
+const uT = T=>`<span class="u" data-t="${T}">${fmt(T)} K</span>`;
+const uL = (l,d=0)=>`<span class="u" data-l="${l}">${fmt(l,d)} nm</span>`;
+const uV = v=>`<span class="u" data-v="${v}">${v>0?"+":""}${fmt(v)} km/s</span>`;
+function colorName(l){ return l<380?"ultraviolet (invisible)": l<450?"violet": l<485?"blue": l<500?"blue-green": l<565?"green": l<590?"yellow": l<625?"orange": l<=750?"red":"infrared (invisible)"; }
+
+/* ================= MISSION 1: glow ================= */
+const BB_PRESETS=[["Candle",1900],["Light bulb",2700],["Proxima Cen",3000],["Sun",5800],["Vega",9600],["Rigel",12000],["Hot O star",30000]];
+function drawBB(){
+  const T=+$("#bbT").value; const c=$("#bbCanvas"); const {ctx,w,h}=setupCanvas(c);
+  const xmin=300,xmax=1000;
+  const F=frame(ctx,w,h,{xmin,xmax,ymin:0,ymax:1.08,xstep:100,rainbow:true,rainbowAlpha:.22,ylabel:"brightness",b:40});
+  let mx=0; for(let l=xmin;l<=xmax;l+=2) mx=Math.max(mx,planck(l,T));
+  ctx.beginPath(); for(let l=xmin;l<=xmax;l+=2){const v=planck(l,T)/mx; l===xmin?ctx.moveTo(F.X(l),F.Y(v)):ctx.lineTo(F.X(l),F.Y(v));}
+  ctx.strokeStyle="#fff"; ctx.lineWidth=2.5; ctx.stroke();
+  // labels for UV/IR
+  ctx.fillStyle=css("--plot-text"); ctx.font='11px "Atkinson Hyperlegible"'; ctx.textAlign="center";
+  ctx.fillText("ultraviolet",F.X(340),F.y1-6); ctx.fillText("infrared",F.X(860),F.y1-6);
+  const peak=2898000/T;
+  if(peak<=xmax){ ctx.setLineDash([4,4]); ctx.strokeStyle=css("--amber"); ctx.beginPath(); ctx.moveTo(F.X(Math.max(xmin,peak)),F.y0); ctx.lineTo(F.X(Math.max(xmin,peak)),F.y1); ctx.stroke(); ctx.setLineDash([]); }
+  // glowing ball
+  const col=bbRGB(T); const r=Math.min(30,h*.14); const cx=w-r-22, cy=F.y0+r+16;
+  const g=ctx.createRadialGradient(cx,cy,2,cx,cy,r*1.8); g.addColorStop(0,"#fff"); g.addColorStop(.35,rgbStr(col)); g.addColorStop(1,rgbStr(col,0));
+  ctx.fillStyle=g; ctx.beginPath(); ctx.arc(cx,cy,r*1.8,0,7); ctx.fill();
+  $("#bbTout").innerHTML = uT(T);
+  const name = T<3500?"orange-red":T<5000?"orange":T<6500?"yellow-white":T<8500?"white":"blue-white";
+  $("#bbColor").textContent=name;
+  $("#bbPeak").innerHTML = peak<380? `${fmt(peak)} nm (UV!)` : peak>750 ? `${fmt(peak)} nm (IR!)` : `${fmt(peak)} nm`;
+  const pw=Math.pow(T/5800,4);
+  $("#bbPow").textContent = (pw<1? fmt(pw,2): fmt(pw, pw<10?1:0))+" ×";
+  $("#bbYours").innerHTML = `<b>Your numbers:</b> 2,898,000 ÷ ${fmt(T)} K = <b>${fmt(peak)} nm</b> (${colorName(peak)}).<br>(${fmt(T)} ÷ 5,800)⁴ = <b>${fmt(pw,pw<1?3:1)}×</b> the Sun's light per square meter.`;
+  if(Math.abs(T-5800)>1500) markDone(1);
+}
+BB_PRESETS.forEach(([n,T])=>{const b=document.createElement("button"); b.className="chip"; b.textContent=n; b.onclick=()=>{$("#bbT").value=T; drawBB();}; $("#bbPresets").appendChild(b);});
+$("#bbT").addEventListener("input",drawBB);
+predict("#p1",1,["Not quite. Hot things start out red, but as they heat up they glow orange, then yellow-white, then blue-white. Try the slider!","Yes! Red-hot → white-hot → blue-hot. The hottest stars are blue.","Not quite. The color changes too. Slide from 2,000 K to 30,000 K and watch."]);
+
+/* ================= MISSION 2: hydrogen atom ================= */
+const atom={from:3,to:2,anim:null,found:new Set(),lines:[],t:0,electronN:3,photon:null};
+const hLam=(a,b)=>1239.84/(13.6057*(1/(b*b)-1/(a*a)));
+function buildLevelBtns(){
+  $("#fromBtns").innerHTML=""; $("#toBtns").innerHTML="";
+  for(let n=2;n<=6;n++){const b=document.createElement("button"); b.className="chip"+(n===atom.from?" on":""); b.textContent=n; b.onclick=()=>{atom.from=n; if(atom.to>=n) atom.to=n-1; atom.electronN=n; buildLevelBtns(); drawAtom();}; $("#fromBtns").appendChild(b);}
+  for(let n=1;n<=5;n++){const b=document.createElement("button"); b.className="chip"+(n===atom.to?" on":""); b.textContent=n; b.disabled=n>=atom.from; b.onclick=()=>{atom.to=n; buildLevelBtns(); drawAtom();}; $("#toBtns").appendChild(b);}
+}
+function rN(n,R){ return R*(0.17+0.83*(n-1)/5); }
+function drawAtom(){
+  const c=$("#atomCanvas"); const {ctx,w,h}=setupCanvas(c);
+  ctx.fillStyle=css("--plot-bg"); ctx.fillRect(0,0,w,h);
+  const cx=Math.min(w*.32, h*.5+10), cy=h/2, R=Math.min(h*.46, w*.3);
+  for(let n=1;n<=6;n++){ ctx.beginPath(); ctx.arc(cx,cy,rN(n,R),0,7); ctx.strokeStyle= (n===atom.from||n===atom.to)? "rgba(255,255,255,.55)":"rgba(255,255,255,.16)"; ctx.lineWidth=(n===atom.from||n===atom.to)?2:1; ctx.stroke();
+    ctx.fillStyle="rgba(255,255,255,.7)"; ctx.font='12px "JetBrains Mono"'; ctx.textAlign="center"; ctx.fillText(n, cx+rN(n,R)*Math.cos(2.35)+ (n===1?0:0), cy+rN(n,R)*Math.sin(2.35)+4); }
+  const ng=ctx.createRadialGradient(cx,cy,1,cx,cy,10); ng.addColorStop(0,"#fff"); ng.addColorStop(1,"#ff9a4a"); ctx.fillStyle=ng; ctx.beginPath(); ctx.arc(cx,cy,7,0,7); ctx.fill();
+  // electron
+  let er=rN(atom.electronN,R); if(atom.anim){ const p=Math.min(1,atom.t/0.5); er = rN(atom.from,R)+(rN(atom.to,R)-rN(atom.from,R))*p; }
+  const ang=-0.7; const ex=cx+er*Math.cos(ang), ey=cy+er*Math.sin(ang);
+  ctx.fillStyle="#7fd3ff"; ctx.beginPath(); ctx.arc(ex,ey,6,0,7); ctx.fill();
+  // photon wave
+  if(atom.photon){
+    const P=atom.photon; const vis=P.l>=380&&P.l<=750; const col = vis? rgbStr(wl2rgb(P.l)) : "rgba(200,200,200,.7)";
+    const sx=P.x, sy=P.y, dist=Math.max(0,(atom.t-0.45))*w*0.9; const len=Math.min(dist, w-sx-10);
+    ctx.strokeStyle=col; ctx.lineWidth=3; ctx.beginPath();
+    const k=2*Math.PI/Math.max(8,P.l/22);
+    for(let s=0;s<=len;s+=2){ const x=sx+s, y=sy+8*Math.sin(k*s); s===0?ctx.moveTo(x,y):ctx.lineTo(x,y); }
+    ctx.stroke();
+    if(len>40){ ctx.fillStyle=col; ctx.font='bold 14px "JetBrains Mono"'; ctx.textAlign="right"; ctx.fillText(vis? `${fmt(P.l)} nm`: (P.l<380?`${fmt(P.l)} nm UV`:`${fmt(P.l)} nm IR`), w-12, sy-14); }
+  }
+  // energy ladder on the right
+  const lx=w-60, ly0=18, ly1=h-18;
+  const Ey=n=> ly0 + (ly1-ly0)*( (13.6/(n*n)) /13.6 ) * 0.98;
+  if(w>380){ ctx.textAlign="right"; ctx.font='11px "JetBrains Mono"';
+    for(let n=1;n<=6;n++){ ctx.strokeStyle=(n===atom.from||n===atom.to)?"#fff":"rgba(255,255,255,.3)"; ctx.beginPath(); ctx.moveTo(lx-40,Ey(n)); ctx.lineTo(lx+40,Ey(n)); ctx.stroke(); if(n<=3||n===6){ctx.fillStyle="rgba(255,255,255,.6)"; ctx.fillText(`n=${n}`,lx-46,Ey(n)+4);} }
+    ctx.textAlign="center"; ctx.fillStyle="rgba(255,255,255,.55)"; ctx.fillText("energy ladder",lx,ly1+12);
+    ctx.strokeStyle=css("--amber"); ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(lx,Ey(atom.from)); ctx.lineTo(lx,Ey(atom.to)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(lx-5,Ey(atom.to)-8); ctx.lineTo(lx,Ey(atom.to)); ctx.lineTo(lx+5,Ey(atom.to)-8); ctx.stroke();
+  }
+}
+function drawHStrip(){
+  const c=$("#hStrip"); const {ctx,w,h}=setupCanvas(c);
+  ctx.fillStyle="#05070d"; ctx.fillRect(0,0,w,h);
+  const X=l=>(l-L0)/(L1-L0)*w;
+  atom.lines.forEach(l=>{ if(l<L0||l>L1) return; const col=wl2rgb(l); const g=ctx.createLinearGradient(X(l)-5,0,X(l)+5,0); g.addColorStop(0,rgbStr(col,0)); g.addColorStop(.5,rgbStr(col)); g.addColorStop(1,rgbStr(col,0)); ctx.fillStyle=g; ctx.fillRect(X(l)-5,0,10,h-18); });
+  ctx.fillStyle="#8892a6"; ctx.font='11px "JetBrains Mono"'; ctx.textAlign="center";
+  for(let v=400;v<=700;v+=50) ctx.fillText(v,X(v),h-4);
+}
+$("#jumpBtn").onclick=()=>{
+  if(atom.anim) return;
+  const l=hLam(atom.from,atom.to);
+  const c=$("#atomCanvas"); const w=c.clientWidth, h=+c.dataset.h; const cx=Math.min(w*.32,h*.5+10), R=Math.min(h*.46,w*.3);
+  atom.electronN=atom.from; atom.t=0; atom.photon={l, x:cx+rN(atom.to,R)*Math.cos(-.7)+6, y:h/2+rN(atom.to,R)*Math.sin(-.7)};
+  const t0=performance.now();
+  atom.anim=true;
+  const step=now=>{ atom.t=(now-t0)/1000; drawAtom(); if(atom.t<1.6) requestAnimationFrame(step); else { atom.anim=false; atom.electronN=atom.to; drawAtom(); } };
+  requestAnimationFrame(step);
+  const vis=l>=380&&l<=750; const gap=13.6057*(1/(atom.to**2)-1/(atom.from**2));
+  let msg;
+  if(vis){ const key=atom.from+"-"+atom.to; const isNew=!atom.found.has(key); atom.found.add(key); if(!atom.lines.some(x=>Math.abs(x-l)<.5)) atom.lines.push(l);
+    msg=`<b>${atom.from} → ${atom.to}:</b> ${uL(l)}, <b>${colorName(l)}</b> light! ${isNew?"New line added to your spectrum.":"You already found this one."}`;}
+  else if(l<380) msg=`<b>${atom.from} → ${atom.to}:</b> ${fmt(l)} nm is <b>ultraviolet</b>, too energetic for your eyes to see. Big jumps all the way down to step 1 make UV.`;
+  else msg=`<b>${atom.from} → ${atom.to}:</b> ${fmt(l)} nm is <b>infrared</b>, too little energy for your eyes to see. Small jumps between high steps make IR.`;
+  $("#jumpMsg").innerHTML=msg;
+  $("#atomYours").innerHTML=`<b>Your numbers:</b> gap = 13.6 × (1/${atom.to}² − 1/${atom.from}²) = <b>${fmt(gap,3)} eV</b>.<br>wavelength = 1240 ÷ ${fmt(gap,3)} = <b>${fmt(l,1)} nm</b> (${colorName(l)}).`;
+  $("#hCount").textContent=`${atom.lines.length} / 4`;
+  state.res.hLines=atom.lines.length;
+  if(atom.lines.length>=4){ $("#hWin").classList.remove("hide"); markDone(2); }
+  drawHStrip(); renderResults();
+};
+$("#atomReset").onclick=()=>{ atom.lines=[]; atom.found.clear(); atom.photon=null; atom.electronN=atom.from; $("#hCount").textContent="0 / 4"; $("#hWin").classList.add("hide"); $("#jumpMsg").textContent="Pick a start step and an end step, then make the jump."; drawAtom(); drawHStrip(); };
+
+/* ================= MISSION 3: calibrate ================= */
+// simulated phone: pixel = 52 + 2.47*(lambda-380) + small curvature
+const pixOf = l => 52 + 2.47*(l-380) + 0.0003*(l-380)*(l-380);
+const PIXMAX = 1000;
+const calPeaks = GAS.H.lines.map(([l,a])=>({l,a,p:pixOf(l)}));
+// add noise-free simulated brightness at each pixel
+function calSignal(p){ let s=0.035+0.008*Math.sin(p/37); for(const k of calPeaks){ const d=(p-k.p)/4.2; s+=k.a*Math.exp(-d*d/2);} return Math.min(1.05,s); }
+// local maxima of simulated signal
+const calMax=[]; for(let p=2;p<PIXMAX-2;p++){ const v=calSignal(p); if(v>0.1 && v>=calSignal(p-1)&&v>calSignal(p+1)) calMax.push(p); }
+const cal={sel:null, pts:[]};
+function calFit(){ if(cal.pts.length<2) return null; const [a,b]=cal.pts; const m=(b.l-a.l)/(b.p-a.p); return {m, c:a.l-m*a.p}; }
+function drawCal(){
+  const c=$("#calCanvas"); const {ctx,w,h}=setupCanvas(c);
+  const fit=calFit();
+  const F=frame(ctx,w,h,{xmin:0,xmax:PIXMAX,ymin:0,ymax:1.4,xstep:100,xlabel: fit?"pixel   ·   amber numbers = your nm scale":"pixel on the camera chip",ylabel:"brightness",b:88});
+  // colour each Balmer peak by its real colour
+  calPeaks.forEach(k=>{ const col=wl2rgb(k.l); ctx.beginPath(); ctx.moveTo(F.X(k.p-16),F.Y(0));
+    for(let p=k.p-16;p<=k.p+16;p+=0.5){ const d=(p-k.p)/4.2; ctx.lineTo(F.X(p),F.Y(k.a*Math.exp(-d*d/2)+0.035)); }
+    ctx.lineTo(F.X(k.p+16),F.Y(0)); ctx.closePath(); ctx.fillStyle=rgbStr(col,.75); ctx.fill(); });
+  ctx.beginPath(); for(let p=0;p<=PIXMAX;p+=1){ const v=calSignal(p); p===0?ctx.moveTo(F.X(p),F.Y(v)):ctx.lineTo(F.X(p),F.Y(v)); }
+  ctx.strokeStyle="#e7ecf5"; ctx.lineWidth=1.6; ctx.stroke();
+  // camera view strip (what the phone's camera sees)
+  const sy=F.y1+22, sh=24;
+  ctx.fillStyle="#05070d"; ctx.fillRect(F.x0,sy,F.x1-F.x0,sh);
+  calPeaks.forEach(k=>{ const col=wl2rgb(k.l); const x=F.X(k.p); const a=Math.min(1,.35+k.a);
+    const g=ctx.createLinearGradient(x-5,0,x+5,0); g.addColorStop(0,rgbStr(col,0)); g.addColorStop(.5,rgbStr(col,a)); g.addColorStop(1,rgbStr(col,0)); ctx.fillStyle=g; ctx.fillRect(x-5,sy,10,sh); });
+  ctx.fillStyle=css("--plot-text"); ctx.font='10px "Atkinson Hyperlegible"'; ctx.textAlign="right"; ctx.fillText("camera view",F.x1-4,sy+sh-6);
+  cal.pts.forEach((q,i)=>{ ctx.fillStyle=css("--amber"); ctx.beginPath(); ctx.arc(F.X(q.p),F.Y(calSignal(q.p))-10,6,0,7); ctx.fill(); ctx.fillStyle="#1b1300"; ctx.font='bold 10px "JetBrains Mono"'; ctx.textAlign="center"; ctx.fillText(i+1,F.X(q.p),F.Y(calSignal(q.p))-7); });
+  if(cal.sel!=null){ ctx.strokeStyle=css("--amber"); ctx.setLineDash([3,3]); ctx.beginPath(); ctx.moveTo(F.X(cal.sel),F.y0); ctx.lineTo(F.X(cal.sel),F.y1); ctx.stroke(); ctx.setLineDash([]); }
+  if(fit){ ctx.fillStyle=css("--amber"); ctx.font='11px "JetBrains Mono"'; ctx.textAlign="center";
+    for(let l=400;l<=700;l+=50){ const p=(l-fit.c)/fit.m; if(p<0||p>PIXMAX) continue; if(w<=420 && l%100) continue; ctx.fillRect(F.X(p),sy+sh,1,5); ctx.fillText(l,F.X(p),sy+sh+16); }
+    calMax.forEach(p=>{ const l=fit.m*p+fit.c; ctx.fillStyle="#fff"; ctx.textAlign="center"; ctx.font='bold 11px "JetBrains Mono"'; ctx.fillText(fmt(l),F.X(p),F.Y(calSignal(p))-(cal.pts.some(q=>q.p===p)?22:8)); });
+  }
+  c._F=F;
+}
+$("#calCanvas").addEventListener("click",e=>{
+  const c=$("#calCanvas"); const F=c._F; if(!F) return; const r=c.getBoundingClientRect(); const x=e.clientX-r.left;
+  const p=(x-F.x0)/(F.x1-F.x0)*PIXMAX; let best=null,bd=1e9; calMax.forEach(m=>{const d=Math.abs(m-p); if(d<bd){bd=d;best=m;}});
+  if(bd>60){ $("#calSel").textContent="Tap closer to a peak."; return; }
+  cal.sel=best; $("#calSel").innerHTML=`Selected peak at pixel <b>${best}</b>. Which line is it? ↓`; drawCal();
+});
+$$("#m3 .chip[data-w]").forEach(b=>b.addEventListener("click",()=>{
+  if(cal.sel==null){ $("#calSel").textContent="First tap a peak on the graph."; return; }
+  const l=+b.dataset.w; const truthL = calPeaks.reduce((a,k)=>Math.abs(k.p-cal.sel)<Math.abs(a.p-cal.sel)?k:a).l;
+  const wrong = Math.abs(truthL-l)>3;
+  cal.pts = cal.pts.filter(q=>q.p!==cal.sel); if(cal.pts.length>=2) cal.pts.shift();
+  cal.pts.push({p:cal.sel,l});
+  $("#calSel").innerHTML = wrong? `Hmm, pixel ${cal.sel} set to ${l} nm. Check the color order: violet is on the left, red on the right.` : `Pixel ${cal.sel} = ${l} nm. ${cal.pts.length<2?"Now tap a second peak.":""}`;
+  cal.sel=null; updCal(); drawCal();
+}));
+function updCal(){
+  $("#cal1").textContent = cal.pts[0]? `px ${cal.pts[0].p} = ${cal.pts[0].l}`:"—";
+  $("#cal2").textContent = cal.pts[1]? `px ${cal.pts[1].p} = ${cal.pts[1].l}`:"—";
+  const fit=calFit(); const d=$("#calDone");
+  if(fit){ $("#calSlope").textContent=fmt(fit.m,3);
+    const vio=calMax.map(p=>fit.m*p+fit.c).filter(l=>l>420&&l<450);
+    const good = fit.m>0.3 && fit.m<0.5 && cal.pts.every(q=>Math.abs(q.l-calPeaks.reduce((a,k)=>Math.abs(k.p-q.p)<Math.abs(a.p-q.p)?k:a).l)<3);
+    d.classList.remove("hide");
+    d.innerHTML = good ? `<b class="step-done">Calibrated!</b> Each pixel is ${fmt(fit.m,3)} nm wide. Now the graph reads in nm: the faint violet peak lands near <b>${vio.length?fmt(vio[0]):"?"} nm</b>, and hydrogen's 5 → 2 line (from Mission 2) is really at 434 nm. A few nm off is normal for a two-point phone calibration.` : `<b style="color:var(--bad)">Something's off.</b> Your scale runs ${fit.m<0?"backwards":"too stretched or squished"}. Make sure each peak got its real wavelength, then try again.`;
+    state.res.cal = good? `${fmt(fit.m,3)} nm/pixel`:"needs another try";
+    if(good) markDone(3);
+  } else { $("#calSlope").textContent="—"; d.classList.add("hide"); }
+  renderResults();
+}
+$("#calReset").onclick=()=>{cal.pts=[];cal.sel=null;$("#calSel").textContent="Tap a peak on the graph."; updCal(); drawCal();};
+predict("#p3",1,["Too far violet. 400 nm is past even the faintest hydrogen line (410 nm).","Right! That's the 434 nm line from the 5 → 2 jump in Mission 2.","Too red. 500 nm would sit to the right of the aqua 486 nm line, not the left."]);
+function drawGr(){ const l=+$("#grL").value; const s=l/1000; const ang=Math.asin(s)*180/Math.PI; $("#grLout").textContent=l+" nm"; $("#grYours").innerHTML=`<b>Your numbers:</b> sin(angle) = ${l} ÷ 1000 = ${fmt(s,3)}, so the angle = <b>${fmt(ang,1)}°</b> (${colorName(l)}).`; }
+$("#grL").addEventListener("input",drawGr);
+
+/* ================= MISSION 4: gases ================= */
+let gasSel="H";
+function emission(lines, l, width=1.1){ let s=0; for(const [c,a] of lines){ const d=(l-c)/width; s+=a*Math.exp(-d*d/2);} return s; }
+function drawEmission(c, lines, overlays=[]){
+  const {ctx,w,h}=setupCanvas(c);
+  const stripH=34;
+  const F=frame(ctx,w,h,{xmin:L0,xmax:L1,ymin:0,ymax:1.15,b:20+stripH+26,ylabel:"brightness",xlabel:""});
+  // graph
+  ctx.beginPath(); for(let l=L0;l<=L1;l+=0.25){ const v=Math.min(1.1,emission(lines,l)); l===L0?ctx.moveTo(F.X(l),F.Y(v)):ctx.lineTo(F.X(l),F.Y(v)); }
+  ctx.strokeStyle="#e7ecf5"; ctx.lineWidth=1.6; ctx.stroke();
+  overlays.forEach((o,i)=>{ ctx.strokeStyle=o.col; ctx.lineWidth=2; ctx.setLineDash([5,4]);
+    o.lines.forEach(([l,a])=>{ if(a<0.1) return; ctx.beginPath(); ctx.moveTo(F.X(l),F.y0+i*4); ctx.lineTo(F.X(l),F.y1); ctx.stroke(); }); ctx.setLineDash([]); });
+  // strip view (what the eye sees)
+  const sy=F.y1+22;
+  ctx.fillStyle="#05070d"; ctx.fillRect(F.x0,sy,F.x1-F.x0,stripH);
+  for(let px=F.x0;px<F.x1;px++){ const l=L0+(px-F.x0)/(F.x1-F.x0)*(L1-L0); const v=Math.min(1,emission(lines,l,0.9)*1.3); if(v<0.02) continue; ctx.fillStyle=rgbStr(wl2rgb(l),v); ctx.fillRect(px,sy,1.2,stripH); }
+  ctx.fillStyle=css("--plot-text"); ctx.font='11px "Atkinson Hyperlegible"'; ctx.textAlign="center"; ctx.fillText("wavelength (nm) · strip = what your eye sees",(F.x0+F.x1)/2,h-6);
+}
+function drawGas(){
+  const g=GAS[gasSel]; $("#tube").style.background=`linear-gradient(180deg, #fff 0%, ${g.glow} 35%, ${g.glow} 65%, #fff0 100%)`; $("#tube").style.boxShadow=`0 0 24px 6px ${g.glow}`;
+  $("#tubeNote").textContent=GAS_NOTES[gasSel];
+  drawEmission($("#gasCanvas"), g.lines);
+}
+Object.keys(GAS).forEach(k=>{ const b=document.createElement("button"); b.className="chip"+(k===gasSel?" on":""); b.textContent=GAS[k].name; b.onclick=()=>{gasSel=k; $$("#gasBtns button").forEach(x=>x.classList.toggle("on",x===b)); drawGas();}; $("#gasBtns").appendChild(b); });
+
+const OVCOL={H:"#ff5a8a",He:"#ffd6a0",Ne:"#ff7a3f",Hg:"#7fb0ff",Na:"#ffcf3f"};
+const mys={i:0, ov:new Set(), ans:new Set(), solved:new Set()};
+function mysLines(i){ return MYST[i].ans.flatMap(k=>GAS[k].lines); }
+function drawMys(){ drawEmission($("#mysCanvas"), mysLines(mys.i), [...mys.ov].map(k=>({col:OVCOL[k],lines:GAS[k].lines}))); }
+function buildMys(){
+  $("#mysBtns").innerHTML=""; MYST.forEach((m,i)=>{ const b=document.createElement("button"); b.className="chip"+(i===mys.i?" on":""); b.textContent=(mys.solved.has(i)?"✓ ":"")+m.id; b.onclick=()=>{mys.i=i; mys.ans.clear(); $("#mysFb").textContent=""; buildMys(); drawMys();}; $("#mysBtns").appendChild(b); });
+  $("#ovBtns").innerHTML=""; $("#ansBtns").innerHTML="";
+  Object.keys(GAS).forEach(k=>{
+    const b=document.createElement("button"); b.className="chip"+(mys.ov.has(k)?" on":""); b.innerHTML=`<span style="color:${OVCOL[k]}">┊</span> ${GAS[k].name}`; b.onclick=()=>{ mys.ov.has(k)?mys.ov.delete(k):mys.ov.add(k); buildMys(); drawMys(); }; $("#ovBtns").appendChild(b);
+    const a=document.createElement("button"); a.className="chip"+(mys.ans.has(k)?" on":""); a.textContent=GAS[k].name; a.onclick=()=>{ mys.ans.has(k)?mys.ans.delete(k):mys.ans.add(k); buildMys(); }; $("#ansBtns").appendChild(a);
+  });
+}
+$("#mysCheck").onclick=()=>{
+  const want=new Set(MYST[mys.i].ans); const got=mys.ans; const fb=$("#mysFb");
+  if(!got.size){ fb.className="fb bad"; fb.textContent="Pick at least one element."; return; }
+  const ok = want.size===got.size && [...want].every(k=>got.has(k));
+  if(ok){ fb.className="fb good"; fb.textContent= want.size>1? "Solved! Two fingerprints at once, just like a star, which holds many elements." : `Solved! It's ${GAS[[...want][0]].name}.`; mys.solved.add(mys.i); buildMys(); }
+  else { const some=[...got].some(k=>want.has(k)); fb.className="fb bad"; fb.textContent= some? (got.size<want.size? "Part right! Some bright lines are still unexplained. Is it a mix?" : "Close, but one of your picks has lines that aren't in the signal.") : "Not a match. Turn on overlays and look for lines that land exactly on the peaks."; }
+  state.res.mys=mys.solved.size; if(mys.solved.size===3) markDone(4); renderResults();
+};
+// phone matcher
+function matchPeaks(peaks){
+  return Object.keys(GAS).map(k=>{
+    const strong=GAS[k].lines.filter(x=>x[1]>=0.2).map(x=>x[0]);
+    let hit=0; peaks.forEach(p=>{ if(strong.some(l=>Math.abs(l-p)<=8)) hit++; });
+    const top=GAS[k].lines.slice().sort((a,b)=>b[1]-a[1]).slice(0,3).map(x=>x[0]);
+    const cover=top.filter(l=>peaks.some(p=>Math.abs(l-p)<=8)).length/top.length;
+    const score=Math.round(100*(0.65*hit/peaks.length + 0.35*cover));
+    return {k,score};
+  }).sort((a,b)=>b.score-a.score);
+}
+$("#matchBtn").onclick=()=>{
+  const peaks=($("#myPeaks").value.match(/\d+(\.\d+)?/g)||[]).map(Number).filter(x=>x>=350&&x<=750);
+  const out=$("#matchOut");
+  if(!peaks.length){ out.innerHTML='<p class="fb bad">Type some numbers between 380 and 720 first.</p>'; return; }
+  const r=matchPeaks(peaks);
+  out.innerHTML = r.map(x=>`<div class="mb"><b>${GAS[x.k].name}</b><div class="bar"><span style="width:${x.score}%"></span></div><span class="mono">${x.score}%</span></div>`).join("") +
+    `<p><b>Best match: ${GAS[r[0].k].name}.</b> ${r[0].score<60?"Not a strong match, though. Maybe recalibrate, or it's a mix of gases?":""}</p>`;
+  state.res.phone=`${peaks.map(p=>fmt(p)).join(", ")} nm → ${GAS[r[0].k].name}`; renderResults();
+};
+$("#tryDemo").onclick=()=>{ $("#myPeaks").value="652, 483, 431"; $("#matchBtn").click(); };
+
+/* ================= MISSION 5: stars ================= */
+// A. Kirchhoff demo
+let absMode=0;
+const ABS_NOTES=["A hot, dense glow makes a continuous rainbow, no gaps.","A thin glowing gas makes only bright lines: its fingerprint.","Shine a hot glow through cooler gas and the gas steals its fingerprint colors, leaving dark lines in the same places. This is what starlight looks like!"];
+function drawAbs(){
+  const c=$("#absCanvas"); const {ctx,w,h}=setupCanvas(c);
+  ctx.fillStyle="#05070d"; ctx.fillRect(0,0,w,h);
+  const H=GAS.H.lines; const pad=14, sw=w-2*pad, sh=h-46;
+  for(let px=0;px<sw;px++){ const l=L0+px/sw*(L1-L0); let a;
+    if(absMode===0) a=1; else if(absMode===1) a=Math.min(1,emission(H,l,0.9)*1.4); else a=1-Math.min(.92,emission(H,l,0.9)*1.6);
+    ctx.fillStyle=rgbStr(wl2rgb(l),a); ctx.fillRect(pad+px,14,1.2,sh); }
+  ctx.fillStyle="#8892a6"; ctx.font='11px "JetBrains Mono"'; ctx.textAlign="center";
+  for(let v=400;v<=700;v+=50) ctx.fillText(v,pad+(v-L0)/(L1-L0)*sw,h-16);
+  ctx.fillText("wavelength (nm) · gas = hydrogen",w/2,h-2);
+  $("#absNote").textContent=ABS_NOTES[absMode];
+}
+$$("#absBtns button").forEach(b=>b.onclick=()=>{absMode=+b.dataset.m; $$("#absBtns button").forEach(x=>x.classList.toggle("on",x===b)); drawAbs();});
+
+// B. Sun
+const sunOn=new Set();
+function drawSpecLine(ctx,F,arr,col,lw=1.8){ ctx.beginPath(); arr.forEach((v,i)=>{ const x=F.X(L0+i), y=F.Y(v/1000); i?ctx.lineTo(x,y):ctx.moveTo(x,y); }); ctx.strokeStyle=col; ctx.lineWidth=lw; ctx.stroke(); }
+function drawSun(){
+  const c=$("#sunCanvas"); const {ctx,w,h}=setupCanvas(c);
+  const F=frame(ctx,w,h,{xmin:L0,xmax:L1,ymin:0,ymax:1.08,rainbow:true,rainbowAlpha:.16,ylabel:"brightness"});
+  drawSpecLine(ctx,F,STAR.G2V,"#fff");
+  [...sunOn].forEach((k,i)=>{ const e=SUN_EL[k]; ctx.strokeStyle=e.col; ctx.lineWidth=2; ctx.setLineDash([4,3]);
+    e.lines.forEach(l=>{ ctx.beginPath(); ctx.moveTo(F.X(l),F.y0+i*3); ctx.lineTo(F.X(l),F.y1); ctx.stroke(); }); ctx.setLineDash([]);
+    ctx.fillStyle=e.col; ctx.font='bold 11px "Atkinson Hyperlegible"'; ctx.textAlign="center"; ctx.fillText(k, F.X(e.lines[0]), F.y0+10+i*12); });
+}
+const sunChecked=new Set();
+function buildSun(){
+  $("#sunBtns").innerHTML=""; Object.keys(SUN_EL).forEach(k=>{ const e=SUN_EL[k]; const b=document.createElement("button"); b.className="chip"+(sunOn.has(k)?" on":""); b.innerHTML=`<span style="color:${e.col}">┊</span> ${e.name}`;
+    b.onclick=()=>{ sunOn.has(k)?sunOn.delete(k):sunOn.add(k); sunChecked.add(k); buildSun(); drawSun(); }; $("#sunBtns").appendChild(b); });
+  $("#sunChecklist").innerHTML=Object.keys(SUN_EL).map(k=>{ const e=SUN_EL[k]; const seen=sunChecked.has(k);
+    return `<li class="${seen?"done":""}"><b>${e.name}</b>: ${seen? (e.inSun? "lines land on dips → <b>in the star</b> ✓" : "lines miss the dips → <b>not visible here</b>") : "not checked yet"}</li>`; }).join("");
+  const found=Object.keys(SUN_EL).filter(k=>sunChecked.has(k)&&SUN_EL[k].inSun).map(k=>SUN_EL[k].name);
+  state.res.sun = found.length? found.join(", "):undefined;
+  m5check();
+  renderResults();
+}
+
+// C. sort
+const sortSeq=[];
+function buildStars(){
+  const box=$("#starCards"); box.innerHTML="";
+  STAR_SHUFFLE.forEach((si,pos)=>{
+    const b=document.createElement("button"); b.className="starcard"; b.dataset.si=si;
+    const r=sortSeq.indexOf(si);
+    b.innerHTML=`<div class="top"><span>Star ${pos+1}</span><span class="rank">${r>=0?r+1:"·"}</span></div><canvas height="110"></canvas>`;
+    if(r>=0) b.classList.add("picked");
+    b.onclick=()=>{ if(sortSeq.includes(si)) return; sortSeq.push(si); buildStars(); $("#starCheck").disabled=sortSeq.length<STARS.length; };
+    box.appendChild(b);
+  });
+  drawStarThumbs();
+}
+function drawStarThumbs(){
+  $$("#starCards .starcard").forEach(card=>{ const c=card.querySelector("canvas"); const {ctx,w,h}=setupCanvas(c); const si=+card.dataset.si;
+    const F=frame(ctx,w,h,{xmin:L0,xmax:L1,ymin:0,ymax:1.08,rainbow:true,rainbowAlpha:.28,b:18,t:6,l:8,xstep:100,xlabel:""});
+    drawSpecLine(ctx,F,STAR[STARS[si].k],"#fff",1.5);
+  });
+}
+$("#starCheck").onclick=()=>{
+  let right=0; sortSeq.forEach((si,i)=>{ if(si===i) right++; });
+  const cards=$$("#starCards .starcard"); cards.forEach(cd=>{ const si=+cd.dataset.si; cd.classList.add(sortSeq.indexOf(si)===si?"ok":"no"); });
+  const fb=$("#starFb");
+  fb.className="fb "+(right===7?"good":"bad");
+  fb.textContent = right===7? "Perfect order! You read temperature from starlight." : `${right} of 7 in the right spot. Green = correct. Look at which side of the rainbow each star is brightest on.`;
+  const rv=$("#starReveal"); rv.classList.remove("hide");
+  rv.innerHTML="<b>The answer (hottest → coolest):</b><br>"+STARS.map((s,i)=>`${i+1}. Star ${STAR_SHUFFLE.indexOf(i)+1} = type <b>${s.type}</b>, about ${uT(s.T)}, ${s.note}`).join("<br>")+
+    "<br><br>Notice the hydrogen dips are strongest in the middle (type A, ~10,000 K). In the hottest stars, hydrogen is too hot to absorb well; in the coolest, it's too cold. Astronomers use exactly these clues to sort stars.";
+  state.res.sort=`${right}/7 correct`; m5check(); renderResults();
+};
+$("#starReset").onclick=()=>{ sortSeq.length=0; $("#starFb").textContent=""; $("#starReveal").classList.add("hide"); $("#starCheck").disabled=true; buildStars(); };
+
+// D. carbon star
+let dcCmp=false, dcBands=false;
+const C2=[[473.7,"C₂"],[516.5,"C₂"],[563.5,"C₂"],[430.5,"CH"]];
+function drawDC(){
+  const c=$("#dcCanvas"); const {ctx,w,h}=setupCanvas(c);
+  const F=frame(ctx,w,h,{xmin:L0,xmax:L1,ymin:0,ymax:1.1,rainbow:true,rainbowAlpha:.16,ylabel:"brightness"});
+  if(dcCmp) drawSpecLine(ctx,F,STAR.G2V,"rgba(160,170,190,.75)",1.3);
+  drawSpecLine(ctx,F,STAR.dC9231,"#ffb07a",2);
+  if(dcBands){ ctx.font='bold 12px "Atkinson Hyperlegible"'; ctx.textAlign="center";
+    C2.forEach(([l,n])=>{ ctx.fillStyle="rgba(255,207,63,.18)"; ctx.fillRect(F.X(l-9),F.y0,F.X(l)-F.X(l-9),F.y1-F.y0); ctx.strokeStyle=css("--amber"); ctx.beginPath(); ctx.moveTo(F.X(l),F.y0); ctx.lineTo(F.X(l),F.y1); ctx.stroke(); ctx.fillStyle=css("--amber"); ctx.fillText(n,F.X(l)-8,F.y0+12); }); }
+  ctx.font='11px "Atkinson Hyperlegible"'; ctx.textAlign="left"; ctx.fillStyle="#ffb07a"; ctx.fillText("dwarf carbon star",F.x0+6,F.y1-8);
+  if(dcCmp){ ctx.fillStyle="rgba(180,190,210,.9)"; ctx.fillText("Sun-like star",F.x0+130,F.y1-8); }
+}
+$("#dcCompare").onclick=e=>{dcCmp=!dcCmp; e.currentTarget.classList.toggle("on",dcCmp); drawDC();};
+$("#dcBands").onclick=e=>{dcBands=!dcBands; e.currentTarget.classList.toggle("on",dcBands); drawDC();};
+predict("#p5",1,["Single atoms make thin, sharp lines. These dips are wide with a sharp edge on one side, which is the signature of molecules.","Yes! C₂ molecules make wide sawtooth bands (called Swan bands). Only a star with more carbon than oxygen shows them so strongly.","Nope. Dust wouldn't pick out the same exact colors in every carbon star."]);
+
+// E. Doppler
+const C_KMS=299792;
+function shifted(arr,v){ const f=1+v/C_KMS; return arr.map((_,i)=>{ const lam=(L0+i)/f; const j=lam-L0; const a=Math.floor(j); const t=j-a; const v0=arr[Math.max(0,Math.min(arr.length-1,a))], v1=arr[Math.max(0,Math.min(arr.length-1,a+1))]; return v0*(1-t)+v1*t; }); }
+const dopObs = shifted(STAR.A0V, DOP_TRUE);
+function drawDop(){
+  const v=+$("#dopV").value; const c=$("#dopCanvas"); const {ctx,w,h}=setupCanvas(c);
+  const F=frame(ctx,w,h,{xmin:L0,xmax:L1,ymin:0,ymax:1.1,rainbow:true,rainbowAlpha:.16,ylabel:"brightness"});
+  drawSpecLine(ctx,F,dopObs,"#fff",2);
+  const f=1+v/C_KMS; ctx.setLineDash([5,4]); ctx.strokeStyle="#ff5a8a"; ctx.lineWidth=2;
+  [656.28,486.13,434.05,410.17].forEach(l=>{ const x=F.X(l*f); ctx.beginPath(); ctx.moveTo(x,F.y0); ctx.lineTo(x,F.y1); ctx.stroke(); }); ctx.setLineDash([]);
+  ctx.fillStyle="#ff5a8a"; ctx.font='bold 11px "Atkinson Hyperlegible"'; ctx.textAlign="left"; ctx.fillText("your hydrogen lines",F.x0+6,F.y0+12);
+  $("#dopVout").innerHTML = v===0? "0 km/s (not moving)" : `${uV(v)} ${v>0?"(away)":"(toward)"}`;
+  const sh=656.28*v/C_KMS;
+  $("#dopYours").innerHTML=`<b>Your numbers:</b> at ${uV(v)}, the red hydrogen line moves from 656.3 nm to <b>${fmt(656.28+sh,1)} nm</b>, a shift of ${fmt(sh,1)} nm.<br>Check: 300,000 × (${fmt(sh,2)} ÷ 656.3) = <b>${fmt(C_KMS*sh/656.28)} km/s</b>.`;
+}
+$("#dopV").addEventListener("input",drawDop);
+$("#dopCheck").onclick=()=>{ const v=+$("#dopV").value; const err=Math.abs(v-DOP_TRUE); const fb=$("#dopFb");
+  if(err<=150){ fb.className="fb good"; fb.innerHTML=`Nailed it! The secret speed was ${uV(DOP_TRUE)}, moving <b>away</b> from us (redshift). That's super fast for a star; most move tens of km/s.`; state.res.dop=`${fmt(v)} km/s (true ${fmt(DOP_TRUE)})`; m5check(); }
+  else { fb.className="fb bad"; fb.textContent = v<DOP_TRUE? "Not yet. The dips sit to the right (redder) of your lines, so slide toward faster 'away' speeds." : "Too far. Your lines are now past the dips; slide back a bit."; }
+  renderResults(); };
+
+function m5check(){ if(sunChecked.size===Object.keys(SUN_EL).length && state.res.sort && state.res.dop) markDone(5); }
+/* ================= results ================= */
+function renderResults(){
+  const R=state.res;
+  const tiles=[
+    ["Hydrogen lines found", R.hLines!=null? `${R.hLines} / 4`:"—"],
+    ["Calibration", R.cal||"—"],
+    ["Mystery signals solved", R.mys!=null? `${R.mys} / 3`:"—"],
+    ["My phone's peaks", R.phone||"—"],
+    ["Elements in the Sun", R.sun||"—"],
+    ["Star sorting", R.sort||"—"],
+    ["Speedy star", R.dop||"—"]
+  ];
+  $("#resTiles").innerHTML=tiles.map(([k,v])=>`<div class="tile"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("");
+}
+$("#copyRes").onclick=async()=>{
+  const txt="Light Detectives: my report\n"+$$("#resTiles .tile").map(t=>t.querySelector(".k").textContent+": "+t.querySelector(".v").textContent).join("\n");
+  try{ await navigator.clipboard.writeText(txt); $("#copyMsg").textContent="Copied!"; }
+  catch(e){ const ta=document.createElement("textarea"); ta.value=txt; document.body.appendChild(ta); ta.select(); try{document.execCommand("copy"); $("#copyMsg").textContent="Copied!";}catch(_){ $("#copyMsg").textContent="Couldn't copy; take a screenshot instead."; } ta.remove(); }
+};
+
+/* ================= init ================= */
+function drawAll(){ drawBB(); drawAtom(); drawHStrip(); drawCal(); drawGas(); drawMys(); drawAbs(); drawSun(); drawStarThumbs(); drawDC(); drawDop(); }
+buildLevelBtns(); buildMys(); buildSun(); buildStars(); drawGr(); renderResults();
+drawAll();
+let rT; window.addEventListener("resize",()=>{ clearTimeout(rT); rT=setTimeout(drawAll,120); });
+if(window.matchMedia) window.matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change",drawAll);
+if(document.fonts) document.fonts.ready.then(drawAll);
+</script>
+</body>
+</html>
