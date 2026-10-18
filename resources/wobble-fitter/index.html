@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<title>Wobble Fitter</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: same logbook as Transit Detective — a wobble demo, a target strip, then three stations (fit → mass → what's it made of). */
+:root{
+  --bg:#eef1f5; --panel:#ffffff; --ink:#18233a; --muted:#5b6780; --line:#d5dbe6;
+  --data:#2c4a86; --accent:#c9761a; --accent-soft:#f6e5cf; --blue:#2f6fd6; --red:#c8402c;
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1524; --panel:#172036; --ink:#e4e9f3; --muted:#9aa6bf; --line:#2a3550;
+  --data:#8fb3ff; --accent:#f0a447; --accent-soft:#3a2c1a; --blue:#6ea4ff; --red:#ff7a63; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1524; --panel:#172036; --ink:#e4e9f3; --muted:#9aa6bf; --line:#2a3550;
+  --data:#8fb3ff; --accent:#f0a447; --accent-soft:#3a2c1a; --blue:#6ea4ff; --red:#ff7a63; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+.wrap{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+header h1{font-family:var(--display);font-weight:800;font-size:clamp(2.4rem,6vw,3.6rem);line-height:1;margin:0;letter-spacing:.01em}
+header p{margin:.4rem 0 0;max-width:68ch;color:var(--muted)}
+.eyebrow{font-family:var(--mono);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.station{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.station h2{font-family:var(--display);font-weight:600;font-size:1.6rem;margin:0;display:flex;gap:.6rem;align-items:baseline;text-wrap:balance}
+.station h2 .n{font-family:var(--mono);font-size:.85rem;color:var(--accent);border:1.5px solid var(--accent);border-radius:99px;padding:0 .5em}
+.station p{margin:0;max-width:72ch}
+.targets{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.target{font:inherit;text-align:left;background:var(--panel);color:var(--ink);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer;display:flex;flex-direction:column;gap:2px}
+.target:hover{border-color:var(--data)}
+.target[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.target b{font-family:var(--display);font-size:1.35rem;line-height:1.05}
+.target span{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+.starinfo{display:flex;flex-wrap:wrap;gap:6px 18px;font-family:var(--mono);font-size:.8rem;color:var(--muted)}
+.starinfo b{color:var(--ink);font-weight:600}
+.hint{font-style:italic;color:var(--muted)}
+canvas{width:100%;display:block;border-radius:8px;background:var(--bg)}
+.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px 20px;align-items:end}
+label{display:flex;flex-direction:column;gap:4px;font-size:.85rem;color:var(--muted)}
+label .v{font-family:var(--mono);color:var(--ink);font-size:.9rem}
+input[type=range]{width:100%;accent-color:var(--accent)}
+input[type=number]{font:inherit;font-family:var(--mono);font-size:.9rem;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px 8px;width:100%}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+button.btn{font:inherit;font-size:.9rem;background:var(--bg);color:var(--ink);border:1.5px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+button.btn:hover{border-color:var(--data)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.demo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+@media (max-width:720px){.demo{grid-template-columns:1fr}}
+.meter{height:12px;border-radius:99px;background:var(--line);overflow:hidden}
+.meter i{display:block;height:100%;background:var(--accent);transition:width .15s}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.stat{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.stat small{display:block;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.stat strong{font-family:var(--display);font-size:1.9rem;line-height:1.1;font-variant-numeric:tabular-nums}
+.stat .u{font-family:var(--body);font-size:1rem;font-weight:700;margin-left:.3em;color:var(--muted)}
+.stat em{display:block;font-style:normal;font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+.verdict{border-left:4px solid var(--accent);padding:8px 12px;background:var(--accent-soft);border-radius:0 8px 8px 0}
+.readout{font-family:var(--mono);font-size:.95rem}
+.note{font-size:.8rem;color:var(--muted)}
+.reveal{border:1px dashed var(--line);border-radius:10px;padding:12px;font-family:var(--mono);font-size:.85rem}
+.method{border:1px solid var(--line);border-left:4px solid var(--data);border-radius:0 10px 10px 0;background:var(--bg);padding:10px 14px}
+.method summary{cursor:pointer;font-weight:700;color:var(--data)}
+.method ol{margin:.6rem 0 0;padding-left:1.4rem;display:flex;flex-direction:column;gap:.55rem;max-width:78ch}
+.method p{margin:.5rem 0 0}
+.eq{font-family:var(--mono);font-size:.88rem;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:4px 10px;display:inline-block;max-width:100%;overflow-x:auto;white-space:nowrap;vertical-align:middle}
+.live{display:block;margin-top:.6rem;font-family:var(--mono);font-size:.85rem;line-height:1.7;background:var(--panel);border:1px dashed var(--accent);border-radius:8px;padding:8px 12px;overflow-x:auto}
+.live b{color:var(--accent)}
+.live .lab{color:var(--muted);font-family:var(--body);font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;display:block}
+.quiz{border:1.5px solid var(--accent);border-radius:10px;padding:10px 14px;background:var(--accent-soft);display:flex;flex-direction:column;gap:8px}
+.quiz .qh{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.quiz .qq{font-weight:700}
+.quiz .opts{display:flex;flex-wrap:wrap;gap:8px}
+.quiz .opts button{font:inherit;font-size:.9rem;background:var(--panel);color:var(--ink);border:1.5px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+.quiz .opts button:hover{border-color:var(--data)}
+.quiz .opts button.right{border-color:#2f7d4f;box-shadow:0 0 0 2px #2f7d4f inset}
+.quiz .opts button.wrong{border-color:var(--red);opacity:.75}
+.quiz .fb{font-size:.92rem}
+.quiz .fb b.ok{color:#2f7d4f} .quiz .fb b.no{color:var(--red)}
+.x{border-bottom:1.5px dotted var(--accent);cursor:help;outline-offset:2px}
+.x:focus-visible{outline:2px solid var(--accent)}
+#xbubble{position:fixed;z-index:50;max-width:min(320px,calc(100vw - 32px));background:var(--ink);color:var(--bg);font-family:var(--body);font-size:.85rem;line-height:1.4;border-radius:8px;padding:8px 10px;box-shadow:0 6px 24px rgba(0,0,0,.25);pointer-events:none}
+.cheat dl{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:6px 14px;margin:.6rem 0 0}
+.cheat dt{font-family:var(--mono);font-weight:600;color:var(--accent)}
+.cheat dd{margin:0}
+footer{font-size:.8rem;color:var(--muted);max-width:80ch}
+footer a{color:var(--data)}
+@media (prefers-reduced-motion:reduce){.meter i{transition:none}}
+</style>
+<meta name="description" content="Weigh exoplanets by fitting radial-velocity wobbles, then combine with transit radii to find what planets are made of.">
+<style>
+#br-sitebar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.25rem 1rem;
+  padding:.5rem clamp(1rem,4vw,2rem);background:#f3f4f6;color:#374151;box-shadow:0 1px 3px rgba(0,0,0,.08);
+  font:600 14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;position:relative;z-index:50;margin:0 0 1rem;border-radius:6px}
+#br-sitebar a{color:#2563eb;text-decoration:none}
+#br-sitebar a:hover,#br-sitebar a:focus-visible{text-decoration:underline}
+#br-sitebar span{font-weight:400;opacity:.85}
+@media print{#br-sitebar{display:none}}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-163ZQGF3WY"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-163ZQGF3WY');</script>
+</head>
+<body>
+<nav id="br-sitebar" aria-label="Site"><a href="../../resources.html">&larr; Teaching Resources</a><span><a href="../../index.html">Benjamin Roulston</a> </span></nav>
+<div class="wrap">
+<header>
+  <h1>Wobble Fitter</h1>
+  <p>A planet doesn't just orbit its star. They both orbit their shared center of mass, so the star makes a tiny circle of its own. When the star swings toward us its light shifts slightly blue; when it swings away the light shifts red. Measure that shift night after night and you can weigh a planet you can't see.</p>
+</header>
+
+<section class="station">
+  <h2>See the wobble</h2>
+  <div class="demo">
+    <canvas id="orbit" height="260" aria-label="Animated star and planet orbiting their center of mass"></canvas>
+    <div style="display:flex;flex-direction:column;gap:10px;min-width:0">
+      <canvas id="spec" height="70" aria-label="The star's spectrum with dark absorption lines shifting"></canvas>
+      <canvas id="trace" height="170" aria-label="Star's velocity toward or away from us over time"></canvas>
+    </div>
+  </div>
+  <div class="controls">
+    <label for="dmass">Planet mass <span class="v" id="dmassv"></span><input id="dmass" type="range" min="0" max="1000" value="700"></label>
+    <div class="row"><button class="btn" id="pause" type="button">Pause</button><span class="note">The star's motion is exaggerated so you can see it. The real wobble of the Sun caused by Jupiter is about 12.5 m/s, a world-class sprinter's top speed. Earth's pull adds just 0.09 m/s.</span></div>
+  </div>
+  <div class="quiz" data-quiz="w0"></div>
+</section>
+
+<section class="station cheat">
+  <details>
+    <summary><b>Units cheat sheet</b>: what do m/s, M☉, AU and g/cm³ mean? (Tip: tap any underlined value on this page for a plain-language translation.)</summary>
+    <dl>
+      <dt>m/s</dt><dd>Meters per second. 1 m/s ≈ 2.2 mph, a slow walk. A car on the highway goes about 30 m/s.</dd>
+      <dt>K</dt><dd>Here K means the star's top wobble speed toward or away from us, in m/s. (Not kelvin!)</dd>
+      <dt>M☉</dt><dd>One Sun mass: 333,000 Earths, or 1,048 Jupiters.</dd>
+      <dt>M⊕ / Earth masses</dt><dd>One Earth mass, 6 × 10²⁴ kg. Jupiter is 318 Earth masses; Neptune is 17.</dd>
+      <dt>AU</dt><dd>Astronomical unit: the Earth–Sun distance, 150 million km.</dd>
+      <dt>g/cm³</dt><dd>Grams per cubic centimeter, a unit of density. Water is 1, rock is about 3, Earth (squeezed by its own gravity) is 5.5, iron is 7.9.</dd>
+      <dt>nm</dt><dd>Nanometer, a billionth of a meter. Visible light runs from about 400 nm (violet) to 700 nm (red).</dd>
+    </dl>
+  </details>
+</section>
+
+<section aria-label="Choose a star">
+  <div class="targets" id="targets"></div>
+</section>
+
+<section class="station">
+  <h2><span class="n">1</span>Fit the wobble</h2>
+  <div class="starinfo" id="starinfo"></div>
+  <p class="hint" id="hint"></p>
+  <canvas id="rv" height="300" aria-label="Measured velocity of the star, with your model curve"></canvas>
+  <div class="controls">
+    <label for="per">Period (days) <span class="v" id="perv"></span><input id="per" type="range" min="0" max="10000" value="5000"></label>
+    <label for="pernum">Type an exact period (days) — e.g. from Transit Detective<input id="pernum" type="number" step="0.0001" min="0.3" max="800"></label>
+    <label for="amp">Wobble speed, K <span class="v" id="ampv"></span><input id="amp" type="range" min="0" max="1000" value="400"></label>
+    <label for="ph">Slide the wave left/right <span class="v" id="phv"></span><input id="ph" type="range" min="0" max="1000" value="0"></label>
+  </div>
+  <div class="controls">
+    <label>How good is your fit? <span class="v" id="fitv"></span><div class="meter"><i id="fitbar" style="width:0%"></i></div></label>
+    <label class="row" style="flex-direction:row;align-items:center;gap:6px"><input type="checkbox" id="foldrv"> Fold the data on my period</label>
+  </div>
+  <p class="note">The dots are simulated measurements built from each planet's published orbit and the measurement precision of the instrument that observed it. Every student sees the same data.</p>
+  <div class="quiz" data-quiz="w1"></div>
+  <details class="method" open>
+    <summary>How the math works: measuring and fitting the wobble</summary>
+    <ol>
+      <li><b>Speed from color (the Doppler shift).</b> Astronomers spread the star's light into a spectrum and measure where its dark absorption lines sit. A line at wavelength λ shifts by
+        <br><span class="eq">Δλ = λ × v ÷ c</span> &nbsp; where c = 300,000,000 m/s is the speed of light.
+        <br>A shift toward blue means the star is coming toward us; toward red means it's moving away. Each dot on the plot is one night's measured speed. The error bar shows how uncertain it is.</li>
+      <li><b>The model: a wave.</b> For a circular orbit, the star's speed toward or away from us rises and falls like a sine wave:
+        <br><span class="eq">v(t) = K × sin(2π × (t − t₀) ÷ P)</span>
+        <br>Your three sliders set the wave: <b>P</b> is the time for one full wave (the orbital period), <b>K</b> is the wave's height (the star's top speed), and <b>t₀</b> slides the wave left or right to match when the orbit started.</li>
+      <li><b>Scoring the fit.</b> For each night, the computer finds how far the dot is from your curve, measured in error bars. It squares those misses and averages them. That score is called χ² ("chi-squared"):
+        <br><span class="eq">χ² = average of [(measured − model) ÷ error bar]²</span>
+        <br>About 1 means your curve passes through the dots as well as their error bars allow. Much bigger than 1 means the curve misses.</li>
+    </ol>
+    <span class="live" id="w1live"></span>
+  </details>
+</section>
+
+<section class="station">
+  <h2><span class="n">2</span>Weigh the planet</h2>
+  <p>A faster wobble means a heavier planet. A longer period means the planet is farther away, so it has to be heavier to make the same wobble.</p>
+  <div class="readout">M<sub>planet</sub> ≈ K × (P / 2πG)<sup>1/3</sup> × M<sub>star</sub><sup>2/3</sup> <span class="note">(the three steps below, combined into one formula)</span></div>
+  <div class="results" id="results"></div>
+  <div class="quiz" data-quiz="w2"></div>
+  <details class="method" open>
+    <summary>How the math works: weighing a planet, step by step</summary>
+    <ol>
+      <li><b>Find how big the planet's orbit is.</b> Kepler's third law (with Newton's gravity) links the period to the orbit's size, using the star's mass M<sub>star</sub> and the gravitational constant G:
+        <br><span class="eq">a = ∛( G × M<sub>star</sub> × P² ÷ 4π² )</span></li>
+      <li><b>Find how fast the planet moves.</b> In one period the planet travels once around a circle of radius a:
+        <br><span class="eq">v<sub>planet</sub> = 2π a ÷ P</span></li>
+      <li><b>Balance the seesaw.</b> The star and planet swing around their shared center of mass, like two kids on a seesaw. The heavy one moves slowly and the light one moves fast, so mass × speed is the same for both:
+        <br><span class="eq">M<sub>star</sub> × K = M<sub>planet</sub> × v<sub>planet</sub></span> &nbsp;so&nbsp; <span class="eq">M<sub>planet</sub> = M<sub>star</sub> × K ÷ v<sub>planet</sub></span></li>
+    </ol>
+    <span class="live" id="w2live"></span>
+    <p class="note">This assumes we see the orbit edge-on. If the orbit is tilted, we only see part of the star's motion, so the true mass is larger. That's why radial velocity alone gives a <i>minimum</i> mass. For planets that transit, we know the orbit is edge-on, so the mass is the real mass.</p>
+  </details>
+</section>
+
+<section class="station">
+  <h2><span class="n">3</span>What is it made of?</h2>
+  <p>Combine your mass with the size you measured from the transit. Mass divided by volume gives density, and density hints at what a planet is made of: iron, rock, water, or mostly gas.</p>
+  <div class="controls">
+    <label for="rad">Planet radius from your transit measurement (Earth radii)<input id="rad" type="number" step="0.01" min="0.3" max="30"></label>
+    <div class="row"><button class="btn" id="pubrad" type="button">Use the published radius</button><button class="btn" id="answer" type="button">Show the published orbit</button></div>
+  </div>
+  <canvas id="mr" height="340" aria-label="Mass versus radius diagram with lines of constant density"></canvas>
+  <div class="verdict" id="verdict"></div>
+  <div class="reveal" id="reveal" hidden></div>
+  <div class="quiz" data-quiz="w3"></div>
+  <div class="quiz" data-quiz="w4"></div>
+  <details class="method" open>
+    <summary>How the math works: density</summary>
+    <ol>
+      <li><b>Density is mass divided by volume.</b> Planets are close to spheres, so
+        <br><span class="eq">density = M ÷ ( 4/3 × π × R³ )</span></li>
+      <li><b>A shortcut using Earth.</b> Earth's density is 5.51 g/cm³. Measuring mass and radius in Earth units:
+        <br><span class="eq">density = 5.51 g/cm³ × (M ÷ M<sub>Earth</sub>) ÷ (R ÷ R<sub>Earth</sub>)³</span>
+        <br>Because the radius is cubed, a planet twice Earth's size has 8 times Earth's volume. It needs 8 Earth masses just to match Earth's density.</li>
+      <li><b>Compare with materials.</b> Water is 1.0 g/cm³, rock is about 3–5.5, iron is about 8 (more when squeezed inside a planet). Gas giants are mostly hydrogen and helium, so they come out around 0.3–1.5.</li>
+    </ol>
+    <span class="live" id="w3live"></span>
+  </details>
+</section>
+
+<footer>Orbits, masses and radii from the <a href="https://exoplanetarchive.ipac.caltech.edu/" target="_blank" rel="noopener">NASA Exoplanet Archive</a> (Planetary Systems Composite table). Measurements are simulated from those orbits with realistic noise and observing schedules; signals from the other planets in each system have been removed.</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const G=6.674e-11,MSUN=1.989e30,MJ=1.898e27,ME=5.972e24,RE=6.371e6,DAY=86400;
+
+const T=[
+ {key:"51peg",name:"51 Pegasi",tag:"1995 · The first one",mstar:1.11,P:4.23080,K:55.77,sig:13,n:36,span:22,inst:"ELODIE spectrograph, Haute-Provence (1995)",rp:null,pl:"51 Peg b",
+  hint:"The planet that started it all (Nobel Prize 2019). No transit, so you'll have to find the period yourself."},
+ {key:"w18",name:"WASP-18",tag:"Star A in Transit Detective",mstar:1.294,P:0.94145,K:1814,sig:25,n:24,span:14,inst:"CORALIE spectrograph",rp:13.90,pl:"WASP-18 b",
+  hint:"You found its period from the transits. Type it in, then fit the speed."},
+ {key:"w62",name:"WASP-62",tag:"Star B in Transit Detective",mstar:1.11,P:4.41195,K:60.0,sig:12,n:28,span:32,inst:"CORALIE spectrograph",rp:14.80,pl:"WASP-62 b",
+  hint:"Same size as WASP-18 b. Is it the same mass?"},
+ {key:"pimen",name:"pi Mensae",tag:"Star E in Transit Detective",mstar:1.07,P:6.26784,K:1.185,sig:0.8,n:70,span:60,inst:"ESPRESSO spectrograph, VLT",rp:2.02,pl:"pi Men c",
+  hint:"The star wobbles at about walking speed, from 18 parsecs away. It takes one of the most precise instruments on Earth to see this."},
+ {key:"t270",name:"TOI-270",tag:"Star D in Transit Detective",mstar:0.386,P:5.66051,K:4.16,sig:2.2,n:60,span:50,inst:"ESPRESSO spectrograph, VLT",rp:2.33,pl:"TOI-270 c",
+  hint:"Fit planet c (period near 5.66 days). The other two planets' signals have been removed for you."},
+ {key:"earth",name:"Sun (seen by aliens)",tag:"Earth twin",mstar:1.0,P:365.25,K:0.0894,sig:0.5,n:120,span:730,inst:"best spectrograph we have today",rp:1.0,pl:"Earth",
+  hint:"What would alien astronomers see if they watched our Sun for two years? Try to find Earth."}
+];
+// seeded random numbers so every student gets the same data
+function rng(seed){let s=seed>>>0;return ()=>{s=(s+0x6D2B79F5)>>>0;let t=s;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return ((t^t>>>14)>>>0)/4294967296;};}
+function gauss(r){let u=0,v=0;while(!u)u=r();v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+T.forEach((s,i)=>{const r=rng(1234+i*97);s.phase0=r();const nights=[];
+  while(nights.length<s.n){const d=Math.floor(r()*s.span);const t=d+0.15+r()*0.6;nights.push(t);}
+  nights.sort((a,b)=>a-b);nights[0]=0.2;s.t=nights;
+  s.v=s.t.map(t=>-s.K*Math.sin(2*Math.PI*(t/s.P+s.phase0))+gauss(r)*s.sig);});
+
+let S=null,P=3,K=50,PH=0;
+
+/* ---------- canvas helpers ---------- */
+function setup(c){const dpr=window.devicePixelRatio||1;const r=c.getBoundingClientRect();if(!c.dataset.h)c.dataset.h=c.getAttribute("height");const h=+c.dataset.h;c._h=h;c._w=r.width;
+  c.width=Math.round(r.width*dpr);c.height=Math.round(h*dpr);c.style.height=h+"px";const x=c.getContext("2d");x.setTransform(dpr,0,0,dpr,0,0);return x;}
+const PAD={l:62,r:14,t:14,b:38};
+function nice(span,n){const raw=span/n,p=Math.pow(10,Math.floor(Math.log10(raw)));const m=raw/p;return (m<1.5?1:m<3.5?2:m<7.5?5:10)*p;}
+function axes(ctx,c,x0,x1,y0,y1,xl,yl,yf,xf){xf=xf||(v=>+v.toFixed(4)+"");
+  const W=c._w,H=c._h;ctx.clearRect(0,0,W,H);ctx.font="12px "+css("--mono");ctx.fillStyle=css("--muted");ctx.strokeStyle=css("--line");ctx.lineWidth=1;
+  const X=v=>PAD.l+(v-x0)/(x1-x0)*(W-PAD.l-PAD.r),Y=v=>PAD.t+(y1-v)/(y1-y0)*(H-PAD.t-PAD.b);
+  const dx=nice(x1-x0,6),dy=nice(y1-y0,5);ctx.textAlign="center";ctx.textBaseline="top";
+  for(let v=Math.ceil(x0/dx)*dx;v<=x1+1e-9;v+=dx){const x=X(v);ctx.beginPath();ctx.moveTo(x,PAD.t);ctx.lineTo(x,H-PAD.b);ctx.stroke();ctx.fillText(xf(v),x,H-PAD.b+5);}
+  ctx.textAlign="right";ctx.textBaseline="middle";
+  for(let v=Math.ceil(y0/dy)*dy;v<=y1+1e-9;v+=dy){const y=Y(v);ctx.beginPath();ctx.moveTo(PAD.l,y);ctx.lineTo(W-PAD.r,y);ctx.stroke();ctx.fillText(yf(v),PAD.l-6,y);}
+  ctx.textAlign="center";ctx.textBaseline="bottom";ctx.fillText(xl,PAD.l+(W-PAD.l-PAD.r)/2,H-2);
+  ctx.save();ctx.translate(12,PAD.t+(H-PAD.t-PAD.b)/2);ctx.rotate(-Math.PI/2);ctx.textBaseline="middle";ctx.fillText(yl,0,0);ctx.restore();return {X,Y,W,H};
+}
+const vf=v=>Math.abs(v)>=100?v.toFixed(0):Math.abs(v)>=1?(+v.toFixed(1))+"":(+v.toFixed(2))+"";
+
+/* ---------- demo animation ---------- */
+let demoT=0,running=true,last=null,traceHist=[];
+const dm=()=>{const f=+$("dmass").value/1000;return 0.03+f*0.97;}; // star wobble fraction (exaggerated)
+function demoFrame(ts){
+  if(last===null)last=ts;const dt=Math.min(0.05,(ts-last)/1000);last=ts;if(running)demoT+=dt*0.25;
+  const th=2*Math.PI*demoT,f=dm();
+  // orbit (tilted view, observer at bottom)
+  const c=$("orbit"),x=setup(c),W=c._w,H=c._h;x.clearRect(0,0,W,H);
+  const cx=W/2,cy=H/2-10,R=Math.min(W*0.38,140),tilt=0.35;
+  x.strokeStyle=css("--line");x.setLineDash([4,4]);x.beginPath();x.ellipse(cx,cy,R,R*tilt,0,0,2*Math.PI);x.stroke();
+  const rs=R*0.22*f;x.beginPath();x.ellipse(cx,cy,rs,rs*tilt,0,0,2*Math.PI);x.stroke();x.setLineDash([]);
+  const px=cx+R*Math.cos(th),py=cy+R*tilt*Math.sin(th),sx=cx-rs*Math.cos(th),sy=cy-rs*tilt*Math.sin(th);
+  const vr=-Math.cos(th); // star's velocity toward the observer (observer sits at the bottom of the drawing)
+  const starCol=vr>0?css("--blue"):css("--red");
+  const drawPlanet=()=>{x.beginPath();x.arc(px,py,6+8*f,0,2*Math.PI);x.fillStyle=css("--data");x.fill();};
+  const drawStar=()=>{x.beginPath();x.arc(sx,sy,26,0,2*Math.PI);x.fillStyle=css("--accent");x.fill();x.lineWidth=4;x.strokeStyle=starCol;x.globalAlpha=Math.abs(vr);x.stroke();x.globalAlpha=1;};
+  if(Math.sin(th)<0){drawPlanet();drawStar();}else{drawStar();drawPlanet();}
+  x.fillStyle=css("--ink");x.beginPath();x.arc(cx,cy,2.5,0,2*Math.PI);x.fill();
+  x.font="12px "+css("--mono");x.fillStyle=css("--muted");x.textAlign="left";x.fillText("• = center of mass",8,16);
+  x.textAlign="center";x.fillText("▼ to Earth",cx,H-8);
+  // spectrum
+  const s=$("spec"),y=setup(s),SW=s._w,SH=s._h;y.clearRect(0,0,SW,SH);
+  const g=y.createLinearGradient(0,0,SW,0);["#5b3fd1","#2f6fd6","#2ea7c9","#3fbf6b","#d9cf3a","#f09a2e","#d6402c"].forEach((c2,i)=>g.addColorStop(i/6,c2));
+  y.fillStyle=g;y.fillRect(0,8,SW,SH-30);
+  const shift=-vr*f*SW*0.02;[0.18,0.31,0.47,0.62,0.79].forEach(p=>{y.fillStyle="#0b0d14";y.fillRect(p*SW+shift-2,8,4,SH-30);});
+  y.font="12px "+css("--mono");y.fillStyle=css("--muted");y.textAlign="left";y.fillText("bluer",4,SH-6);y.textAlign="right";y.fillText("redder",SW-4,SH-6);
+  y.textAlign="center";y.fillStyle=starCol;y.fillText(vr>0.1?"moving toward us: lines shift blue":vr<-0.1?"moving away: lines shift red":"moving sideways: no shift",SW/2,SH-6);
+  // trace
+  traceHist.push([demoT,-vr*f]);while(traceHist.length&&traceHist[0][0]<demoT-2.2)traceHist.shift();
+  const tc=$("trace"),z=setup(tc);const A=axes(z,tc,demoT-2.2,demoT,-1.1,1.1,"time →","away ↑  /  toward ↓",v=>"");
+  z.strokeStyle=css("--accent");z.lineWidth=2.5;z.beginPath();traceHist.forEach((p,i)=>{const X=A.X(p[0]),Y=A.Y(p[1]);i?z.lineTo(X,Y):z.moveTo(X,Y);});z.stroke();
+  requestAnimationFrame(demoFrame);
+}
+$("pause").onclick=()=>{running=!running;$("pause").textContent=running?"Pause":"Play";};
+$("dmass").addEventListener("input",()=>{$("dmassv").textContent=(dm()<0.3?"light":dm()<0.7?"medium":"heavy")+" planet";});
+
+/* ---------- targets ---------- */
+function renderTargets(){const box=$("targets");box.innerHTML="";T.forEach(s=>{const b=document.createElement("button");b.type="button";b.className="target";b.setAttribute("aria-pressed",S===s?"true":"false");
+  b.innerHTML="<b></b><span></span>";b.children[0].textContent=s.name;b.children[1].textContent=s.tag;b.onclick=()=>select(s);box.appendChild(b);});}
+function select(s){S=s;$("reveal").hidden=true;
+  $("starinfo").innerHTML="";[["Star",s.name],["Star mass",s.mstar.toFixed(2)+" M☉","This star has "+s.mstar.toFixed(2)+"× the Sun's mass, or about "+Number((s.mstar*333000).toPrecision(2)).toLocaleString()+" Earths."],["Measurements",s.n+" nights over "+s.span+" days","Telescope time is precious: each dot is one night when the star was observed."],["Instrument",s.inst],["Precision","± "+s.sig+" m/s","Each measurement is uncertain by about "+s.sig+" m/s ("+spd(s.sig)+"). That's the error bar on each dot."]]
+   .forEach(([k,v,t])=>{const e=document.createElement("span");e.innerHTML=k+": <b></b>";const bb=e.querySelector("b");bb.textContent=v;if(t)makeTip(bb,t);$("starinfo").appendChild(e);});
+  $("hint").textContent=s.hint;
+  const vmax=Math.max(...s.v.map(Math.abs));s._kmax=Math.max(vmax*1.3,s.sig*3);
+  setP(s.key==="earth"?100:Math.min(10,s.span/3));K=s._kmax*0.4;$("amp").value=400;PH=0;$("ph").value=0;$("foldrv").checked=false;
+  $("rad").value="";renderTargets();update();}
+
+/* ---------- RV fit ---------- */
+const PMIN=0.3,PMAX=800;const p2s=p=>Math.round(Math.log(p/PMIN)/Math.log(PMAX/PMIN)*10000),s2p=v=>PMIN*Math.pow(PMAX/PMIN,v/10000);
+function setP(p){P=Math.max(PMIN,Math.min(PMAX,p));$("per").value=p2s(P);$("pernum").value=P.toFixed(4);}
+const model=t=>-K*Math.sin(2*Math.PI*(t/P+PH));
+$("per").addEventListener("input",e=>{P=s2p(+e.target.value);$("pernum").value=P.toFixed(4);update();});
+$("pernum").addEventListener("input",e=>{const v=+e.target.value;if(v>=PMIN&&v<=PMAX){P=v;$("per").value=p2s(P);update();}});
+$("amp").addEventListener("input",e=>{K=S._kmax*(+e.target.value/1000);update();});
+$("ph").addEventListener("input",e=>{PH=+e.target.value/1000;update();});
+$("foldrv").addEventListener("change",update);
+function chi2(){let s=0;S.t.forEach((t,i)=>{const r=(S.v[i]-model(t))/S.sig;s+=r*r;});return s/S.t.length;}
+function drawRV(){
+  const c=$("rv"),ctx=setup(c);if(!S)return;const fold=$("foldrv").checked;
+  const lim=S._kmax*1.05;const x0=0,x1=fold?1:S.span;
+  const A=axes(ctx,c,x0,x1,-lim,lim,fold?"fraction of one orbit":"days since first measurement","star's speed toward(−) / away(+), m/s",vf);
+  ctx.save();ctx.beginPath();ctx.rect(PAD.l,PAD.t,A.W-PAD.l-PAD.r,A.H-PAD.t-PAD.b);ctx.clip();
+  // model
+  ctx.strokeStyle=css("--accent");ctx.lineWidth=2.5;ctx.beginPath();
+  const N=Math.min(4000,Math.max(400,Math.round(S.span/P*60)));
+  for(let i=0;i<=N;i++){const xx=x0+(x1-x0)*i/N;const t=fold?xx*P:xx;const y=fold?-K*Math.sin(2*Math.PI*(xx+PH)):model(t);i?ctx.lineTo(A.X(xx),A.Y(y)):ctx.moveTo(A.X(xx),A.Y(y));}
+  ctx.stroke();
+  // data
+  ctx.strokeStyle=css("--data");ctx.fillStyle=css("--data");ctx.lineWidth=1.2;
+  S.t.forEach((t,i)=>{const xx=fold?((t/P)%1):t;const X=A.X(xx),Y=A.Y(S.v[i]);const e=S.sig/(2*lim)*(A.H-PAD.t-PAD.b);
+    ctx.beginPath();ctx.moveTo(X,Y-e);ctx.lineTo(X,Y+e);ctx.stroke();ctx.beginPath();ctx.arc(X,Y,3.2,0,2*Math.PI);ctx.fill();});
+  ctx.restore();
+}
+function mass(){const Mp=(K)*Math.pow(P*DAY/(2*Math.PI*G),1/3)*Math.pow(S.mstar*MSUN,2/3);return Mp;}
+function update(){
+  if(!S)return;drawRV();
+  $("perv").textContent=P.toFixed(4)+" d";$("ampv").textContent=vf(K)+" m/s";$("phv").textContent=(PH*P).toFixed(2)+" d";
+  const c2=chi2();const q=Math.max(0,Math.min(1,1/Math.sqrt(c2)));
+  $("fitbar").style.width=(q*100).toFixed(0)+"%";$("fitv").textContent=c2<1.6?"Excellent: the curve goes through the dots within their error bars":c2<4?"Close. Keep adjusting":c2<20?"Not yet":"Way off. Try a different period";
+  const Mp=mass();const me=Mp/ME,mj=Mp/MJ;
+  const sig=(v,n)=>Number(v).toLocaleString("en-US",{maximumSignificantDigits:n});
+  const ratio=S.mstar*MSUN/Mp;
+  const res=[["Wobble speed K",vf(K),"m/s",sig(K*3.6,3)+" km/h ("+sig(K*2.237,3)+" mph)"],["Period",P.toFixed(3),"days",sig(P*24,3)+" hours"],
+             ["Planet mass",me<100?sig(me,3):sig(mj,3),me<100?"Earth masses":"Jupiter masses",me<100?sig(mj,2)+" × Jupiter":sig(me,3)+" × Earth"],
+             ["Star vs. planet",sig(ratio,3),"×","the star is this many times heavier"]];
+  const tips={"Wobble speed K":"The star swings toward and away from us at up to "+vf(K)+" m/s: "+spd(K)+".","Period":"The star completes one wobble, and the planet one orbit, every "+(P<2?(P*24).toFixed(1)+" hours":P.toFixed(2)+" days")+".",
+    "Planet mass":me<100?(me<1.5?"About Earth's mass.":me<10?"A 'super-Earth' or small sub-Neptune: "+me.toFixed(1)+"× Earth. Neptune is 17×.":me<40?"Similar to Neptune (17 Earth masses) or Uranus (14.5).":"Bigger than Neptune but lighter than Saturn (95 Earth masses).") : "Jupiter is 318 Earth masses. This planet is "+mj.toFixed(2)+"× Jupiter, or "+Math.round(me).toLocaleString()+" Earths.",
+    "Star vs. planet":"The Sun is 1,048× heavier than Jupiter and 333,000× heavier than Earth."};
+  $("results").innerHTML="";res.forEach(([a,b,u,c])=>{const d=document.createElement("div");d.className="stat";d.innerHTML="<small></small><strong></strong><em></em>";d.children[0].textContent=a;d.children[1].textContent=b;const s=document.createElement("span");s.className="u";s.textContent=u;d.children[1].appendChild(s);d.children[2].textContent=c;if(tips[a])makeTip(d.children[1],tips[a]);$("results").appendChild(d);});
+  drawMR();liveMethod();
+}
+
+/* ---------- tap-to-translate units ---------- */
+let xb=null;
+function makeTip(el,text){el.classList.add("x");el.setAttribute("tabindex","0");el.dataset.tip=text;el.setAttribute("aria-label",(el.textContent||"")+". "+text);}
+function showTip(el){if(!xb){xb=document.createElement("div");xb.id="xbubble";xb.setAttribute("role","tooltip");document.body.appendChild(xb);}
+  xb.textContent=el.dataset.tip;xb.hidden=false;const r=el.getBoundingClientRect();const bw=xb.offsetWidth,bh=xb.offsetHeight;
+  let left=Math.min(window.innerWidth-bw-12,Math.max(12,r.left+r.width/2-bw/2));let top=r.top-bh-8;if(top<8)top=r.bottom+8;xb.style.left=left+"px";xb.style.top=top+"px";}
+function hideTip(){if(xb)xb.hidden=true;}
+document.addEventListener("pointerover",e=>{const t=e.target.closest&&e.target.closest(".x");if(t&&e.pointerType==="mouse")showTip(t);});
+document.addEventListener("pointerout",e=>{const t=e.target.closest&&e.target.closest(".x");if(t&&e.pointerType==="mouse")hideTip();});
+document.addEventListener("click",e=>{const t=e.target.closest&&e.target.closest(".x");if(t)showTip(t);else hideTip();});
+document.addEventListener("focusin",e=>{if(e.target.classList&&e.target.classList.contains("x"))showTip(e.target);});
+document.addEventListener("focusout",hideTip);window.addEventListener("scroll",hideTip,{passive:true});
+function spd(v){const mph=v*2.237;const cmp=v<0.2?"slower than a crawling baby":v<1?"slower than a walk":v<2.5?"about walking pace":v<6?"jogging speed":v<13?"sprinting speed":v<22?"city driving speed":v<35?"highway driving speed":v<90?"high-speed train speed":v<300?"airliner speed":"faster than a jet airliner";return Number(mph.toPrecision(3)).toLocaleString()+" mph, "+cmp;}
+
+/* ---------- predict-then-check questions ---------- */
+const QUIZ={
+ w0:{q:"Predict: a heavier planet makes its star wobble…",o:["more slowly","faster","the same"],a:1,why:"A heavier planet pulls harder, so the star swings faster around the shared center of mass. Drag the planet-mass slider and watch the spectrum lines shift farther."},
+ w1:{q:"Predict: why don't the dots land exactly on a smooth curve?",o:["the planet speeds up and slows down at random","every measurement has a little error","the star is spinning"],a:1,why:"Each night's measurement is uncertain by about the size of its error bar. A good fit passes through the error bars, not exactly through every dot."},
+ w2:{q:"Predict: two planets make the same wobble speed K around identical stars, but one has a 10× longer period. Which is heavier?",o:["the short-period one","the long-period one","they're the same"],a:1,why:"A far-out planet moves more slowly, so it needs more mass to push the star just as fast. Mass grows as P to the 1/3 power: 10× the period means about 2.2× the mass."},
+ w3:{q:"Predict: can today's best spectrographs measure Earth's 0.09 m/s pull on the Sun?",o:["yes, easily","not reliably yet","it will never be possible"],a:1,why:"The best instruments reach about 0.3–0.5 m/s, and a star's own bubbling surface jiggles by about 1 m/s. Finding Earth twins needs years of data, quiet stars and better instruments. Try the 'Sun (seen by aliens)' button."},
+ w4:{q:"Predict: WASP-62 b's density is 0.28 g/cm³. In a giant enough bathtub it would…",o:["sink like a rock","float","sit exactly halfway"],a:1,why:"Anything less dense than water (1 g/cm³) floats. Saturn (0.69 g/cm³) would float too. Puffy hot Jupiters are some of the least dense planets known."}};
+function renderQuiz(el){const Q=QUIZ[el.dataset.quiz];if(!Q)return;el.innerHTML="<div class='qh'>Predict, then check</div><div class='qq'></div><div class='opts'></div><div class='fb' aria-live='polite'></div>";
+  el.querySelector(".qq").textContent=Q.q;const opts=el.querySelector(".opts"),fb=el.querySelector(".fb");
+  Q.o.forEach((t,i)=>{const b=document.createElement("button");b.type="button";b.textContent=t;b.onclick=()=>{opts.querySelectorAll("button").forEach(x=>x.classList.remove("wrong"));
+    if(i===Q.a){b.classList.add("right");fb.innerHTML="<b class='ok'>Yes!</b> ";}else{b.classList.add("wrong");fb.innerHTML="<b class='no'>Not quite.</b> ";}
+    fb.appendChild(document.createTextNode(Q.why));};opts.appendChild(b);});}
+document.querySelectorAll(".quiz").forEach(renderQuiz);
+
+/* ---------- live worked examples ---------- */
+function setLive(id,h){const e=$(id);if(e)e.innerHTML=h;}
+const sg=(v,n)=>Number(v).toLocaleString("en-US",{maximumSignificantDigits:n});
+function liveMethod(){
+  const c=2.998e8,lam=500;const dl=lam*K/c;const c2=chi2();
+  // nearest night to show one residual
+  const i=Math.floor(S.t.length/2),miss=(S.v[i]-model(S.t[i]))/S.sig;
+  setLive("w1live","<span class='lab'>Your numbers</span>K = <b>"+vf(K)+" m/s</b> → a 500 nm line shifts by 500 × "+vf(K)+" ÷ 300,000,000 = <b>"+(dl<0.001?dl.toExponential(2):sg(dl,3))+" nm</b>"+(K<20?" (just "+sg(dl/lam*1e9,3)+" parts per billion of the wavelength)":"")+
+    "<br>Your wave: P = <b>"+P.toFixed(4)+" d</b>, K = <b>"+vf(K)+" m/s</b>, shifted by <b>"+(PH*P).toFixed(2)+" d</b>"+
+    "<br>Night "+(i+1)+" (day "+S.t[i].toFixed(2)+"): measured "+vf(S.v[i])+" m/s, your curve says "+vf(model(S.t[i]))+" m/s → off by <b>"+Math.abs(miss).toFixed(1)+" error bars</b>"+
+    "<br>Averaging the squared misses over all "+S.t.length+" nights: χ² = <b>"+(c2<100?c2.toFixed(2):Math.round(c2).toLocaleString())+"</b> "+(c2<1.6?"✓ an excellent fit":"(aim for about 1)"));
+  const Ps=P*DAY,Ms=S.mstar*MSUN;const a=Math.cbrt(G*Ms*Ps*Ps/(4*Math.PI*Math.PI));const vp=2*Math.PI*a/Ps;const Mp=Ms*K/vp;
+  setLive("w2live","<span class='lab'>Your numbers</span>"+
+    "1. a = ∛(G × "+S.mstar.toFixed(2)+" M☉ × ("+P.toFixed(3)+" d)² ÷ 4π²) = <b>"+sg(a/1.496e11,3)+" AU</b> ("+sg(a/1e3,3)+" km)"+
+    "<br>2. v<sub>planet</sub> = 2π × "+sg(a/1e3,3)+" km ÷ "+sg(Ps,3)+" s = <b>"+sg(vp/1e3,3)+" km/s</b>"+
+    "<br>3. M<sub>planet</sub> = M<sub>star</sub> × "+vf(K)+" m/s ÷ "+sg(vp,4)+" m/s = M<sub>star</sub> ÷ <b>"+sg(vp/K,3)+"</b>"+
+    "<br>&nbsp;&nbsp;&nbsp;= "+S.mstar.toFixed(2)+" Sun masses ÷ "+sg(vp/K,3)+" = <b>"+(Mp/ME<100?sg(Mp/ME,3)+" Earth masses":sg(Mp/MJ,3)+" Jupiter masses")+"</b>");
+  const rad=+$("rad").value;
+  if(rad>0){const me=Mp/ME,rho=density(me,rad);
+    setLive("w3live","<span class='lab'>Your numbers</span>M = <b>"+sg(me,3)+"</b> Earth masses, R = <b>"+sg(rad,3)+"</b> Earth radii<br>density = 5.51 × "+sg(me,3)+" ÷ "+sg(rad,3)+"³ = 5.51 × "+sg(me,3)+" ÷ "+sg(rad*rad*rad,4)+" = <b>"+rho.toFixed(2)+" g/cm³</b>");}
+  else setLive("w3live","<span class='lab'>Your numbers</span>"+(S.rp?"Type the radius you measured in Transit Detective (or use the published one) and the calculation will appear here.":"51 Peg b has no measured radius, so its density can't be calculated."));
+}
+
+/* ---------- mass–radius ---------- */
+const SOLAR=[["Mercury",0.055,0.383],["Mars",0.107,0.532],["Venus",0.815,0.949],["Earth",1,1],["Uranus",14.5,4.0],["Neptune",17.1,3.88],["Saturn",95.2,9.45],["Jupiter",317.8,11.21]];
+function density(me,re){return me*ME/(4/3*Math.PI*Math.pow(re*RE,3))/1000;}
+function drawMR(){
+  const c=$("mr"),ctx=setup(c);const lx0=Math.log10(0.03),lx1=Math.log10(5000),ly0=Math.log10(0.3),ly1=Math.log10(30);
+  const A=axes(ctx,c,lx0,lx1,ly0,ly1,"mass (Earth masses, log scale)","radius (Earth radii, log scale)",v=>(+Math.pow(10,v).toPrecision(1))+"",v=>(+Math.pow(10,v).toPrecision(1))+"");
+  // relabel x ticks as powers of ten
+  ctx.save();ctx.beginPath();ctx.rect(PAD.l,PAD.t,A.W-PAD.l-PAD.r,A.H-PAD.t-PAD.b);ctx.clip();
+  const LINES=[[0.3,"puffy gas giant · 0.3 g/cm³",[2,4]],[1.3,"Jupiter-like gas · 1.3",[9,5]],[5.5,"rock, like Earth · 5.5",[]],[11,"iron · 11",[9,4,2,4]]];
+  LINES.forEach(([rho,lab,dash],i)=>{
+    ctx.strokeStyle=css("--muted");ctx.setLineDash(dash);ctx.lineWidth=1.6;ctx.beginPath();
+    let first=true;for(let lm=lx0;lm<=lx1;lm+=0.02){const m=Math.pow(10,lm);const r=Math.cbrt(m*ME/(rho*1000)/(4/3*Math.PI))/RE;const X=A.X(lm),Y=A.Y(Math.log10(r));first?ctx.moveTo(X,Y):ctx.lineTo(X,Y);first=false;}
+    ctx.stroke();});
+  // legend in the empty upper-left corner
+  ctx.font="11px "+css("--mono");ctx.textBaseline="middle";ctx.textAlign="left";
+  const lgW=Math.min(230,A.W-PAD.l-PAD.r-10),lgX=PAD.l+8,lgY=PAD.t+8;
+  ctx.fillStyle=css("--panel");ctx.globalAlpha=.85;ctx.fillRect(lgX-4,lgY-4,lgW,LINES.length*17+8);ctx.globalAlpha=1;
+  LINES.forEach(([rho,lab,dash],i)=>{const y=lgY+8+i*17;ctx.strokeStyle=css("--muted");ctx.setLineDash(dash);ctx.beginPath();ctx.moveTo(lgX,y);ctx.lineTo(lgX+28,y);ctx.stroke();ctx.fillStyle=css("--muted");ctx.fillText(lab,lgX+34,y);});
+  ctx.setLineDash([]);ctx.font="12px "+css("--mono");
+  const leftLab={Venus:1,Uranus:1};
+  SOLAR.forEach(([n,m,r])=>{const X=A.X(Math.log10(m)),Y=A.Y(Math.log10(r));ctx.fillStyle=css("--data");ctx.beginPath();ctx.arc(X,Y,4,0,2*Math.PI);ctx.fill();ctx.textBaseline="middle";
+    if(leftLab[n]){ctx.textAlign="right";ctx.fillText(n,X-7,Y);}else{ctx.textAlign="left";ctx.fillText(n,X+7,Y);}});
+  const rad=+$("rad").value;const me=S?mass()/ME:null;
+  if(S&&rad>0){const X=A.X(Math.log10(me)),Y=A.Y(Math.log10(rad));ctx.fillStyle=css("--accent");ctx.strokeStyle=css("--ink");ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(X,Y-9);ctx.lineTo(X+9,Y);ctx.lineTo(X,Y+9);ctx.lineTo(X-9,Y);ctx.closePath();ctx.fill();ctx.stroke();
+    ctx.fillStyle=css("--accent");ctx.font="bold 12px "+css("--mono");ctx.textAlign="right";ctx.textBaseline="bottom";ctx.fillText(S.pl+" (you)",X-10,Y-8);}
+  ctx.restore();
+  // x tick labels as 10^n
+  const v=$("verdict");
+  if(!S)return;
+  if(!(rad>0)){v.textContent=S.rp?"Type the radius you measured in Transit Detective (or use the published one) to place this planet on the diagram.":"51 Peg b doesn't transit, so we can't measure its size. Radial velocity alone also gives only a minimum mass, since we don't know how the orbit is tilted.";return;}
+  const rho=density(me,rad);
+  let words=rho>7?"denser than rock: probably a big iron core":rho>3.5?"about as dense as rock, like Earth":rho>1.8?"too light to be solid rock: rock plus lots of water or a thick gas envelope":rho>0.8?"like Jupiter: mostly hydrogen and helium gas":"less dense than water: a puffed-up gas giant that would float in a big enough bathtub";
+  v.textContent="Density ≈ "+rho.toFixed(2)+" g/cm³ — "+words+". (Water is 1.0, Earth is 5.5, Jupiter is 1.3.)";
+}
+$("rad").addEventListener("input",()=>{drawMR();liveMethod();});
+$("pubrad").onclick=()=>{if(!S)return;if(S.rp){$("rad").value=S.rp.toFixed(2);drawMR();liveMethod();}else{$("verdict").textContent="51 Peg b doesn't transit, so nobody has measured its radius.";}};
+$("answer").onclick=()=>{if(!S)return;const b=$("reveal");b.hidden=!b.hidden;if(b.hidden)return;
+  const mp=S.K*Math.pow(S.P*DAY/(2*Math.PI*G),1/3)*Math.pow(S.mstar*MSUN,2/3);
+  b.textContent=S.pl+": period "+S.P+" d, K = "+S.K+" m/s, mass ≈ "+(mp/ME<100?(mp/ME).toFixed(2)+" Earth masses":(mp/MJ).toFixed(2)+" Jupiter masses")+(S.rp?", radius "+S.rp+" Earth radii, density ≈ "+density(mp/ME,S.rp).toFixed(2)+" g/cm³.":" (minimum mass; no radius).");};
+
+/* ---------- boot ---------- */
+window.addEventListener("resize",()=>{clearTimeout(window._rt);window._rt=setTimeout(update,120);});
+try{window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",update);}catch(e){}
+new MutationObserver(update).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches){running=false;$("pause").textContent="Play";}
+$("dmass").dispatchEvent(new Event("input"));
+select(T[0]);requestAnimationFrame(demoFrame);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(update);
+})();
+</script>
+</body>
+</html>

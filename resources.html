@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Teaching Resources | Benjamin Roulston</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-163ZQGF3WY"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-163ZQGF3WY');
+</script>
+
+<body class="bg-white text-gray-800 font-sans">
+    <!-- Header -->
+    <header class="p-6 bg-gray-100 shadow-md">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center">
+            <h1 class="text-3xl font-bold"><a href="index.html">Benjamin Roulston</a></h1>
+            <nav class="mt-2 md:mt-0">
+                <a href="index.html" class="mx-2">About</a>
+                <a href="research.html" class="mx-2">Research</a>
+                <a href="teaching.html" class="mx-2">Teaching</a>
+                <a href="#" class="mx-2 font-bold text-blue-600">Resources</a>
+                <a href="Roulston_Benjamin_CV.pdf" target="_blank" class="mx-2">CV</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="max-w-4xl mx-auto p-6">
+        <main class="space-y-12">
+
+            <section id="resources">
+                <h2 class="text-3xl font-bold mb-6 border-b pb-2">Teaching Resources</h2>
+
+                <p class="mb-3 text-gray-700 text-justify">
+                    These are interactive activities, worksheets, and visualizations for teaching physics and
+                    astronomy, organized by topic. Students work hands-on with real data, using sliders, clicking,
+                    and fitting to reach the answer themselves. Everything runs in a web browser with no login or
+                    installation, and instructors and students are welcome to use them. If you use one in a class,
+                    I would love to hear how it went:
+                    <a href="mailto:broulsto@clarkson.edu" class="text-blue-600 hover:underline">broulsto@clarkson.edu</a>.
+                </p>
+
+                <nav class="bg-gray-50 p-4 rounded-lg border border-gray-100 text-sm mb-2" aria-label="Topics">
+                    <span class="font-semibold mr-2">Topics:</span>
+                    <a href="#exoplanets" class="text-blue-600 hover:underline mr-4">Exoplanets</a>
+                    <a href="#light-spectra" class="text-blue-600 hover:underline mr-4">Light &amp; Spectra</a>
+                    <a href="#stellar-evolution" class="text-blue-600 hover:underline mr-4">Stars &amp; Stellar Evolution</a>
+                </nav>
+
+                <!-- Exoplanets -->
+                <div class="mt-8 mb-10" id="exoplanets">
+                    <h3 class="text-xl font-semibold mb-3 border-b pb-1">Exoplanets</h3>
+                    <p class="text-gray-700 text-justify mb-4">
+                        Transit Detective and Wobble Fitter work well as a pair: students first measure a planet's size from its transits, then its mass from its star's wobble, and combine the two to find what the planet is made of.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                            <a href="resources/transit-detective/">
+                                <img src="images/resources/transit-detective.jpg" alt="Screenshot of the Transit Detective activity"
+                                    class="rounded-md border border-gray-200 mb-3 w-full h-auto" loading="lazy">
+                            </a>
+                            <p class="font-semibold mb-1">Transit Detective</p>
+                            <div class="flex flex-wrap gap-1 mb-2"><span class="text-xs bg-white border border-gray-300 rounded-full px-2 py-0.5 text-gray-600">Interactive</span><span class="text-xs bg-white border border-gray-300 rounded-full px-2 py-0.5 text-gray-600">Real data</span><span class="text-xs bg-white border border-gray-300 rounded-full px-2 py-0.5 text-gray-600">High school</span><span class="text-xs bg-white border border-gray-300 rounded-full px-2 py-0.5 text-gray-600">Intro college</span></div>
+                            <p class="text-sm text-justify mb-2">
+                                Find planets in real NASA TESS light curves. Students mark the dips, fold the light curve to find the orbital period, measure the transit depth, and work out how big the planet must be. One of the stars is an impostor.
+                            </p>
+                            <div class="flex flex-wrap gap-4 text-sm">
+                                <a href="resources/transit-detective/" class="text-blue-600 hover:underline">Open activity →</a>
+                                <a href="resources/exoplanet-week/day1-worksheet.html" class="text-blue-600 hover:underline">Worksheet →</a>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                            <a href="resources/wobble-fitter/">
+                                <img src="images/resources/wobble-fitter.jpg" alt="Screenshot of the Wobble Fitter activity"
+                                    class="rounded-md border border-gray-200 mb-3 w-full h-auto" loading="lazy">
+                            </a>
+                            <p class="font-semibold mb-1">Wobble Fitter</p>
+                            <div class="flex flex-wrap gap-1 mb-2"><span class="text-xs bg-white border border-gray-300 rounded-full px-2 py-0.5 text-gray-600">Interactive</span><span class="text-xs bg-white border border-gray-300 rounded-full px-2 py-0.5 text-gray-600">Real orbits</span><span class="text-xs bg-white border border-gray-300 rounded-full px-2 py-0.5 text-gray-600">High school</span><span class="text-xs bg-white border border-gray-300 rounded-full px-2 py-0.5 text-gray-600">Intro college</span></div>
+                            <p class="text-sm text-justify mb-2">
+                                Weigh planets you can't see. Students fit a star's radial-velocity curve to find the planet's mass, then place it on a mass–radius diagram to decide whether it is rock, water, or gas.
+                            </p>
+                            <div class="flex flex-wrap gap-4 text-sm">
+                                <a href="resources/wobble-fitter/" class="text-blue-600 hover:underline">Open activity →</a>
+                                <a href="resources/exoplanet-week/day2-worksheet.html" class="text-blue-600 hover:underline">Worksheet →</a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Light &amp; Spectra -->
+                <div class="mt-8 mb-10" id="light-spectra">
+                    <h3 class="text-xl font-semibold mb-3 border-b pb-1">Light &amp; Spectra</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                            <a href="resources/light-detectives/">
+                                <img src="images/resources/light-detectives.jpg" alt="Screenshot of the Light Detectives activity"
+                                    class="rounded-md border border-gray-200 mb-3 w-full h-auto" loading="lazy">
+                            </a>
+                            <p class="font-semibold mb-1">Light Detectives</p>
+                            <div class="flex flex-wrap gap-1 mb-2"><span class="text-xs bg-white border border-gray-300 rounded-full px-2 py-0.5 text-gray-600">Interactive</span><span class="text-xs bg-white border border-gray-300 rounded-full px-2 py-0.5 text-gray-600">Middle school</span><span class="text-xs bg-white border border-gray-300 rounded-full px-2 py-0.5 text-gray-600">High school</span></div>
+                            <p class="text-sm text-justify mb-2">
+                                Learn to read starlight. Students watch a glowing object change color as it heats up, build the spectral fingerprints of atoms, match unknown spectra to their elements, and read a real star's spectrum for its temperature, makeup, and motion.
+                            </p>
+                            <div class="flex flex-wrap gap-4 text-sm">
+                                <a href="resources/light-detectives/" class="text-blue-600 hover:underline">Open activity →</a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Stars &amp; Stellar Evolution -->
+                <div class="mt-8 mb-10" id="stellar-evolution">
+                    <h3 class="text-xl font-semibold mb-3 border-b pb-1">Stars &amp; Stellar Evolution</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                            <a href="dC_star_formation.html">
+                                <img src="images/resources/dc-star-formation.jpg" alt="Screenshot of the dwarf carbon star formation animation"
+                                    class="rounded-md border border-gray-200 mb-3 w-full h-auto" loading="lazy">
+                            </a>
+                            <p class="font-semibold mb-1">Formation of a Dwarf Carbon Star</p>
+                            <div class="flex flex-wrap gap-1 mb-2"><span class="text-xs bg-white border border-gray-300 rounded-full px-2 py-0.5 text-gray-600">Animation</span><span class="text-xs bg-white border border-gray-300 rounded-full px-2 py-0.5 text-gray-600">Intro college</span></div>
+                            <p class="text-sm text-justify mb-2">
+                                A step-by-step animation of how a giant companion makes carbon, transfers it to a small main-sequence star, and becomes a white dwarf, leaving behind a dwarf carbon star. Useful for stellar evolution, binary stars, and the origin of the elements.
+                            </p>
+                            <div class="flex flex-wrap gap-4 text-sm">
+                                <a href="dC_star_formation.html" class="text-blue-600 hover:underline">Open animation →</a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <p class="text-sm text-gray-600 mb-16">Instructors: guides with timing and discussion notes are
+                    available for some activities by <a href="mailto:broulsto@clarkson.edu?subject=Teaching%20resources"
+                        class="text-blue-600 hover:underline">email</a>.</p>
+
+            </section>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="p-6 text-center text-gray-500 border-t mt-12">
+        © 2026 Benjamin Roulston. All rights reserved.
+    </footer>
+</body>
+
+</html>
