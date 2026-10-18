@@ -1,3 +1,7 @@
 
 images/.DS_Store
 .DS_Store
+
+# Local assistant context (not part of the public site)
+CLAUDE.md
+.claude/
