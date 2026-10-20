@@ -1,0 +1,1221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Light Buckets</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Big+Shoulders+Display:wght@600;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#eef1f5; --panel:#ffffff; --ink:#1b2a44; --ink2:#4a5a74; --muted:#7a879b; --line:#d7dde6;
+  --amber:#e8a020; --amber-ink:#8a5a00; --amber-soft:#fff4dc; --good:#1f8a5b; --good-soft:#e3f5ec; --bad:#c2413b; --bad-soft:#fde9e7;
+  --plot-bg:#0e1424; --plot-grid:#26304a; --plot-text:#aab4c8; --chip:#f2f4f8; --shadow:0 1px 2px rgba(20,30,50,.06),0 4px 14px rgba(20,30,50,.06);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0f1420; --panel:#182032; --ink:#e7ecf5; --ink2:#b5c0d3; --muted:#8a96ab; --line:#2a3550;
+  --amber:#f2b441; --amber-ink:#f6c86a; --amber-soft:#2f2614; --good:#4cc68e; --good-soft:#15301f; --bad:#ef7a73; --bad-soft:#3a1c1b;
+  --plot-bg:#0a0f1b; --plot-grid:#222c44; --plot-text:#9aa6bd; --chip:#202a40; --shadow:none;
+}}
+:root[data-theme="dark"]{
+  --bg:#0f1420; --panel:#182032; --ink:#e7ecf5; --ink2:#b5c0d3; --muted:#8a96ab; --line:#2a3550;
+  --amber:#f2b441; --amber-ink:#f6c86a; --amber-soft:#2f2614; --good:#4cc68e; --good-soft:#15301f; --bad:#ef7a73; --bad-soft:#3a1c1b;
+  --plot-bg:#0a0f1b; --plot-grid:#222c44; --plot-text:#9aa6bd; --chip:#202a40; --shadow:none;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,sans-serif;font-size:17px;line-height:1.5;overflow-x:hidden}
+.wrap{max-width:880px;margin:0 auto;padding:0 16px 60px}
+h1,h2,h3{font-family:"Big Shoulders Display",Impact,sans-serif;letter-spacing:.01em;line-height:1.05;margin:0}
+h1{font-size:clamp(46px,11vw,84px);font-weight:800}
+h2{font-size:clamp(30px,7vw,40px);font-weight:800}
+h3{font-size:24px;font-weight:600;margin-top:18px}
+p{margin:.5em 0}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.92em}
+header.hero{padding:28px 0 8px}
+.eyebrow{font-family:"JetBrains Mono",monospace;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--amber-ink)}
+.hero .rain{height:10px;border-radius:6px;margin:14px 0 12px;background:linear-gradient(90deg,#7a00c8,#2a3cff,#00b7ff,#00d27a,#c8e600,#ffd000,#ff7a00,#e00000)}
+.lede{font-size:19px;color:var(--ink2);max-width:640px}
+.missionnav{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px}
+.missionnav a{display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:var(--ink);background:var(--panel);border:1px solid var(--line);padding:8px 12px;border-radius:999px;font-weight:700;font-size:15px;min-height:44px}
+.missionnav a .dot{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.missionnav a.done .dot{background:var(--good)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;margin:18px 0;box-shadow:var(--shadow)}
+.mission-head{display:flex;gap:12px;align-items:flex-start;margin-bottom:8px}
+.badge{flex:none;width:46px;height:46px;border-radius:12px;background:var(--ink);color:var(--panel);display:grid;place-items:center;font-family:"Big Shoulders Display";font-size:28px;font-weight:800}
+.mission-head .sub{color:var(--ink2);margin-top:4px}
+.tag{display:inline-block;font-family:"JetBrains Mono",monospace;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:6px;background:var(--amber-soft);color:var(--amber-ink);margin-right:6px}
+.tag.sim{background:var(--chip);color:var(--ink2)}
+.tag.real{background:var(--good-soft);color:var(--good)}
+canvas{display:block;width:100%;border-radius:10px;background:var(--plot-bg);touch-action:manipulation}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+button,.btn{font:inherit;font-weight:700;font-size:16px;border-radius:10px;border:1px solid var(--line);background:var(--chip);color:var(--ink);padding:10px 14px;min-height:44px;cursor:pointer}
+button:hover{border-color:var(--ink2)}
+button.on{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+button.primary{background:var(--amber);color:#1b1300;border-color:var(--amber)}
+button:disabled{opacity:.45;cursor:default}
+.chip{font-size:15px;padding:8px 12px;min-height:44px}
+.sw{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+input[type=range]{width:100%;accent-color:var(--amber);height:34px}
+.slider-row{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center;margin:8px 0}
+.slider-row label{font-weight:700}
+.slider-row output{font-family:"JetBrains Mono",monospace;font-size:15px;color:var(--amber-ink);text-align:right}
+.slider-row input{grid-column:1 / -1}
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px 0}
+.tile{background:var(--chip);border-radius:12px;padding:10px 12px}
+.tile .k{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.tile .v{font-family:"JetBrains Mono",monospace;font-size:20px;margin-top:2px}
+.predict{border:2px dashed var(--amber);border-radius:14px;padding:14px;margin:14px 0;background:var(--amber-soft)}
+.predict .q{font-weight:700;margin-bottom:8px}
+.predict .opts{display:grid;gap:8px}
+.predict .opts button{text-align:left;background:var(--panel)}
+.predict .opts button.right{background:var(--good-soft);border-color:var(--good)}
+.predict .opts button.wrong{background:var(--bad-soft);border-color:var(--bad)}
+.fb{margin-top:8px;font-weight:700}
+.fb.good{color:var(--good)} .fb.bad{color:var(--bad)}
+details.math{border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin:14px 0;background:var(--panel)}
+details.math summary{cursor:pointer;font-weight:700;min-height:32px;display:flex;align-items:center}
+.eq{display:inline-block;font-family:"JetBrains Mono",monospace;font-size:15px;background:var(--chip);border-radius:8px;padding:4px 10px;margin:4px 0}
+.yours{background:var(--amber-soft);border-radius:10px;padding:10px 12px;margin-top:8px}
+.yours b{color:var(--amber-ink)}
+.u{border-bottom:2px dotted var(--amber);cursor:help;white-space:nowrap}
+#bubble{position:fixed;z-index:50;max-width:min(320px,calc(100vw - 32px));background:var(--ink);color:var(--panel);padding:10px 12px;border-radius:10px;font-size:15px;box-shadow:0 6px 20px rgba(0,0,0,.25);display:none}
+.callout{border-left:4px solid var(--amber);background:var(--chip);padding:10px 14px;border-radius:0 10px 10px 0;margin:12px 0}
+.story{background:var(--plot-bg);color:#e7ecf5;border-radius:14px;padding:14px 16px;margin:14px 0}
+.story h3{margin:0 0 6px;color:var(--amber)}
+.step-done{color:var(--good);font-weight:700}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:14px;color:var(--ink2);margin-top:6px}
+.legend i{display:inline-block;width:14px;height:4px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.grid2{display:grid;grid-template-columns:1fr;gap:14px}
+@media(min-width:720px){.grid2{grid-template-columns:1fr 1fr}}
+.starcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-top:10px}
+.starcard{border:2px solid var(--line);border-radius:12px;padding:8px;background:var(--panel);cursor:pointer;text-align:left;font:inherit;color:var(--ink)}
+.starcard.picked{border-color:var(--amber)}
+.starcard.ok{border-color:var(--good)} .starcard.no{border-color:var(--bad)}
+.starcard .top{display:flex;justify-content:space-between;align-items:center;font-weight:700;margin-bottom:6px}
+.rank{font-family:"JetBrains Mono",monospace;background:var(--amber);color:#1b1300;border-radius:8px;padding:0 8px;min-width:30px;text-align:center}
+.matchbars .mb{display:grid;grid-template-columns:90px 1fr 48px;gap:8px;align-items:center;margin:6px 0;font-size:15px}
+.matchbars .bar{height:14px;background:var(--chip);border-radius:7px;overflow:hidden}
+.matchbars .bar span{display:block;height:100%;background:var(--amber)}
+textarea,input[type=text]{width:100%;font:inherit;font-family:"JetBrains Mono",monospace;font-size:16px;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+.units{margin:8px 0}
+.units table{border-collapse:collapse;width:100%;font-size:15px}
+.units td{border-top:1px solid var(--line);padding:6px 4px;vertical-align:top}
+.units td:first-child{font-family:"JetBrains Mono",monospace;white-space:nowrap;color:var(--amber-ink)}
+footer{color:var(--muted);font-size:14px;margin-top:30px}
+footer a{color:var(--ink2)}
+.results .tile .v{font-size:17px}
+.hide{display:none!important}
+.small{font-size:14px;color:var(--muted)}
+.tubewrap{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.tube{width:100%;max-width:300px;height:30px;border-radius:15px;border:2px solid #556;transition:background .3s, box-shadow .3s}
+.check{list-style:none;padding:0;margin:8px 0}
+.check li{padding:4px 0}
+.check li::before{content:"○ ";color:var(--muted)}
+.check li.done::before{content:"● ";color:var(--good)}
+.loader{margin:10px 0}
+.filebtn{display:inline-flex;align-items:center;gap:6px;font:inherit;font-weight:700;font-size:16px;border-radius:10px;padding:10px 16px;min-height:48px;cursor:pointer;background:var(--amber);color:#1b1300;border:1px solid var(--amber)}
+.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.labmsg{margin-top:6px;color:var(--amber-ink)}
+.curphoto{margin:8px 0 6px}
+.photowrap{background:var(--plot-bg);border-radius:10px;min-height:120px;display:flex;justify-content:center;align-items:center;overflow:hidden}
+.photowrap canvas{border-radius:0;touch-action:manipulation;cursor:crosshair}
+.photoempty{color:var(--plot-text);padding:30px 16px;text-align:center;display:flex;justify-content:center}
+.ltable{border-collapse:collapse;width:100%;font-size:15px}
+.ltable th,.ltable td{border-bottom:1px solid var(--line);padding:6px 6px;text-align:left;vertical-align:top}
+.ltable th{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.tablewrap{overflow-x:auto}
+.nbrow{border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin:8px 0;background:var(--chip)}
+.nbhead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
+.nbhead .chip{min-height:36px;padding:4px 10px}
+.starcard{cursor:default}
+.hb button.right{background:var(--good-soft);border-color:var(--good)}
+.hb button.wrong{background:var(--bad-soft);border-color:var(--bad)}
+.hunt .predict{margin:12px 0}
+.ltable tr.ghost td{opacity:.6}
+.handson{border:2px solid var(--good);background:var(--good-soft);border-radius:14px;padding:12px 14px;margin:14px 0}
+.handson .hs-h{font-weight:700;color:var(--good);margin-bottom:4px}
+.handson ol,.handson ul{margin:6px 0 0 20px;padding:0}
+.handson li{margin:4px 0}
+.goal{font-weight:700;color:var(--amber-ink);margin:8px 0 4px}
+.hint{font-weight:400;color:var(--muted);font-size:14px}
+.tasks{border:1px solid var(--line);border-left:4px solid #5b8def;border-radius:0 12px 12px 0;padding:10px 14px;margin:14px 0;background:var(--chip)}
+.tasks .th{font-weight:700;display:flex;justify-content:space-between;gap:8px}
+.tasks .th .cnt{font-family:"JetBrains Mono",monospace;font-size:14px;color:var(--muted)}
+.tasks.all{border-left-color:var(--good)} .tasks.all .th .cnt{color:var(--good)}
+.check li{padding:4px 0 4px 26px;position:relative}
+.check li::before{position:absolute;left:0}
+.check li.done{color:var(--ink2)}
+.check li.flash{animation:flash .9s}
+@keyframes flash{0%{background:var(--good-soft)}100%{background:transparent}}
+.keyidea{background:var(--ink);color:var(--panel);border-radius:12px;padding:12px 14px;margin:14px 0}
+.keyidea span{display:block;font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--amber);margin-bottom:2px}
+.keyidea b{color:var(--amber)}
+:root .keyidea b{color:inherit;text-decoration:underline;text-decoration-color:var(--amber);text-decoration-thickness:2px;text-underline-offset:3px}
+canvas.drag{cursor:grab;touch-action:pan-y}
+canvas.drag.dragging{cursor:grabbing}
+.start{margin-top:16px}
+.kit{margin:4px 0 0 20px;padding:0}.kit li{margin:3px 0}
+.callout.warn{border-left-color:var(--bad);background:var(--bad-soft)}
+.howkey{display:grid;gap:6px;grid-template-columns:1fr;font-size:15.5px}
+@media(min-width:720px){.howkey{grid-template-columns:1fr 1fr}}
+.k-sw{display:inline-block;width:14px;height:14px;border-radius:4px;margin-right:8px;vertical-align:-2px}
+.k-tasks{background:#5b8def}.k-pred{border:2px dashed var(--amber);background:var(--amber-soft)}.k-hands{border:2px solid var(--good);background:var(--good-soft)}.k-key{background:var(--ink)}
+.toggle{display:inline-flex;align-items:center;gap:8px;font-size:15px;color:var(--ink2);min-height:36px;cursor:pointer}
+.toggle input{width:20px;height:20px;accent-color:var(--amber)}
+.lenstable{border-collapse:collapse;width:100%;margin:10px 0 4px;font-size:15px}
+.lenstable th,.lenstable td{padding:5px 6px;text-align:left}
+.lenstable th{font-size:13px;color:var(--ink2)}
+.lenstable td input{max-width:90px;padding:8px}
+.lenstable td.avg{font-family:"JetBrains Mono",monospace;color:var(--good);font-weight:700}
+details.trouble{margin-top:8px}
+details.trouble summary{cursor:pointer;font-weight:700;color:var(--good);min-height:32px}
+.plan{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin:8px 0}
+.plan label{display:inline-block;font-size:16px}
+.plan input{max-width:90px}
+ol.tight{margin:6px 0 6px 20px;padding:0}ol.tight li{margin:4px 0}
+.bigideas{margin:6px 0 0 20px;padding:0}.bigideas li{margin:4px 0}
+#designList{margin:6px 0}
+.keyidea span{color:#f2b441}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .keyidea span{color:#8a5a00} }
+:root[data-theme="dark"] .keyidea span{color:#8a5a00}
+</style>
+
+<meta name="description" content="A hands-on lens lab: learn how lenses bend light, measure focal lengths, and build a working telescope, then see why bigger telescopes collect more light.">
+<style>
+#br-sitebar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.25rem 1rem;
+  padding:.5rem clamp(1rem,4vw,2rem);background:#f3f4f6;color:#374151;box-shadow:0 1px 3px rgba(0,0,0,.08);
+  font:600 14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;position:relative;z-index:50;margin:0 0 1rem;border-radius:6px}
+#br-sitebar a{color:#2563eb;text-decoration:none}
+#br-sitebar a:hover,#br-sitebar a:focus-visible{text-decoration:underline}
+#br-sitebar span{font-weight:400;opacity:.85}
+@media print{#br-sitebar{display:none}}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-163ZQGF3WY"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-163ZQGF3WY');</script>
+</head>
+<body>
+<nav id="br-sitebar" aria-label="Site"><a href="../../resources.html">&larr; Teaching Resources</a><span><a href="../../index.html">Benjamin Roulston</a> </span></nav>
+<div id="bubble" role="status"></div>
+<div class="wrap">
+
+<header class="hero">
+  <h1>Light Buckets</h1>
+  <div class="rain"></div>
+  <p class="lede">You have two lenses. By the end of this lab you'll know how they bend light, how to measure them, and how to put them together into a working telescope.</p>
+  <nav class="missionnav" aria-label="Steps">
+    <a href="#s1" id="nav1"><span class="dot"></span>1 · Rays</a>
+    <a href="#s2" id="nav2"><span class="dot"></span>2 · Bending</a>
+    <a href="#s3" id="nav3"><span class="dot"></span>3 · Shapes</a>
+    <a href="#s4" id="nav4"><span class="dot"></span>4 · Focal point</a>
+    <a href="#s5" id="nav5"><span class="dot"></span>5 · Pictures</a>
+    <a href="#s6" id="nav6"><span class="dot"></span>6 · Measure</a>
+    <a href="#s7" id="nav7"><span class="dot"></span>7 · Magnifier</a>
+    <a href="#s8" id="nav8"><span class="dot"></span>8 · Telescope</a>
+    <a href="#s9" id="nav9"><span class="dot"></span>9 · Light buckets</a>
+    <a href="#s10" id="nav10"><span class="dot"></span>10 · Mirrors</a>
+    <a href="#results" id="nav11"><span class="dot"></span>My results</a>
+  </nav>
+
+  <section class="panel start">
+    <h3 style="margin-top:0">Before you start</h3>
+    <div class="grid2">
+      <div>
+        <p style="margin-top:0"><b>Your kit</b> (work with a partner):</p>
+        <ul class="kit">
+          <li>2 lenses</li>
+          <li>a meter stick (or a 30 cm ruler plus a tape measure)</li>
+          <li>a white index card</li>
+          <li>your worksheet and a pencil</li>
+          <li>a phone or laptop with this page open</li>
+        </ul>
+      </div>
+      <div>
+        <p style="margin-top:0"><b>Set up:</b></p>
+        <ol class="kit">
+          <li>Put a small piece of tape on the edge of the <b>wider</b> lens and write <b>A</b>. The other lens is <b>B</b>. If they're the same width, pick either one.</li>
+          <li>Hold lenses by their <b>edges</b>. Fingerprints on the glass make everything blurry.</li>
+          <li>Find a <b>bright window</b> or a lamp on the far side of the room. You'll need it in Steps 5, 6 and 8.</li>
+        </ol>
+      </div>
+    </div>
+    <div class="callout warn"><b>Safety:</b> never look at the Sun through a lens or a telescope, and never use a lens to focus sunlight on anything (it can start a fire or hurt your eyes).</div>
+    <p style="margin-bottom:4px"><b>How each step works</b></p>
+    <div class="howkey">
+      <div><span class="k-sw k-tasks"></span><b>Things to try</b> on this page. They tick off by themselves as you do them.</div>
+      <div><span class="k-sw k-pred"></span><b>Check questions.</b> Make your guess, then use the page to test it.</div>
+      <div><span class="k-sw k-hands"></span><b>With your real lenses.</b> Do this at your table and write it on your worksheet (same step number).</div>
+      <div><span class="k-sw k-key"></span><b>Key idea.</b> The one thing to remember from the step.</div>
+    </div>
+    <details class="math units">
+      <summary>Word list</summary>
+      <table>
+        <tr><td>ray</td><td>a line showing the path light travels.</td></tr>
+        <tr><td>refraction</td><td>light bending when it goes from one material into another (air → glass).</td></tr>
+        <tr><td>converging lens</td><td>fatter in the middle; brings light rays <b>together</b>.</td></tr>
+        <tr><td>focal point (F)</td><td>the spot where a converging lens brings light from far away together.</td></tr>
+        <tr><td>focal length (f)</td><td>the distance from the middle of the lens to its focal point.</td></tr>
+        <tr><td>image</td><td>a picture of an object made by a lens.</td></tr>
+        <tr><td>objective</td><td>the front lens of a telescope. It collects the light.</td></tr>
+        <tr><td>eyepiece</td><td>the lens you look through. It magnifies.</td></tr>
+        <tr><td>magnification (×)</td><td>how many times bigger something looks. 10× = ten times wider.</td></tr>
+        <tr><td>aperture</td><td>the width of the front lens or mirror.</td></tr>
+      </table>
+    </details>
+  </section>
+</header>
+
+<!-- ============ STEP 1 ============ -->
+<section class="panel" id="s1">
+  <div class="mission-head"><div class="badge">1</div><div><h2>Light travels in straight lines</h2><div class="sub">Before we can bend light, we need a way to draw it.</div></div></div>
+  <p class="goal">🎯 You'll learn: what a ray is, and why light from far away arrives "parallel".</p>
+  <p>Light leaves a glowing object, like a light bulb, in <b>every direction</b>. Each bit of light travels in a straight line until something changes its path. Scientists draw those paths as lines with arrows, called <b>rays</b>.</p>
+  <p>The box on the right is a lens 5 cm tall. Only the rays that land on it matter.</p>
+  <canvas id="s1Canvas" class="drag" height="250" aria-label="Rays leaving a light bulb"></canvas>
+  <div class="slider-row"><label for="s1S">How far away is the bulb? <span class="hint">(or drag the bulb)</span></label><output id="s1Out"></output><input type="range" id="s1S" min="0" max="1000" value="230"></div>
+  <div class="readouts">
+    <div class="tile"><div class="k">Bulb distance</div><div class="v" id="s1d">—</div></div>
+    <div class="tile"><div class="k">Top and bottom rays differ by</div><div class="v" id="s1a">—</div></div>
+  </div>
+  <div class="tasks" data-step="1"></div>
+  <div class="predict" id="p1">
+    <div class="q">Check: light from a star, trillions of kilometers away, reaches your eye as rays that are…</div>
+    <div class="opts">
+      <button data-a="0">Spreading out a lot</button>
+      <button data-a="1">Almost perfectly parallel</button>
+      <button data-a="2">Curved</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+  <div class="keyidea"><span>Key idea</span>Light travels in straight lines. The farther away the source, the more <b>parallel</b> its rays are when they reach you. A star's rays are parallel.</div>
+  <div class="handson"><div class="hs-h">✏️ Worksheet Step 1</div>Fill in the blank. Then get your lenses out of the box (hold them by the edges).</div>
+</section>
+
+<!-- ============ STEP 2 ============ -->
+<section class="panel" id="s2">
+  <div class="mission-head"><div class="badge">2</div><div><h2>Light bends when it enters glass</h2><div class="sub">This bending is called <b>refraction</b>.</div></div></div>
+  <p class="goal">🎯 You'll learn: why light bends at a surface, and which way it bends.</p>
+  <p>Light travels slower in glass or water than in air. When a beam hits glass at a slant, one edge of the beam slows down first, so the whole beam <b>turns</b>. It's like a toy car rolling at an angle from pavement onto grass: the wheel that hits the grass first slows down and the car swerves.</p>
+  <canvas id="s2Canvas" height="280" aria-label="A ray bending at an air-glass surface"></canvas>
+  <div class="row" id="s2Dir">
+    <button class="chip on" data-d="in">Light going into the glass</button>
+    <button class="chip" data-d="out">Light coming out of the glass</button>
+  </div>
+  <div class="slider-row"><label for="s2S" id="s2Lab">Angle the light comes in at</label><output id="s2Out"></output><input type="range" id="s2S" min="0" max="80" value="45"></div>
+  <div class="row" id="s2Mat">
+    <button class="chip" data-n="1.33">Water</button>
+    <button class="chip on" data-n="1.5">Glass</button>
+    <button class="chip" data-n="2.42">Diamond</button>
+  </div>
+  <div class="readouts">
+    <div class="tile"><div class="k" id="s2ak">Angle in air</div><div class="v" id="s2a">—</div></div>
+    <div class="tile"><div class="k" id="s2bk">Angle inside</div><div class="v" id="s2b">—</div></div>
+    <div class="tile"><div class="k">Bent by</div><div class="v" id="s2c">—</div></div>
+  </div>
+  <p class="small">Angles are measured from the dashed "straight-in" line, which points straight into the surface.</p>
+  <div class="tasks" data-step="2"></div>
+  <div class="predict" id="p2">
+    <div class="q">Predict, then check with the buttons: which material bends light the most?</div>
+    <div class="opts">
+      <button data-a="0">Water</button>
+      <button data-a="1">Glass</button>
+      <button data-a="2">Diamond</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+  <div class="keyidea"><span>Key idea</span>Light bends when it crosses from air into glass (toward the straight-in line) and again when it comes back out (away from it). Light hitting straight-on doesn't bend.</div>
+  <div class="handson"><div class="hs-h">🖐 With your lenses · Worksheet Step 2</div>
+    <ol>
+      <li>Lay your worksheet flat. Hold <b>Lens A</b> about <b>2 cm</b> (a finger's width) above the bold sentence in Step 2.</li>
+      <li>Look straight down through it. Are the words bigger, smaller or the same?</li>
+      <li>Slowly lift the lens toward your eye, up to about <b>30 cm</b> (a ruler's length) above the paper. Watch the words the whole time.</li>
+      <li>Circle what you saw on your worksheet. Then try Lens B.</li>
+    </ol>
+  </div>
+  <details class="math"><summary>For the curious: the bending rule</summary>
+    <p>Each material has an <b>index of refraction</b>, n: how many times slower light travels in it (air ≈ 1, water 1.33, glass 1.5, diamond 2.42). The angles follow Snell's law:</p>
+    <div class="eq">n(air) × sin(angle in air) = n(glass) × sin(angle in glass)</div>
+    <div class="yours" id="s2Yours"></div>
+  </details>
+</section>
+
+<!-- ============ STEP 3 ============ -->
+<section class="panel" id="s3">
+  <div class="mission-head"><div class="badge">3</div><div><h2>The shape decides where light goes</h2><div class="sub">Same glass, different shapes, very different results.</div></div></div>
+  <p class="goal">🎯 You'll learn: how the shape of a piece of glass decides where light goes, and what a converging lens is.</p>
+  <p>Parallel rays come in from the left, like starlight. Each ray bends where it enters and leaves the glass, by an amount that depends on how <b>tilted</b> the glass surface is at that spot. Pick a shape and watch.</p>
+  <canvas id="s3Canvas" height="270" aria-label="Rays through different glass shapes"></canvas>
+  <div class="row" id="s3Shapes">
+    <button class="chip on" data-s="flat">Flat window</button>
+    <button class="chip" data-s="prism">Prism (wedge)</button>
+    <button class="chip" data-s="two">Two prisms</button>
+    <button class="chip" data-s="conv">Fat in the middle</button>
+    <button class="chip" data-s="div">Thin in the middle</button>
+  </div>
+  <div class="callout" id="s3note"></div>
+  <div class="tasks" data-step="3"></div>
+  <div class="predict" id="p3">
+    <div class="q">In a lens that is fat in the middle, which rays bend the most?</div>
+    <div class="opts">
+      <button data-a="0">The rays through the middle</button>
+      <button data-a="1">The rays near the edges</button>
+      <button data-a="2">They all bend the same amount</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+  <div class="keyidea"><span>Key idea</span>A lens that is <b>fatter in the middle</b> is a <b>converging lens</b>: its curved faces bend the outer rays most, so parallel rays all meet at one point. Telescopes use converging lenses.</div>
+  <div class="handson"><div class="hs-h">🖐 With your lenses · Worksheet Step 3</div>
+    <ol>
+      <li>Hold each lens <b>edge-on</b> at eye level in front of a sheet of white paper. Look at its outline: is the middle thicker than the edge?</li>
+      <li>Gently feel the faces between your thumb and finger (or just look). Which lens bulges more?</li>
+      <li>Measure the <b>width</b> of each lens across the glass, in millimeters (mm), with your ruler. Don't include any plastic holder.</li>
+      <li>Fill in the table on your worksheet.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ STEP 4 ============ -->
+<section class="panel" id="s4">
+  <div class="mission-head"><div class="badge">4</div><div><h2>The focal point</h2><div class="sub">Where a converging lens brings parallel light together.</div></div></div>
+  <p class="goal">🎯 You'll learn: what focal length means, and what decides it.</p>
+  <p>A converging lens bends every parallel ray toward the same spot: the <b>focal point</b> (F). The distance from the middle of the lens to that spot is the lens's most important number, its <b>focal length</b>, written <b>f</b>. Two things set it: how <b>curved</b> the faces are, and what the lens is <b>made of</b>.</p>
+  <canvas id="rayCanvas" height="270" aria-label="Rays meeting at a focal point"></canvas>
+  <div class="slider-row"><label for="fS">How curved are the faces?</label><output id="fOut"></output><input type="range" id="fS" min="0" max="1000" value="450"></div>
+  <div class="row" id="s4Mat">
+    <span class="small">Made of:</span>
+    <button class="chip" data-n="1.33">Water</button>
+    <button class="chip on" data-n="1.5">Glass</button>
+    <button class="chip" data-n="2.42">Diamond</button>
+  </div>
+  <div class="readouts">
+    <div class="tile"><div class="k">Focal length</div><div class="v" id="fTile">—</div></div>
+    <div class="tile"><div class="k">Lens shape</div><div class="v" id="shapeTile">—</div></div>
+  </div>
+  <div class="tasks" data-step="4"></div>
+  <div class="predict" id="p4">
+    <div class="q">A fatter, more curved lens has a focal length that is…</div>
+    <div class="opts">
+      <button data-a="0">Longer</button>
+      <button data-a="1">Shorter</button>
+      <button data-a="2">The same</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+  <div class="keyidea"><span>Key idea</span>Focal length f is the distance from the lens to where parallel light meets. <b>More curved</b> lenses, and materials that bend light more, have a <b>shorter</b> focal length.</div>
+  <div class="handson"><div class="hs-h">✏️ Worksheet Step 4 · Predict</div>Look at your two lenses edge-on again. Which one bulges more? <b>Predict</b> which lens has the shorter focal length, and write why. You'll test this in Step 6.</div>
+  <details class="math"><summary>For the curious: the lens-maker's rule</summary>
+    <p>For a lens with two faces curved the same amount (each face part of a ball with radius R):</p>
+    <div class="eq">f = R ÷ (2 × (n − 1))</div>
+    <div class="yours" id="s4Yours"></div>
+  </details>
+</section>
+
+<!-- ============ STEP 5 ============ -->
+<section class="panel" id="s5">
+  <div class="mission-head"><div class="badge">5</div><div><h2>Lenses make pictures</h2><div class="sub">Called <b>images</b>. They can land on a piece of paper.</div></div></div>
+  <p class="goal">🎯 You'll learn: how a lens makes a picture, why it's upside down, and where the sharp spot is.</p>
+  <p>Every point on a candle flame sends rays in all directions. The lens catches some of them and bends them back together at <b>one point</b> on the other side. Do that for every point on the candle and you get a picture: an <b>image</b>. Follow the bright yellow ray: it leaves the <b>top</b> of the flame, goes straight through the middle of the lens, and lands at the <b>bottom</b>. That's why the picture is <b>upside down</b>.</p>
+  <canvas id="imgCanvas" class="drag" height="290" aria-label="Lens forming an image on a screen"></canvas>
+  <p class="small">This lens has f = <b>10 cm</b>. Drag the <b>candle</b> and the <b>paper</b>, or use the sliders. Heights are stretched so you can see the rays.</p>
+  <div class="grid2">
+    <div class="slider-row"><label for="doS">Candle distance from lens</label><output id="doOut"></output><input type="range" id="doS" min="0" max="1000" value="500"></div>
+    <div class="slider-row"><label for="scS">Paper distance from lens</label><output id="scOut"></output><input type="range" id="scS" min="0" max="1000" value="350"></div>
+  </div>
+  <div class="row"><label class="toggle"><input type="checkbox" id="s5Hint"> Show where the sharp spot is</label></div>
+  <div class="grid2">
+    <div><p class="small" style="margin:4px 0">What you see on the paper:</p><canvas id="screenCanvas" height="180" aria-label="The picture on the paper"></canvas></div>
+    <div class="readouts" style="align-content:start;margin-top:0">
+      <div class="tile"><div class="k">On the paper</div><div class="v" id="sharpTile">—</div></div>
+      <div class="tile"><div class="k">Picture size</div><div class="v" id="sizeTile">—</div></div>
+    </div>
+  </div>
+  <div class="callout hide" id="s5win"></div>
+  <div class="tasks" data-step="5"></div>
+  <div class="predict" id="p5">
+    <div class="q">Move the candle farther from the lens and find the sharp spot again. The sharp picture…</div>
+    <div class="opts">
+      <button data-a="0">Moves farther from the lens and gets bigger</button>
+      <button data-a="1">Moves closer to the lens and gets smaller</button>
+      <button data-a="2">Stays in the same place</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+  <div class="keyidea"><span>Key idea</span>A converging lens makes an <b>upside-down</b> picture you can catch on paper. Farther objects make smaller pictures, closer to the lens. If the object is closer than F, there's <b>no</b> picture on the paper.</div>
+  <div class="handson"><div class="hs-h">🖐 With your lenses · Worksheet Step 5</div>
+    <ol>
+      <li>Stand 3 m or more from a bright window (or a lamp). Turn your back to it if the room is bright.</li>
+      <li>Hold <b>Lens A</b> up, facing the window. Hold the white card <b>right behind the lens</b>, touching it.</li>
+      <li>Slowly pull the card away from the lens. At some point a small, sharp picture of the window appears. Go past it and it blurs again.</li>
+      <li>Is the picture upside down? Sketch it on your worksheet.</li>
+      <li><b>Bonus:</b> try a lamp only about 1 m away. Is the sharp spot closer to the lens or farther away than for the window?</li>
+    </ol>
+  </div>
+  <details class="math"><summary>For the curious: the lens equation</summary>
+    <p>The object distance (d<sub>o</sub>), picture distance (d<sub>i</sub>) and focal length (f) are linked:</p>
+    <div class="eq">1 ÷ f = 1 ÷ d<sub>o</sub> + 1 ÷ d<sub>i</sub></div>
+    <div class="yours" id="s5Yours"></div>
+  </details>
+</section>
+
+<!-- ============ STEP 6 ============ -->
+<section class="panel" id="s6">
+  <div class="mission-head"><div class="badge">6</div><div><h2>Measure a focal length</h2><div class="sub">The trick: use something far away.</div></div></div>
+  <p class="goal">🎯 You'll learn: how to measure f for a lens you know nothing about, and then measure both of yours.</p>
+  <p>Put Steps 1 and 4 together. Light from far away arrives as <b>parallel rays</b>, and a lens brings parallel rays together at its <b>focal point</b>. So when you focus a <b>faraway</b> window onto a card, the card is at the focal point, and the distance from the lens to the card <b>is the focal length</b>.</p>
+  <h3>Practice on a mystery lens</h3>
+  <canvas id="mysCanvas" class="drag" height="250" aria-label="Measuring a mystery lens"></canvas>
+  <div class="slider-row"><label for="mysS">Slide the card <span class="hint">(or drag it)</span></label><output id="mysOut"></output><input type="range" id="mysS" min="0" max="1000" value="60"></div>
+  <div class="row" id="mysDist">
+    <span class="small">The window is:</span>
+    <button class="chip" data-d="100">1 m away</button>
+    <button class="chip" data-d="300">3 m away</button>
+    <button class="chip on" data-d="100000">very far away</button>
+  </div>
+  <div class="grid2">
+    <div><p class="small" style="margin:4px 0">The card:</p><canvas id="mysCard" height="140" aria-label="The picture on the card"></canvas></div>
+    <div>
+      <div class="row"><label for="mysAns" class="small">The focal length is</label><input type="text" id="mysAns" inputmode="decimal" style="max-width:90px" aria-label="Your focal length answer"><span class="small">cm</span></div>
+      <div class="row"><button class="primary" id="mysCheck">Check</button><button class="chip" id="mysNew">New mystery lens</button></div>
+      <div class="fb" id="mysFb"></div>
+    </div>
+  </div>
+  <div class="tasks" data-step="6"></div>
+
+  <h3>Now your real lenses</h3>
+  <div class="handson"><div class="hs-h">🖐 Measure · Worksheet Step 6</div>
+    <ol>
+      <li>Stand at least <b>3 m</b> from a bright window, the farther the better. One partner holds the lens and card; the other measures.</li>
+      <li>Hold the lens upright, facing the window. Hold the card behind it and slide it until the window's picture is <b>as sharp as you can get</b>. Hold still.</li>
+      <li>Lay the ruler along the gap. Measure from the <b>middle of the lens</b> (not its front or back face) to the <b>card</b>, in cm.</li>
+      <li>Do it <b>twice</b> for each lens, letting go and starting over each time. Type all four numbers below.</li>
+    </ol>
+    <div class="tablewrap"><table class="lenstable">
+      <tr><th></th><th>Try 1 (cm)</th><th>Try 2 (cm)</th><th>Average f</th><th>Width (mm)</th></tr>
+      <tr><th>Lens A</th><td><input type="text" id="fA1" inputmode="decimal" aria-label="Lens A try 1"></td><td><input type="text" id="fA2" inputmode="decimal" aria-label="Lens A try 2"></td><td class="avg" id="avgA">—</td><td><input type="text" id="dA" inputmode="decimal" aria-label="Lens A width"></td></tr>
+      <tr><th>Lens B</th><td><input type="text" id="fB1" inputmode="decimal" aria-label="Lens B try 1"></td><td><input type="text" id="fB2" inputmode="decimal" aria-label="Lens B try 2"></td><td class="avg" id="avgB">—</td><td><input type="text" id="dB" inputmode="decimal" aria-label="Lens B width"></td></tr>
+    </table></div>
+    <div class="small" id="lensCheck"></div>
+    <div class="row"><button class="primary" id="saveLenses">Use my lenses</button><span class="small" id="lensMsg"></span></div>
+    <details class="trouble"><summary>Trouble finding a sharp spot?</summary>
+      <ul>
+        <li><b>Picture too dim:</b> turn off the lights near you and use the brightest window.</li>
+        <li><b>The sharp spot is past arm's length</b> (f longer than about 60 cm): stand the card against a wall and move the lens toward and away from it instead.</li>
+        <li><b>Two tries disagree by more than 2 cm:</b> do a third try. The sharp spot is narrow; move slowly.</li>
+        <li><b>Only a lamp nearby?</b> Your answer will come out a bit too long (try the "1 m away" button above to see why).</li>
+      </ul>
+    </details>
+  </div>
+  <div class="keyidea"><span>Key idea</span>To measure a focal length: focus something <b>far away</b> onto a card and measure from the middle of the lens to the card. Was your Step 4 prediction right?</div>
+</section>
+
+<!-- ============ STEP 7 ============ -->
+<section class="panel" id="s7">
+  <div class="mission-head"><div class="badge">7</div><div><h2>One lens: a magnifying glass</h2><div class="sub">Close up, a converging lens makes things look bigger.</div></div></div>
+  <p class="goal">🎯 You'll learn: how a magnifying glass works, and which of your lenses magnifies more.</p>
+  <p>When the object is <b>closer to the lens than its focal length</b>, the rays can't come together into a picture. They're still spreading after the lens, and your eye traces them back to a <b>bigger, right-side-up</b> picture behind the object (green). This is how a magnifying glass works, and it's exactly what the <b>eyepiece</b> of a telescope does.</p>
+  <canvas id="magCanvas" class="drag" height="270" aria-label="Magnifying glass ray diagram"></canvas>
+  <p class="small">Your eye is right behind the lens. Drag the <b>bug</b> (or use the slider) until it looks sharp. A healthy eye can't focus on anything closer than about 25 cm.</p>
+  <div class="slider-row"><label for="magS">Bug distance from lens</label><output id="magOut"></output><input type="range" id="magS" min="0" max="1000" value="150"></div>
+  <div class="row" id="magLensBtns"></div>
+  <div class="grid2">
+    <div><p class="small" style="margin:4px 0">What your eye sees:</p><canvas id="magView" height="170" aria-label="Magnified view"></canvas></div>
+    <div class="readouts" style="align-content:start;margin-top:0">
+      <div class="tile"><div class="k">Looks</div><div class="v" id="magTile">—</div></div>
+      <div class="tile"><div class="k">Best magnifying power</div><div class="v" id="magPow">—</div></div>
+    </div>
+  </div>
+  <div class="tasks" data-step="7"></div>
+  <div class="predict" id="p7">
+    <div class="q">Which makes the stronger magnifying glass?</div>
+    <div class="opts">
+      <button data-a="0">The lens with the longer focal length</button>
+      <button data-a="1">The lens with the shorter focal length</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+  <div class="keyidea"><span>Key idea</span>Hold an object a little <b>inside</b> the focal length and the lens magnifies it. The <b>shorter</b> the focal length, the stronger the magnifier: about <b>25 ÷ f</b> times.</div>
+  <div class="handson"><div class="hs-h">🖐 With your lenses · Worksheet Step 7</div>
+    <ol>
+      <li>Hold <b>Lens B</b> close to your eye, about <b>2 cm</b> away (closer than feels normal).</li>
+      <li>Bring the tiny text in Step 7 of your worksheet up toward the lens until it's sharp. Read the smallest line you can.</li>
+      <li>Have your partner measure the distance from the lens to the paper. Is it <b>less than f</b>?</li>
+      <li>Repeat with Lens A. Which lens lets you read smaller text? That's your <b>eyepiece</b>.</li>
+    </ol>
+  </div>
+  <details class="math"><summary>For the curious: magnifying power</summary>
+    <p>Your eye sees clearly down to about 25 cm. A magnifying glass lets you bring things much closer and still see them sharp. Its best magnifying power is about</p>
+    <div class="eq">magnification ≈ 25 cm ÷ f</div>
+    <div class="yours" id="s7Yours"></div>
+  </details>
+</section>
+
+<!-- ============ STEP 8 ============ -->
+<section class="panel" id="s8">
+  <div class="mission-head"><div class="badge">8</div><div><h2>Two lenses: a telescope</h2><div class="sub">The front lens makes a picture. The back lens magnifies it.</div></div></div>
+  <p class="goal">🎯 You'll learn: how two lenses work together, how to plan a telescope, and how to build it.</p>
+  <ol class="tight">
+    <li>The <b>objective</b> (front lens) points at something far away. Just like in Step 6, it makes a small, upside-down <b>image</b> one focal length (<b>f<sub>o</sub></b>) behind it.</li>
+    <li>The <b>eyepiece</b> (back lens) is a magnifying glass, like in Step 7, looking at that image. It works best when the image is one eyepiece focal length (<b>f<sub>e</sub></b>) in front of it.</li>
+    <li>So the lenses go <b>f<sub>o</sub> + f<sub>e</sub></b> apart, and the view is magnified <b>f<sub>o</sub> ÷ f<sub>e</sub></b> times.</li>
+  </ol>
+
+  <h3>8a · Which lens goes in front?</h3>
+  <div class="predict" id="p8">
+    <div class="q">Predict: which of your lenses should be the objective (front)?</div>
+    <div class="opts">
+      <button data-a="0">The one with the longer focal length</button>
+      <button data-a="1">The one with the shorter focal length</button>
+      <button data-a="2">It doesn't matter</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+
+  <h3>8b · Plan it</h3>
+  <p class="small" id="teleSrc"></p>
+  <div class="plan">
+    <label>Spacing = f<sub>o</sub> + f<sub>e</sub> = <input type="text" id="planSep" inputmode="decimal" aria-label="Predicted spacing"> cm</label>
+    <label>Magnification = f<sub>o</sub> ÷ f<sub>e</sub> = <input type="text" id="planMag" inputmode="decimal" aria-label="Predicted magnification"> ×</label>
+    <button class="primary" id="planCheck">Check my plan</button>
+  </div>
+  <div class="fb" id="planFb"></div>
+
+  <h3>8c · Focus it</h3>
+  <p>Drag the <b>eyepiece</b> (or use the slider) until the view is sharp. Pick something to look at.</p>
+  <canvas id="teleCanvas" class="drag" height="270" aria-label="Rays through a two-lens telescope"></canvas>
+  <div class="slider-row"><label for="sepS">Distance between the lenses</label><output id="sepOut"></output><input type="range" id="sepS" min="0" max="1000" value="600"></div>
+  <div class="row" id="targetBtns">
+    <span class="small">Look at:</span>
+    <button class="chip on" data-t="sign">A sign down the street</button>
+    <button class="chip" data-t="moon">The Moon</button>
+    <button class="chip" data-t="jup">Jupiter</button>
+  </div>
+  <div class="grid2">
+    <div><p class="small" style="margin:4px 0" id="nakedLab">By eye:</p><canvas id="nakedCanvas" height="220" aria-label="The view by eye"></canvas></div>
+    <div><p class="small" style="margin:4px 0">Through your telescope:</p><canvas id="viewCanvas" height="220" aria-label="The view through the telescope"></canvas></div>
+  </div>
+  <div class="readouts">
+    <div class="tile"><div class="k">Magnification</div><div class="v" id="magTile8">—</div></div>
+    <div class="tile"><div class="k">Lenses are</div><div class="v" id="sepTile">—</div></div>
+    <div class="tile"><div class="k">Focus</div><div class="v" id="focusTile">—</div></div>
+  </div>
+  <div class="row"><button class="chip" id="swapBtn">⇄ Swap the lenses</button><button class="chip" id="useMineBtn">Use my lenses</button><button class="chip" id="autoSepBtn">Show me the sharp spot</button></div>
+  <div class="callout" id="s8note"></div>
+  <div class="tasks" data-step="8"></div>
+
+  <details class="math" id="designBox"><summary>8d · Design your own telescope (explore)</summary>
+    <p>Change the focal lengths and see what happens to the length and the magnification. Try these challenges:</p>
+    <ul class="check" id="designList">
+      <li id="dz1">Match Galileo: about <b>20×</b> magnification.</li>
+      <li id="dz2">At least <b>10×</b> in a tube shorter than <b>30 cm</b>.</li>
+      <li id="dz3">A telescope that makes things look <b>smaller</b>.</li>
+    </ul>
+    <div class="grid2">
+      <div class="slider-row"><label for="foS">Objective focal length f<sub>o</sub></label><output id="foOut"></output><input type="range" id="foS" min="3" max="100" step="0.1" value="30"></div>
+      <div class="slider-row"><label for="feS">Eyepiece focal length f<sub>e</sub></label><output id="feOut"></output><input type="range" id="feS" min="1" max="40" step="0.1" value="5"></div>
+    </div>
+  </details>
+
+  <div class="keyidea"><span>Key idea</span>A telescope is two converging lenses: a <b>long-f objective</b> in front and a <b>short-f eyepiece</b> at your eye, about <b>f<sub>o</sub> + f<sub>e</sub></b> apart. It magnifies <b>f<sub>o</sub> ÷ f<sub>e</sub></b> times, and the view is upside down.</div>
+  <div class="handson"><div class="hs-h">🖐 Build it · Worksheet Step 8</div>
+    <ol>
+      <li><b>Plan:</b> fill in 8a on your worksheet: which lens is the objective, the predicted spacing and the predicted magnification.</li>
+      <li>Lay the meter stick on the table pointing at the poster (or out a window). Hold the <b>objective</b> upright at the <b>0 cm</b> mark.</li>
+      <li>Hold the <b>eyepiece</b> upright at your predicted spacing. Put your eye right behind it, about 1–2 cm away.</li>
+      <li>Line up your eye, both lens centers and the poster in one straight line. (Tip: first look over the top of the lenses at the poster, then drop down.)</li>
+      <li>Slide the eyepiece <b>slowly</b> toward and away from the objective, 1 cm at a time, until the poster is <b>sharp</b>. Record the real spacing.</li>
+      <li>Swap the lenses and look again (8e).</li>
+    </ol>
+  </div>
+  <div class="story"><h3>1609: Galileo's telescope</h3>Galileo heard about Dutch "spyglasses" and built his own, eventually reaching about 20×. Pointing it at the sky, he saw mountains on the Moon, countless stars in the Milky Way, and four moons circling Jupiter. Your telescope is the same idea.</div>
+</section>
+
+<!-- ============ STEP 9 ============ -->
+<section class="panel" id="s9">
+  <div class="mission-head"><div class="badge">9</div><div><h2>Light buckets</h2><div class="sub">The real reason astronomers build giant telescopes.</div></div></div>
+  <p class="goal">🎯 You'll learn: why a wider telescope shows fainter stars, and how much more light yours collects than your eye.</p>
+  <p>Most stars are too faint to see because only a little of their light lands in your eye. Your pupil opens to only about <b>7 mm</b> in the dark. A telescope's objective is a much bigger opening, a <b>light bucket</b>, so it catches far more light from every star.</p>
+  <div class="predict" id="p9">
+    <div class="q">Predict first: a lens twice as wide collects…</div>
+    <div class="opts">
+      <button data-a="0">2× as much light</button>
+      <button data-a="1">4× as much light</button>
+      <button data-a="2">8× as much light</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+  <div class="slider-row"><label for="apS">Opening (aperture)</label><output id="apOut"></output><input type="range" id="apS" min="0" max="1000" value="0"></div>
+  <div class="row" id="apPresets"></div>
+  <div class="grid2">
+    <div><p class="small" style="margin:4px 0"><span class="tag sim">Simulated sky</span>The same patch of sky:</p><canvas id="skyCanvas" height="260" aria-label="Star field through different apertures"></canvas></div>
+    <div><p class="small" style="margin:4px 0">How many pupils fit in the opening:</p><canvas id="bucketCanvas" height="260" aria-label="Pupils filling the opening"></canvas></div>
+  </div>
+  <div class="readouts">
+    <div class="tile"><div class="k">Light collected vs. your eye</div><div class="v" id="lgTile">—</div></div>
+    <div class="tile"><div class="k">Stars visible here</div><div class="v" id="nStarTile">—</div></div>
+  </div>
+  <div class="tasks" data-step="9"></div>
+  <div class="keyidea"><span>Key idea</span>Light collected grows with the <b>area</b> of the opening: (width ÷ 7 mm)² times your eye. Twice as wide = 4× the light, so fainter stars show up.</div>
+  <div class="handson"><div class="hs-h">✏️ Worksheet Step 9</div>Use your objective's width from Step 3: light collected = (width in mm ÷ 7)². Tap "My objective" above to see your telescope's sky.</div>
+  <details class="math"><summary>For the curious: why the square?</summary>
+    <p>A lens collects light over its whole circle, and a circle's area grows with the <b>square</b> of its width: twice as wide → 2 × 2 = 4 times the light.</p>
+    <div class="yours" id="s9Yours"></div>
+  </details>
+</section>
+
+<!-- ============ STEP 10 ============ -->
+<section class="panel" id="s10">
+  <div class="mission-head"><div class="badge">10</div><div><h2>Why giant telescopes use mirrors</h2><div class="sub">A curved mirror can focus light too.</div></div></div>
+  <p class="goal">🎯 You'll learn: the problem with big lenses, and how mirrors fix it.</p>
+  <p>White light is a mix of colors. Glass bends blue light a little more than red light, so a lens brings the colors to slightly different focal points. A curved mirror <b>bounces</b> every color the same way.</p>
+  <canvas id="mirCanvas" height="250" aria-label="Lens vs mirror with white light"></canvas>
+  <div class="row"><button class="chip on" data-m="lens" id="modeLens">Lens</button><button class="chip" data-m="mirror" id="modeMirror">Curved mirror</button><button class="chip on" id="colorBtn">🌈 White light</button></div>
+  <div class="grid2">
+    <div class="callout"><b>Lens problems</b><ul style="margin:6px 0 0 18px;padding:0"><li>Colors focus at different spots, so bright things get <b>colored fringes</b>.</li><li>Light passes <b>through</b> the glass, so all of it must be flawless.</li><li>A lens can only be held at its edges, so a huge one <b>sags</b>.</li></ul></div>
+    <div class="callout"><b>Mirror fixes</b><ul style="margin:6px 0 0 18px;padding:0"><li>All colors bounce the same way: <b>no fringes</b>.</li><li>Light only touches the <b>front surface</b>.</li><li>A mirror can be <b>supported from behind</b>, or built from segments.</li></ul></div>
+  </div>
+  <canvas id="sizeCanvas" height="250" aria-label="Telescope sizes compared"></canvas>
+  <p class="small">Drawn to scale: the width of each telescope's main lens or mirror, with a person's height (1.7 m) for comparison.</p>
+  <div class="tasks" data-step="10"></div>
+  <div class="predict" id="p10">
+    <div class="q">The biggest lens telescope ever used for astronomy (Yerkes, 1897) is about 1 m wide. The biggest telescope being built today is 39 m wide. What is it made of?</div>
+    <div class="opts">
+      <button data-a="0">One giant lens</button>
+      <button data-a="1">Hundreds of hexagon-shaped mirror segments fitted together</button>
+      <button data-a="2">Water</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+  <div class="keyidea"><span>Key idea</span>Lenses split colors and sag when they're big. The giant telescopes of today are <b>mirror</b> telescopes.</div>
+  <div class="handson"><div class="hs-h">🖐 Look closely · Worksheet Step 10</div>Look through your telescope at a bright window frame or a white edge against something dark. Look along the edges: do you see faint <b>red or blue</b> fringes? That's the lens problem giant telescopes avoid by using mirrors.</div>
+</section>
+
+<!-- ============ RESULTS ============ -->
+<section class="panel results" id="results">
+  <div class="mission-head"><div class="badge">★</div><div><h2>My telescope report</h2><div class="sub">Fills in as you go.</div></div></div>
+  <div class="readouts" id="resTiles"></div>
+  <div class="row"><button class="primary" id="copyRes">Copy my results</button><span class="small" id="copyMsg"></span></div>
+  <h3>The big ideas</h3>
+  <ol class="bigideas">
+    <li>Light travels in straight lines; light from far away arrives parallel.</li>
+    <li>Light bends when it enters or leaves glass.</li>
+    <li>A lens fatter in the middle brings parallel light together at its focal point.</li>
+    <li>Focal length f = lens to focal point. Measure it by focusing something far away.</li>
+    <li>A lens makes an upside-down picture; closer than F, it magnifies instead.</li>
+    <li>Telescope = long-f objective + short-f eyepiece, f<sub>o</sub> + f<sub>e</sub> apart, magnifying f<sub>o</sub> ÷ f<sub>e</sub>.</li>
+    <li>Wider opening = more light = fainter stars. That's why telescopes are light buckets.</li>
+  </ol>
+</section>
+
+<footer>
+  <p><b>Sources.</b> Telescope sizes: Yerkes Observatory 40-inch (1.02 m) refractor (1897); Hubble Space Telescope 2.4 m; James Webb Space Telescope 6.5 m; Keck telescopes 10 m; Vera C. Rubin Observatory 8.4 m; Extremely Large Telescope 39 m, 798 segments (ESO, under construction). Refractive indices: water 1.33, crown glass ≈ 1.5, diamond 2.42. Moon ≈ 0.5° across; Jupiter's four large moons lie up to about 10 arcminutes from the planet. All diagrams and views are simulations built from the ray rules shown on the page.</p>
+</footer>
+</div>
+
+<script>
+"use strict";
+/* ---------------- helpers ---------------- */
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const fmt = (x,d=0) => Number(x).toLocaleString("en-US",{maximumFractionDigits:d,minimumFractionDigits:d});
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const state={done:{},res:{},tasks:{}};
+let userActed=false; ["pointerdown","keydown"].forEach(ev=>document.addEventListener(ev,e=>{ if(e.isTrusted) userActed=true; },true));
+function setupCanvas(c){
+  if(!c.dataset.h) c.dataset.h=c.getAttribute("height");
+  const h=+c.dataset.h, w=c.clientWidth||600, dpr=window.devicePixelRatio||1;
+  c.width=Math.round(w*dpr); c.height=Math.round(h*dpr); c.style.height=h+"px";
+  const ctx=c.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0); return {ctx,w,h};
+}
+const store={ get(k){ try{ const s=localStorage.getItem(k); return s?JSON.parse(s):(store.m[k]??null); }catch(e){ return store.m[k]??null; } }, set(k,v){ store.m[k]=v; try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }, m:{} };
+const LENS_KEY="lightbuckets.lenses.v1";
+function myLenses(){ const L=store.get(LENS_KEY); if(!L) return null; const ok=x=>x&&x.f>0; return (ok(L.A)&&ok(L.B))? L:null; }
+
+/* ---------------- task checklists ---------------- */
+const TASKS={
+ 1:[["near","Drag the bulb close to the lens. The rays spread out a lot."],["far","Drag the bulb far away until the top and bottom rays differ by less than 1°."],["q","Answer the check question."]],
+ 2:[["zero","Find the angle where the light doesn't bend at all."],["mats","Try water, glass and diamond."],["trap","Switch to “coming out of the glass” and tilt the light until it gets <b>trapped</b> inside."],["q","Answer the check question."]],
+ 3:[["all","Try all five shapes."],["two","Look closely at “two prisms”: do the rays meet at one point?"],["q","Answer the check question."]],
+ 4:[["short","Make a lens with a focal length shorter than 10 cm."],["long","Make a lens with a focal length longer than 40 cm. (Hint: try a different material.)"],["same","Make a <b>glass</b> lens with f = 20 cm. Then switch to <b>water</b>: can you get f = 20 cm again?"],["q","Answer the check question."]],
+ 5:[["sharp","Get a sharp picture on the paper."],["same","Make the picture the <b>same size</b> as the candle."],["big","Make a sharp picture <b>bigger</b> than the candle."],["inside","Move the candle closer to the lens than F. Where's the picture now?"],["q","Answer the check question."]],
+ 6:[["mys","Find the sharp spot for a mystery lens and check your answer."],["near","Choose “1 m away” and find the sharp spot. Is it at f?"],["saved","Measure your own two lenses and press “Use my lenses”."]],
+ 7:[["sharp","Drag the bug until it looks sharp and bigger."],["both","Get a sharp view with each lens. Which magnifies more?"],["past","Move the bug past F. What happens?"],["q","Answer the check question."]],
+ 8:[["q","8a · Pick which lens goes in front."],["plan","8b · Work out the spacing and magnification, then check your plan."],["sharp","8c · Slide the eyepiece until the view is sharp."],["swap","Swap the lenses. What happens to the view?"],["jup","Look at Jupiter with a sharp view (3× or more). Can you see its moons?"]],
+ 9:[["q","Answer the prediction question."],["mine","Tap “My objective” (or “Binoculars” if you haven't saved your lenses)."],["thousand","Slide to the smallest opening that shows more than 1,000 stars."]],
+ 10:[["mirror","Switch to the curved mirror and compare where the colors meet."],["q","Answer the check question."]]
+};
+function renderTasks(){ $$(".tasks").forEach(box=>{ const n=box.dataset.step; box.innerHTML=`<div class="th"><span>Things to try</span><span class="cnt"></span></div><ul class="check">${TASKS[n].map(([k,t])=>`<li data-k="${k}">${t}</li>`).join("")}</ul>`; updTasks(n); }); }
+function updTasks(n){ const box=$(`.tasks[data-step="${n}"]`); if(!box) return; const T=state.tasks[n]||{}; let c=0; box.querySelectorAll("li").forEach(li=>{ const d=!!T[li.dataset.k]; li.classList.toggle("done",d); if(d) c++; }); const all=c===TASKS[n].length; box.querySelector(".cnt").textContent= all? `all done ✓` : `${c} / ${TASKS[n].length}`; box.classList.toggle("all",all); if(all) markDone(n); }
+function tick(n,k){ if(!userActed) return; state.tasks[n]=state.tasks[n]||{}; if(state.tasks[n][k]) return; state.tasks[n][k]=true; const li=$(`.tasks[data-step="${n}"] li[data-k="${k}"]`); if(li){ li.classList.add("flash"); setTimeout(()=>li.classList.remove("flash"),900); } updTasks(n); }
+function markDone(n){ if(state.done[n]) return; state.done[n]=true; const a=$("#nav"+n); if(a) a.classList.add("done"); renderResults(); }
+function predict(id,right,msgs,onRight){
+  const box=$(id), fb=box.querySelector(".fb");
+  box.querySelectorAll(".opts button").forEach(b=>b.addEventListener("click",()=>{ const a=+b.dataset.a; box.querySelectorAll(".opts button").forEach(x=>x.classList.remove("right","wrong")); b.classList.add(a===right?"right":"wrong"); fb.className="fb "+(a===right?"good":"bad"); fb.textContent=msgs[a]; if(a===right&&onRight) onRight(); }));
+}
+
+/* ---------------- tap-to-translate units ---------------- */
+function cmWords(v){ return `${fmt(v,v<10?1:0)} cm ≈ ${fmt(v/2.54,1)} inches.`+(v<3?" About the width of a fingertip or two.":v>=20&&v<=35?" About the length of a sheet of paper (28 cm).":v>=60? ` About ${fmt(v/30.5,1)} rulers end to end.`:""); }
+function mmWords(v){ return v<1000? `${fmt(v)} mm = ${fmt(v/10,1)} cm ≈ ${fmt(v/25.4,1)} inches.` : `${fmt(v/1000,v<10000?2:1)} m ≈ ${fmt(v/304.8,0)} feet across.`; }
+document.addEventListener("click",e=>{
+  const u=e.target.closest(".u"), bub=$("#bubble"); if(!u){ bub.style.display="none"; return; }
+  let t=""; if(u.dataset.cm) t=cmWords(+u.dataset.cm); if(u.dataset.mm) t=mmWords(+u.dataset.mm); if(u.dataset.x) t=`${fmt(+u.dataset.x,1)}× means things look ${fmt(+u.dataset.x,1)} times wider than with your eye alone.`;
+  bub.textContent=t; bub.style.display="block"; const r=u.getBoundingClientRect(), bw=bub.offsetWidth;
+  bub.style.left=Math.max(16,Math.min(innerWidth-bw-16,r.left))+"px"; bub.style.top=(r.bottom+8>innerHeight-90? r.top-bub.offsetHeight-8 : r.bottom+8)+"px";
+});
+addEventListener("scroll",()=>{$("#bubble").style.display="none";},{passive:true});
+const uCM=(v,d=0)=>`<span class="u" data-cm="${v}">${fmt(v,d)} cm</span>`;
+const uX=v=>`<span class="u" data-x="${v}">${fmt(v,v<10?1:0)}×</span>`;
+
+/* ---------------- drawing helpers ---------------- */
+// x and y scales are independent: heights are stretched so rays are easy to see on any screen.
+function mapper(w,h,x0,x1,yHalf,o={}){ const pad=o.pad??18, cy=o.cy??h/2, sx=(w-2*pad)/(x1-x0), sy=(Math.min(cy,h-cy)-(o.padY??18))/yHalf; return {X:x=>pad+(x-x0)*sx, Y:y=>cy-y*sy, inv:px=>x0+(px-pad)/sx, sx, sy, cy}; }
+function drawLens(ctx,M,x,halfH,f,col,thick){
+  const H=halfH*M.sy, t=thick??clamp(260/Math.abs(f),3,26), X=M.X(x), Y=M.Y(0);
+  ctx.beginPath();
+  if(f>0){ ctx.moveTo(X,Y-H); ctx.quadraticCurveTo(X+t*1.3,Y,X,Y+H); ctx.quadraticCurveTo(X-t*1.3,Y,X,Y-H); }
+  else { const e=Math.max(4,t*0.7); ctx.moveTo(X-e,Y-H); ctx.lineTo(X+e,Y-H); ctx.quadraticCurveTo(X+2,Y,X+e,Y+H); ctx.lineTo(X-e,Y+H); ctx.quadraticCurveTo(X-2,Y,X-e,Y-H); }
+  ctx.closePath(); ctx.fillStyle=col||"rgba(140,190,255,.35)"; ctx.fill(); ctx.strokeStyle="rgba(170,210,255,.9)"; ctx.lineWidth=1.5; ctx.stroke();
+}
+function dot(ctx,X,Y,r,c){ ctx.fillStyle=c; ctx.beginPath(); ctx.arc(X,Y,r,0,7); ctx.fill(); }
+const FONT='13px "Atkinson Hyperlegible", system-ui, sans-serif', BOLD='bold 13px "Atkinson Hyperlegible", system-ui, sans-serif', MONO='12px "JetBrains Mono", ui-monospace, monospace';
+function label(ctx,t,X,Y,c,al="center",font=FONT){ ctx.fillStyle=c; ctx.font=font; ctx.textAlign=al; ctx.fillText(t,X,Y); }
+function bg(ctx,w,h){ ctx.fillStyle=css("--plot-bg")||"#0e1424"; ctx.fillRect(0,0,w,h); }
+function axis(ctx,M,x0,x1){ ctx.strokeStyle="rgba(255,255,255,.15)"; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(M.X(x0),M.Y(0)); ctx.lineTo(M.X(x1),M.Y(0)); ctx.stroke(); }
+function arrowHead(ctx,x1,y1,x2,y2,col){ const a=Math.atan2(y2-y1,x2-x1); ctx.fillStyle=col; ctx.beginPath(); ctx.moveTo(x2,y2); ctx.lineTo(x2-9*Math.cos(a-0.4),y2-9*Math.sin(a-0.4)); ctx.lineTo(x2-9*Math.cos(a+0.4),y2-9*Math.sin(a+0.4)); ctx.closePath(); ctx.fill(); }
+function ruler(ctx,M,x0,x1,y,step=5,lab=10){ ctx.strokeStyle="#f2b441"; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(M.X(x0),y); ctx.lineTo(M.X(x1),y); ctx.stroke();
+  const minPx=lab*M.sx<34? lab*2 : lab;
+  for(let v=Math.ceil(x0/step)*step;v<=x1+1e-6;v+=step){ ctx.beginPath(); ctx.moveTo(M.X(v),y); ctx.lineTo(M.X(v),y-(v%lab?4:8)); ctx.stroke(); if(Math.abs(v%minPx)<1e-6) label(ctx,v+minPx>x1+1e-6?`${v} cm`:String(v),M.X(v),y-11,"#f2b441",v+minPx>x1+1e-6?"right":"center",MONO); } }
+function grip(ctx,X,Y){ ctx.save(); ctx.fillStyle="rgba(242,180,65,.95)"; ctx.beginPath(); ctx.roundRect? ctx.roundRect(X-17,Y-9,34,18,9) : ctx.rect(X-17,Y-9,34,18); ctx.fill(); ctx.fillStyle="#1b1300"; ctx.beginPath(); ctx.moveTo(X-12,Y); ctx.lineTo(X-5,Y-5); ctx.lineTo(X-5,Y+5); ctx.closePath(); ctx.fill(); ctx.beginPath(); ctx.moveTo(X+12,Y); ctx.lineTo(X+5,Y-5); ctx.lineTo(X+5,Y+5); ctx.closePath(); ctx.fill(); ctx.restore(); }
+const RAY="rgba(255,214,90,.92)";
+function setSlider(id,v){ const s=$(id); s.value=Math.round(clamp(v,+s.min,+s.max)); s.dispatchEvent(new Event("input")); }
+function blurDraw(ctx,bpx,fn){ const n=bpx<1?1:10; for(let k=0;k<n;k++){ ctx.save(); if(n>1){ const a=k/n*2*Math.PI; ctx.translate(Math.cos(a)*bpx/2,Math.sin(a)*bpx/2); ctx.globalAlpha=1/3.2; } fn(); ctx.restore(); } ctx.globalAlpha=1; }
+/* drag handles: each draw stores c._h = [{x, y, set(px)}] */
+function makeDrag(c){ let act=null; const P=e=>{ const r=c.getBoundingClientRect(); return [e.clientX-r.left,e.clientY-r.top]; };
+  c.addEventListener("pointerdown",e=>{ const [x,y]=P(e); let best=null,bd=1e9; (c._h||[]).forEach(hd=>{ const d=Math.abs(hd.x-x)+(hd.y!=null?0.35*Math.abs(hd.y-y):0); if(d<bd){bd=d;best=hd;} }); if(best&&bd<46){ act=best; try{c.setPointerCapture(e.pointerId);}catch(_){} c.classList.add("dragging"); act.set(x); e.preventDefault(); } });
+  c.addEventListener("pointermove",e=>{ if(act){ act.set(P(e)[0]); e.preventDefault(); } });
+  const end=()=>{ act=null; c.classList.remove("dragging"); }; c.addEventListener("pointerup",end); c.addEventListener("pointercancel",end); }
+
+/* ================= STEP 1: rays ================= */
+const s1D=v=>6*Math.pow(1000,v/1000); // bulb distance in cm: 6 cm .. 60 m
+const s1V=D=>Math.log(D/6)/Math.log(1000)*1000;
+const distWords=D=> D<100? `${fmt(D,D<10?1:0)} cm` : `${fmt(D/100,D<1000?1:0)} m`;
+function drawS1(){
+  const c=$("#s1Canvas"); const {ctx,w,h}=setupCanvas(c); bg(ctx,w,h);
+  const D=s1D(+$("#s1S").value); const boxX=w-64, boxH=Math.min(120,h*0.5), cy=h/2-6, pxPerCm=boxH/5, bx=boxX-D*pxPerCm;
+  if(bx>-20){ for(let k=0;k<16;k++){ const a=k/16*2*Math.PI; ctx.strokeStyle="rgba(255,214,90,.16)"; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(bx,cy); ctx.lineTo(bx+Math.cos(a)*2*w,cy+Math.sin(a)*2*w); ctx.stroke(); } }
+  for(let k=0;k<7;k++){ const yb=cy-boxH/2+boxH*k/6; const sx=Math.max(bx,0), sy=cy+(yb-cy)*(sx-bx)/(boxX-bx);
+    ctx.strokeStyle=RAY; ctx.lineWidth=1.8; ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(boxX,yb); ctx.stroke(); arrowHead(ctx,sx,sy,boxX,yb,RAY); }
+  ctx.fillStyle="rgba(140,190,255,.25)"; ctx.fillRect(boxX,cy-boxH/2,14,boxH); ctx.strokeStyle="#cfe3ff"; ctx.lineWidth=2; ctx.strokeRect(boxX,cy-boxH/2,14,boxH);
+  label(ctx,"lens",boxX+7,cy+boxH/2+18,"#cfe3ff"); label(ctx,"5 cm",boxX+20,cy+4,"#cfe3ff","left",MONO);
+  if(bx>-20){ const g=ctx.createRadialGradient(bx,cy,1,bx,cy,16); g.addColorStop(0,"#fff"); g.addColorStop(.4,"#ffd76a"); g.addColorStop(1,"rgba(255,215,106,0)"); ctx.fillStyle=g; ctx.beginPath(); ctx.arc(bx,cy,16,0,7); ctx.fill(); label(ctx,"bulb",bx,cy-24,"#fff",bx<30?"left":"center"); grip(ctx,Math.max(20,bx),h-16); }
+  else { label(ctx,`← the bulb is ${distWords(D)} away, off to the left`,10,22,"#fff","left",BOLD); grip(ctx,20,h-16); }
+  const spread=2*Math.atan(2.5/D)*180/Math.PI;
+  $("#s1Out").textContent= D<15? "close" : D<100? "arm's length" : D<1000? "across the room" : "far away";
+  $("#s1d").textContent=distWords(D); $("#s1a").textContent=`${spread<1?fmt(spread,2):fmt(spread,0)}°`; $("#s1a").style.color= spread<1? "var(--good)":"";
+  c._h=[{x:Math.max(20,bx),set:px=>setSlider("#s1S",s1V(Math.max(6,(boxX-px)/pxPerCm)))}];
+  if(D<15) tick(1,"near"); if(spread<1) tick(1,"far");
+}
+$("#s1S").addEventListener("input",drawS1);
+predict("#p1",1,["Not quite. The farther the source, the more parallel the rays. Try the slider.","Right! A star is so far away that the rays reaching your eye are parallel for all practical purposes.","Light travels in straight lines, so rays don't curve on their own."],()=>tick(1,"q"));
+
+/* ================= STEP 2: refraction ================= */
+let s2n=1.5, s2dir="in"; const s2seen=new Set([1.5]);
+const matName=n=>n>2?"diamond":n>1.4?"glass":"water";
+function drawS2(){
+  const c=$("#s2Canvas"); const {ctx,w,h}=setupCanvas(c); bg(ctx,w,h);
+  const th=+$("#s2S").value*Math.PI/180, cx=w/2, cy=h/2, L=Math.min(w*0.42,h*0.46);
+  ctx.fillStyle= s2n>2?"rgba(200,230,255,.26)":s2n>1.4?"rgba(140,190,255,.22)":"rgba(80,150,255,.24)"; ctx.fillRect(0,cy,w,h-cy);
+  label(ctx,"air",14,24,"#cfe3ff","left",'bold 14px "Atkinson Hyperlegible"'); label(ctx,matName(s2n),14,h-14,"#cfe3ff","left",'bold 14px "Atkinson Hyperlegible"');
+  ctx.strokeStyle="rgba(255,255,255,.55)"; ctx.setLineDash([5,5]); ctx.beginPath(); ctx.moveTo(cx,cy-L); ctx.lineTo(cx,cy+L); ctx.stroke(); ctx.setLineDash([]);
+  label(ctx,"straight-in line",cx+6,cy-L+12,"rgba(255,255,255,.7)","left");
+  const crit=Math.asin(1/s2n); let a1,a2,bent,trapped=false;
+  ctx.strokeStyle=RAY; ctx.lineWidth=3;
+  if(s2dir==="in"){
+    const th2=Math.asin(Math.sin(th)/s2n); a1=th*180/Math.PI; a2=th2*180/Math.PI; bent=a1-a2;
+    const x0=cx-L*Math.sin(th), y0=cy-L*Math.cos(th); ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(cx,cy); ctx.stroke(); arrowHead(ctx,x0,y0,cx-(cx-x0)*0.45,cy-(cy-y0)*0.45,RAY);
+    const x2=cx+L*Math.sin(th2), y2=cy+L*Math.cos(th2); ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(x2,y2); ctx.stroke(); arrowHead(ctx,cx,cy,cx+(x2-cx)*0.6,cy+(y2-cy)*0.6,RAY);
+    ctx.strokeStyle="rgba(255,214,90,.35)"; ctx.setLineDash([3,4]); ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+L*Math.sin(th),cy+L*Math.cos(th)); ctx.stroke(); ctx.setLineDash([]);
+    if(th>0.05) label(ctx,"path with no bending",cx+L*Math.sin(th)*0.95+6,cy+L*Math.cos(th)*0.95+15,"rgba(255,214,90,.75)","left");
+    ctx.strokeStyle="#f2b441"; ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(cx,cy,36,-Math.PI/2-th,-Math.PI/2); ctx.stroke(); ctx.beginPath(); ctx.arc(cx,cy,48,Math.PI/2-th2,Math.PI/2); ctx.stroke();
+    if(a1<0.5){ label(ctx,"straight in: no bending",cx+10,cy-20,"#9fe0b8","left",BOLD); tick(2,"zero"); }
+  } else {
+    const s=s2n*Math.sin(th); a1=th*180/Math.PI;
+    const x0=cx-L*Math.sin(th), y0=cy+L*Math.cos(th); ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(cx,cy); ctx.stroke(); arrowHead(ctx,x0,y0,cx-(cx-x0)*0.45,cy-(cy-y0)*0.45,RAY);
+    ctx.strokeStyle="#f2b441"; ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(cx,cy,36,Math.PI/2,Math.PI/2+th); ctx.stroke();
+    if(s>=1){ trapped=true; a2=null; bent=null; ctx.strokeStyle=RAY; ctx.lineWidth=3; const x2=cx+L*Math.sin(th), y2=cy+L*Math.cos(th); ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(x2,y2); ctx.stroke(); arrowHead(ctx,cx,cy,cx+(x2-cx)*0.6,cy+(y2-cy)*0.6,RAY);
+      label(ctx,"Trapped! All the light reflects back inside.",w-12,24,"#ffb3a8","right",BOLD); tick(2,"trap"); }
+    else { const t2=Math.asin(s); a2=t2*180/Math.PI; bent=a2-a1; ctx.strokeStyle=RAY; ctx.lineWidth=3; const x2=cx+L*Math.sin(t2), y2=cy-L*Math.cos(t2); ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(x2,y2); ctx.stroke(); arrowHead(ctx,cx,cy,cx+(x2-cx)*0.6,cy+(y2-cy)*0.6,RAY);
+      ctx.strokeStyle="rgba(255,214,90,.25)"; ctx.lineWidth=1.5; const x3=cx+L*0.5*Math.sin(th), y3=cy+L*0.5*Math.cos(th); ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(x3,y3); ctx.stroke(); // weak reflection
+      ctx.strokeStyle="#f2b441"; ctx.beginPath(); ctx.arc(cx,cy,48,-Math.PI/2,-Math.PI/2+t2); ctx.stroke(); }
+    label(ctx,`light gets trapped past ${fmt(crit*180/Math.PI,1)}° in ${matName(s2n)}`,w-12,h-14,"rgba(255,255,255,.75)","right");
+  }
+  $("#s2Out").textContent=`${fmt(a1)}°`;
+  if(s2dir==="in"){ $("#s2ak").textContent="Angle in air"; $("#s2bk").textContent=`Angle in ${matName(s2n)}`; $("#s2a").textContent=`${fmt(a1)}°`; $("#s2b").textContent=`${fmt(a2,1)}°`; $("#s2c").textContent=`${fmt(bent,1)}°`;
+    $("#s2Yours").innerHTML=`<b>Your numbers:</b> 1 × sin(${fmt(a1)}°) = ${fmt(Math.sin(th),3)}. Divide by n = ${s2n}: ${fmt(Math.sin(th)/s2n,3)} = sin(angle inside), so the angle inside is <b>${fmt(a2,1)}°</b>.`; }
+  else { $("#s2ak").textContent=`Angle in ${matName(s2n)}`; $("#s2bk").textContent="Angle in air"; $("#s2a").textContent=`${fmt(a1)}°`; $("#s2b").textContent=trapped?"trapped!":`${fmt(a2,1)}°`; $("#s2c").textContent=trapped?"—":`${fmt(bent,1)}°`;
+    $("#s2Yours").innerHTML=`<b>Your numbers:</b> ${s2n} × sin(${fmt(a1)}°) = ${fmt(s2n*Math.sin(th),3)}. `+(trapped? `That's bigger than 1, and no angle has a sine bigger than 1, so the light <b>can't get out</b>. It reflects back inside. (This is how fiber-optic cables carry light, and part of why diamonds sparkle.)` : `That's sin(angle in air), so the angle in air is <b>${fmt(a2,1)}°</b>.`); }
+}
+$("#s2S").addEventListener("input",drawS2);
+$$("#s2Mat .chip").forEach(b=>b.onclick=()=>{ s2n=+b.dataset.n; s2seen.add(s2n); $$("#s2Mat .chip").forEach(x=>x.classList.toggle("on",x===b)); if(s2seen.size===3) tick(2,"mats"); drawS2(); });
+$$("#s2Dir .chip").forEach(b=>b.onclick=()=>{ s2dir=b.dataset.d; $$("#s2Dir .chip").forEach(x=>x.classList.toggle("on",x===b)); $("#s2Lab").textContent= s2dir==="in"? "Angle the light comes in at" : "Angle the light hits the surface from inside"; drawS2(); });
+predict("#p2",2,["Water bends light the least of these three: light only slows to about 3/4 of its speed in air.","Glass bends more than water, but not the most.","Yes! Light slows down the most in diamond (to about 41% of its speed in air), so it bends the most."],()=>tick(2,"q"));
+
+/* ================= STEP 3: shapes ================= */
+let s3shape="flat"; const s3seen=new Set(["flat"]);
+const S3NOTES={flat:"<b>Flat window:</b> the two faces are parallel. Rays hitting straight-on pass through without changing direction. That's why a window doesn't distort the view.",
+ prism:"<b>Prism:</b> the faces are tilted, so every ray bends the same way, toward the thick end (the base).",
+ two:"<b>Two prisms, base to base:</b> each half bends its rays toward the middle, so the rays cross. But they all bend by the <b>same</b> amount, so they cross at <b>different</b> places: no single meeting point. To fix that, the outer rays need to bend more…",
+ conv:"<b>Fat in the middle (a converging lens):</b> the curved faces get <b>more tilted toward the edges</b>, so outer rays bend more than inner ones. Now every ray is aimed at the same spot. Telescope and magnifying-glass lenses are this kind.",
+ div:"<b>Thin in the middle (a diverging lens):</b> rays bend outward, toward the thick edges, and spread <b>apart</b>. Traced backward (dashed), they seem to come from one spot in front of the lens. Glasses for nearsighted people use this kind."};
+function drawS3(){
+  const c=$("#s3Canvas"); const {ctx,w,h}=setupCanvas(c); bg(ctx,w,h); const M=mapper(w,h,-14,30,5); axis(ctx,M,-14,30);
+  const ys=[-3.6,-2.2,-0.8,0.8,2.2,3.6]; const f=12;
+  ys.forEach(y=>{ ctx.strokeStyle=RAY; ctx.lineWidth=1.7; ctx.beginPath(); ctx.moveTo(M.X(-14),M.Y(y)); ctx.lineTo(M.X(0),M.Y(y)); let u=0;
+    if(s3shape==="prism") u=-0.22; if(s3shape==="two") u=-Math.sign(y)*0.22; if(s3shape==="conv") u=-y/f; if(s3shape==="div") u=y/f;
+    ctx.lineTo(M.X(30),M.Y(y+u*30)); ctx.stroke();
+    if(s3shape==="div"){ ctx.strokeStyle="rgba(255,214,90,.35)"; ctx.setLineDash([3,4]); ctx.beginPath(); ctx.moveTo(M.X(0),M.Y(y)); ctx.lineTo(M.X(-f),M.Y(0)); ctx.stroke(); ctx.setLineDash([]); } });
+  const H=4.4*M.sy, X=M.X(0), Y=M.Y(0);
+  ctx.fillStyle="rgba(140,190,255,.35)"; ctx.strokeStyle="rgba(170,210,255,.9)"; ctx.lineWidth=1.5;
+  if(s3shape==="flat"){ ctx.fillRect(X-8,Y-H,16,2*H); ctx.strokeRect(X-8,Y-H,16,2*H); }
+  else if(s3shape==="prism"){ ctx.beginPath(); ctx.moveTo(X-4,Y-H); ctx.lineTo(X+4,Y-H); ctx.lineTo(X+22,Y+H); ctx.lineTo(X-22,Y+H); ctx.closePath(); ctx.fill(); ctx.stroke(); }
+  else if(s3shape==="two"){ ctx.beginPath(); ctx.moveTo(X-3,Y-H); ctx.lineTo(X+3,Y-H); ctx.lineTo(X+18,Y); ctx.lineTo(X+3,Y+H); ctx.lineTo(X-3,Y+H); ctx.lineTo(X-18,Y); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.setLineDash([3,3]); ctx.beginPath(); ctx.moveTo(X-18,Y); ctx.lineTo(X+18,Y); ctx.stroke(); ctx.setLineDash([]);
+    [3.6,2.2,0.8].forEach(y=>dot(ctx,M.X(y/0.22),M.Y(0),3.5,"#ffb3a8")); label(ctx,"rays cross at different spots",M.X(10),M.Y(0)+24,"#ffb3a8"); }
+  else drawLens(ctx,M,0,4.4,s3shape==="conv"?10:-10);
+  if(s3shape==="conv"){ dot(ctx,M.X(f),M.Y(0),5,"#fff"); label(ctx,"all rays meet here",M.X(f),M.Y(0)+24,"#fff",'center',BOLD);
+    [[3.6,"edge ray"],[0.8,"middle ray"]].forEach(([y,n])=>{ const a=Math.atan(y/f)*180/Math.PI; label(ctx,`${n}: bends ${fmt(a)}°`,M.X(1.5),M.Y(y)-8,"#f2b441","left",MONO); }); }
+  if(s3shape==="div"){ dot(ctx,M.X(-f),M.Y(0),4,"rgba(255,255,255,.7)"); label(ctx,"seem to come from here",Math.max(6,M.X(-f)-30),M.Y(0)+22,"rgba(255,255,255,.8)","left"); }
+  $("#s3note").innerHTML=S3NOTES[s3shape];
+}
+$$("#s3Shapes .chip").forEach(b=>b.onclick=()=>{ s3shape=b.dataset.s; s3seen.add(s3shape); $$("#s3Shapes .chip").forEach(x=>x.classList.toggle("on",x===b)); drawS3(); if(s3seen.size===5) tick(3,"all"); if(s3shape==="two") tick(3,"two"); });
+predict("#p3",1,["Rays through the very middle hit the glass straight-on, so they barely bend. Look at the numbers on the diagram.","Right! Near the edges the faces are most tilted, so edge rays bend most. That's exactly what aims them all at one point.","Pick “fat in the middle” and read the numbers: the edge ray bends much more."],()=>tick(3,"q"));
+
+/* ================= STEP 4: focal point ================= */
+let s4n=1.5, s4glass20=false;
+const R4=v=>40-v/1000*34; // face radius, cm: 40 (gentle) .. 6 (very curved)
+const f4=()=>R4(+$("#fS").value)/(2*(s4n-1));
+function drawRays(){
+  const R=R4(+$("#fS").value), f=f4(); const c=$("#rayCanvas"); const {ctx,w,h}=setupCanvas(c); bg(ctx,w,h);
+  const M=mapper(w,h,-10,70,5,{cy:h/2-12}); axis(ctx,M,-10,70);
+  [-4,-2.5,-1,1,2.5,4].forEach(y=>{ ctx.strokeStyle=RAY; ctx.lineWidth=1.6; ctx.beginPath(); ctx.moveTo(M.X(-10),M.Y(y)); ctx.lineTo(M.X(0),M.Y(y)); ctx.lineTo(M.X(70),M.Y(y-y/f*70)); ctx.stroke(); });
+  const tint= s4n>2?"rgba(220,240,255,.45)":s4n>1.4?"rgba(140,190,255,.35)":"rgba(80,150,255,.35)";
+  drawLens(ctx,M,0,4.6,f,tint,clamp(260/R,4,30));
+  if(f<=70){ dot(ctx,M.X(f),M.Y(0),5,"#fff"); label(ctx,"F",M.X(f),M.Y(0)+22,"#fff","center",BOLD);
+    const yd=M.Y(-4.9); ctx.strokeStyle="#9fe0b8"; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(M.X(0),yd); ctx.lineTo(M.X(f),yd); ctx.stroke(); [0,f].forEach(x=>{ctx.beginPath(); ctx.moveTo(M.X(x),yd-5); ctx.lineTo(M.X(x),yd+5); ctx.stroke();});
+    label(ctx,`f = ${fmt(f,1)} cm`,Math.max(M.X(f/2),50),yd-7,"#9fe0b8","center",'bold 13px "JetBrains Mono", monospace'); }
+  ruler(ctx,M,0,70,h-6);
+  $("#fOut").textContent= R>30?"gently curved":R>18?"medium":R>10?"curved":"very curved";
+  $("#fTile").innerHTML=uCM(f,1); $("#shapeTile").textContent=`${$("#fOut").textContent}, ${matName(s4n)}`;
+  $("#s4Yours").innerHTML=`<b>Your numbers:</b> R = ${fmt(R,1)} cm, n = ${s4n} (${matName(s4n)}). f = ${fmt(R,1)} ÷ (2 × ${fmt(s4n-1,2)}) = <b>${fmt(f,1)} cm</b>.`;
+  if(f<10) tick(4,"short"); if(f>40) tick(4,"long");
+  if(s4n===1.5&&Math.abs(f-20)<=0.6) s4glass20=true; if(s4glass20&&s4n===1.33&&Math.abs(f-20)<=0.6) tick(4,"same");
+}
+$("#fS").addEventListener("input",drawRays);
+$$("#s4Mat .chip").forEach(b=>b.onclick=()=>{ s4n=+b.dataset.n; $$("#s4Mat .chip").forEach(x=>x.classList.toggle("on",x===b)); drawRays(); });
+predict("#p4",1,["Watch the white focal point as you curve the lens more: it moves closer.","Right! A more curved lens bends light more strongly, so the rays meet sooner: a shorter focal length.","Slide it and watch: the focal point moves."],()=>tick(4,"q"));
+
+/* ================= STEP 5: images ================= */
+const F5=10;
+const doFromS=v=>3+v/1000*57, doV=d=>(d-3)/57*1000, scFromS=v=>2+v/1000*58, scV=d=>(d-2)/58*1000;
+function s5calc(){ const dO=doFromS(+$("#doS").value), ds=scFromS(+$("#scS").value); const kind= dO>F5+0.25? "real" : dO<F5-0.25? "virtual" : "parallel"; const di= kind==="real"? 1/(1/F5-1/dO) : kind==="virtual"? -dO*F5/(F5-dO) : Infinity; const sharp= kind==="real" && Math.abs(ds-di)/di<0.04; return {dO,ds,di,kind,sharp,m:Math.abs(di/dO)}; }
+function drawImg(){
+  const S=s5calc(), {dO,ds,di,kind}=S; const hO=2.2;
+  const c=$("#imgCanvas"); const {ctx,w,h}=setupCanvas(c); bg(ctx,w,h);
+  const xL=-63, xR=63; const M=mapper(w,h,xL,xR,5.2,{cy:h/2-10}); axis(ctx,M,xL,xR);
+  const lim=y=>clamp(y,-7,7);
+  const ray=(pts,col,lw=1.5,dash)=>{ ctx.strokeStyle=col; ctx.lineWidth=lw; if(dash) ctx.setLineDash(dash); ctx.beginPath(); pts.forEach((p,i)=>i?ctx.lineTo(M.X(p[0]),M.Y(lim(p[1]))):ctx.moveTo(M.X(p[0]),M.Y(lim(p[1])))); ctx.stroke(); ctx.setLineDash([]); };
+  const tip=[-dO,hO];
+  // three rays from the flame tip
+  const r1=[tip,[0,hO],[xR,hO-hO*xR/F5]];              // parallel → through F
+  const r2=[tip,[xR,-hO*xR/dO]];                        // through the middle of the lens
+  ray(r1,"rgba(255,140,90,.85)"); ray(r2,RAY,2.6);
+  if(kind!=="virtual"){ const yl=-hO*F5/(dO-F5); if(Math.abs(yl)<4.5) ray([tip,[0,yl],[xR,yl]],"rgba(140,220,140,.85)"); }
+  if(kind==="virtual"){ ray([[0,hO],[-60,hO+hO/F5*60]],"rgba(255,140,90,.35)",1.2,[4,4]); ray([[0,0],[-60,hO*60/dO]],"rgba(255,214,90,.35)",1.2,[4,4]); }
+  // candle
+  const X=M.X(-dO); ctx.fillStyle="#f5f0e6"; ctx.fillRect(X-4,M.Y(hO*0.78),8,M.Y(0)-M.Y(hO*0.78)); dot(ctx,X,M.Y(hO*0.9),6,"#ffb02e"); dot(ctx,X,M.Y(hO*0.92),3,"#fff7c2"); label(ctx,"candle",X,M.Y(0)+18,"#ddd");
+  drawLens(ctx,M,0,4.6,F5);
+  [-F5,F5].forEach(x=>{ dot(ctx,M.X(x),M.Y(0),3.5,"rgba(255,255,255,.75)"); label(ctx,"F",M.X(x),M.Y(0)+18,"rgba(255,255,255,.75)"); });
+  // paper
+  const SX=M.X(ds); ctx.fillStyle="#e9e4d8"; ctx.fillRect(SX,M.Y(4.4),5,M.Y(-4.4)-M.Y(4.4)); label(ctx,"paper",SX+9,M.Y(4.4)+10,"#ddd","left");
+  // hint: where the sharp picture forms
+  if($("#s5Hint").checked){ if(kind==="real"&&di<62){ const Y0=M.Y(0), Y1=M.Y(lim(-hO*di/dO)); ctx.strokeStyle="rgba(159,224,184,.9)"; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(M.X(di),Y0); ctx.lineTo(M.X(di),Y1); ctx.stroke(); arrowHead(ctx,M.X(di),Y0,M.X(di),Y1,"rgba(159,224,184,.9)"); label(ctx,"sharp here",M.X(di),Y0-10,"#9fe0b8","center",BOLD); }
+    else if(kind==="real") label(ctx,"sharp spot is off to the right →",w-10,22,"#9fe0b8","right",BOLD);
+    else label(ctx,"no sharp spot on this side of the lens",w-10,22,"#9fe0b8","right",BOLD); }
+  ruler(ctx,M,-60,60,h-6,5,10);
+  grip(ctx,X,M.Y(0)+38); grip(ctx,SX+2,M.Y(-4.4)+14);
+  c._h=[{x:X,y:M.Y(0)+20,set:px=>setSlider("#doS",doV(-M.inv(px)))},{x:SX+2,y:M.Y(0),set:px=>setSlider("#scS",scV(M.inv(px)))}];
+  drawScreen(S); updS5(S);
+}
+function drawScreen(S){
+  const {dO,ds,di,kind}=S; const c=$("#screenCanvas"); const {ctx,w,h}=setupCanvas(c); ctx.fillStyle="#efe9dc"; ctx.fillRect(0,0,w,h);
+  const pxPerCm=h/9;
+  if(kind!=="real"){ const g=ctx.createRadialGradient(w/2,h/2,4,w/2,h/2,Math.min(w,h)*0.6); g.addColorStop(0,"rgba(255,190,90,.45)"); g.addColorStop(1,"rgba(255,190,90,0)"); ctx.fillStyle=g; ctx.fillRect(0,0,w,h); label(ctx,"no picture, just a blur of light",w-8,h-8,"#8a6a40","right",BOLD); return; }
+  const blur=2*4.6*Math.abs(ds-di)/Math.max(di,1), bpx=Math.min(40,blur*pxPerCm*0.6), H=clamp(2.2*ds/dO*pxPerCm,4,h*0.92);
+  ctx.save(); ctx.translate(w/2,h/2); ctx.rotate(Math.PI);
+  blurDraw(ctx,bpx,()=>{ ctx.fillStyle="#d7cdb8"; ctx.fillRect(-H*0.09,-H/2,H*0.18,H*0.72); ctx.fillStyle="#ffb02e"; ctx.beginPath(); ctx.ellipse(0,H/2-H*0.1,H*0.08,H*0.14,0,0,7); ctx.fill(); });
+  ctx.restore(); label(ctx,S.sharp?"sharp ✓":"blurry",w-8,h-8,S.sharp?"#1f8a5b":"#8a6a40","right",'bold 14px "Atkinson Hyperlegible"');
+}
+function updS5(S){
+  const {dO,ds,di,kind,sharp,m}=S;
+  $("#doOut").innerHTML=uCM(dO,1); $("#scOut").innerHTML=uCM(ds,1);
+  $("#sharpTile").textContent= kind!=="real"? "no picture" : sharp? "sharp!" : (ds<di? "blurry: move the paper away from the lens" : "blurry: move the paper toward the lens");
+  $("#sizeTile").textContent= kind!=="real"? "—" : !sharp? "find the sharp spot first" : Math.abs(m-1)<0.08? "same size as the candle" : m>1? `${fmt(m,1)}× bigger than the candle` : `${fmt(1/m,1)}× smaller than the candle`;
+  const win=$("#s5win");
+  if(kind==="virtual"){ win.classList.remove("hide"); win.innerHTML=`<b>The candle is closer than F.</b> The rays still spread apart after the lens, so they never come together on the paper. No matter where you put the paper, there's no picture. But look <b>through</b> the lens from the right and you'd see a bigger candle: that's a magnifying glass (Step 7).`; tick(5,"inside"); }
+  else if(kind==="parallel"){ win.classList.remove("hide"); win.innerHTML=`<b>The candle is right at F.</b> The rays come out of the lens parallel, so they never meet: no picture anywhere. (Run it backward: that's why parallel light focuses at F!)`; }
+  else if(sharp){ win.classList.remove("hide"); win.innerHTML=`<b class="step-done">Sharp!</b> Candle ${uCM(dO,1)} from the lens → picture ${uCM(di,1)} behind it, upside down and ${Math.abs(m-1)<0.08?"the same size":m>1?`${fmt(m,1)}× bigger`:`${fmt(1/m,1)}× smaller`}.`; tick(5,"sharp"); state.res.s5=`candle ${fmt(dO,1)} cm → picture ${fmt(di,1)} cm`; renderResults();
+    if(Math.abs(m-1)<0.08) tick(5,"same"); if(m>=1.5) tick(5,"big"); }
+  else win.classList.add("hide");
+  $("#s5Yours").innerHTML= kind==="real"? `<b>Your numbers:</b> 1 ÷ d<sub>i</sub> = 1 ÷ ${F5} − 1 ÷ ${fmt(dO,1)} = ${fmt(1/F5-1/dO,4)}, so d<sub>i</sub> = <b>${fmt(di,1)} cm</b>. Your paper is at ${fmt(ds,1)} cm.` : `<b>Your numbers:</b> 1 ÷ ${F5} − 1 ÷ ${fmt(dO,1)} = ${fmt(1/F5-1/dO,4)}. ${kind==="virtual"?"A negative answer means the picture is on the <b>same side</b> as the candle: you can only see it by looking through the lens.":"Zero means the picture would be infinitely far away."}`;
+}
+$("#doS").addEventListener("input",drawImg); $("#scS").addEventListener("input",drawImg); $("#s5Hint").addEventListener("change",drawImg);
+predict("#p5",1,["Try it: as the candle gets farther, the sharp spot moves toward the lens.","Right! The farther the object, the closer the picture lands to F, and the smaller it gets. For something very far away, it lands right at F.","Move the candle and look again: the sharp spot moves."],()=>tick(5,"q"));
+
+/* ================= STEP 6: measure ================= */
+let mysF=0, mysD=100000;
+const mysFromS=v=>2+v/1000*88, mysV=d=>(d-2)/88*1000;
+const mysSharp=()=>1/(1/mysF-1/mysD);
+function newMystery(){ const opts=[]; for(let v=8;v<=30;v+=0.5) opts.push(v); mysF=opts[Math.floor(Math.random()*opts.length)]; $("#mysAns").value=""; $("#mysFb").textContent=""; $("#mysS").value=60; drawMys(); }
+function drawMys(){
+  const ds=mysFromS(+$("#mysS").value), s=mysSharp(); const c=$("#mysCanvas"); const {ctx,w,h}=setupCanvas(c); bg(ctx,w,h);
+  const M=mapper(w,h,-16,92,4.2,{cy:h/2-12}); axis(ctx,M,-16,92);
+  [-2.6,0,2.6].forEach(y=>{ const uin=y/mysD, u=uin-y/mysF, xe=Math.min(92,ds); ctx.strokeStyle=RAY; ctx.lineWidth=1.6; ctx.beginPath(); ctx.moveTo(M.X(-16),M.Y(y-uin*16)); ctx.lineTo(M.X(0),M.Y(y)); ctx.lineTo(M.X(xe),M.Y(clamp(y+u*xe,-6,6))); ctx.stroke(); });
+  label(ctx,`light from a window ${mysD>=100000?"very far away":mysD/100+" m away"} →`,M.X(-16)+4,16,"#ddd","left");
+  drawLens(ctx,M,0,3.4,mysF); label(ctx,"mystery lens",M.X(0),M.Y(-3.4)+16,"#cfe3ff");
+  const SX=M.X(ds); ctx.fillStyle="#e9e4d8"; ctx.fillRect(SX,M.Y(3.8),5,M.Y(-3.8)-M.Y(3.8)); label(ctx,"card",SX+9,M.Y(2.6),"#ddd","left");
+  grip(ctx,SX+2,M.Y(-3.8)+18);
+  ruler(ctx,M,0,90,h-6,5,10);
+  c._h=[{x:SX+2,set:px=>setSlider("#mysS",mysV(M.inv(px)))}];
+  $("#mysOut").innerHTML=uCM(ds,1);
+  const cc=$("#mysCard"); const r=setupCanvas(cc); const x=r.ctx; x.fillStyle="#efe9dc"; x.fillRect(0,0,r.w,r.h);
+  const bpx=Math.min(40,Math.abs(ds-s)/s*60); const ww=Math.min(r.w*0.5,64)*Math.min(1.6,s/mysF), hh=ww*0.8;
+  x.save(); x.translate(r.w/2,r.h/2); x.rotate(Math.PI);
+  blurDraw(x,bpx,()=>{ x.fillStyle="#bcd9f5"; x.fillRect(-ww/2,-hh/2,ww,hh); x.fillStyle="#6d5b44"; x.fillRect(-ww/2,-1.5,ww,3); x.fillRect(-1.5,-hh/2,3,hh); x.fillStyle="#3c7a3c"; x.fillRect(-ww/2,hh/2-hh*0.28,ww,hh*0.28); });
+  x.restore(); label(x, bpx<2.5?"sharp ✓":"blurry", r.w-8, r.h-8, bpx<2.5?"#1f8a5b":"#8a6a40","right",'bold 14px "Atkinson Hyperlegible"');
+  if(mysD===100&&bpx<2.5) tick(6,"near");
+}
+$("#mysS").addEventListener("input",drawMys);
+$("#mysNew").onclick=newMystery;
+$$("#mysDist .chip").forEach(b=>b.onclick=()=>{ mysD=+b.dataset.d; $$("#mysDist .chip").forEach(x=>x.classList.toggle("on",x===b)); drawMys(); });
+$("#mysCheck").onclick=()=>{ const v=parseFloat($("#mysAns").value); const fb=$("#mysFb"); if(!(v>0)){ fb.className="fb bad"; fb.textContent="Type the distance from the lens to the card, in cm."; return; }
+  const err=Math.abs(v-mysF)/mysF, s=mysSharp();
+  if(err<=0.06){ fb.className="fb good"; fb.textContent=`Yes! This lens has f = ${fmt(mysF,1)} cm.`+(mysD<100000?` Lucky guess? With the window only ${mysD/100} m away, the sharp spot is really at ${fmt(s,1)} cm.`:" You're ready for your real lenses."); if(mysD>=100000||mysD===300){ state.res.mys=`mystery f = ${fmt(mysF,1)} cm (you said ${fmt(v,1)})`; tick(6,"mys"); renderResults(); } }
+  else if(mysD<100000&&Math.abs(v-s)/s<=0.06){ fb.className="fb bad"; fb.textContent=`That's where the card is sharp, but the window is only ${mysD/100} m away, so its rays aren't parallel yet. The sharp spot lands ${fmt(s-mysF,1)} cm past F. Choose “very far away” to measure the true focal length.`; }
+  else { fb.className="fb bad"; fb.textContent= (v<mysF? "Too short. " : "Too long. ")+"Is the picture on the card really at its sharpest? Slide the card slowly back and forth and look again."; } };
+const nv=id=>{ const x=parseFloat($(id).value); return x>0?x:NaN; };
+function lensAvg(k){ const a=nv(`#f${k}1`), b=nv(`#f${k}2`); if(a>0&&b>0) return {f:(a+b)/2,diff:Math.abs(a-b)}; if(a>0) return {f:a,diff:null}; if(b>0) return {f:b,diff:null}; return null; }
+function updLensTable(){ const msgs=[]; ["A","B"].forEach(k=>{ const r=lensAvg(k); $(`#avg${k}`).textContent= r? `${fmt(r.f,1)} cm` : "—"; if(r&&r.diff!=null&&(r.diff>2||r.diff/r.f>0.12)) msgs.push(`Lens ${k}: your two tries differ by ${fmt(r.diff,1)} cm. Do a third try and use the two closest.`); });
+  const A=lensAvg("A"), B=lensAvg("B"); if(A&&B&&!msgs.length) msgs.push(`Lens ${A.f>=B.f?"A":"B"} has the longer focal length, so it will be the objective. Lens ${A.f>=B.f?"B":"A"} will be the eyepiece.`);
+  $("#lensCheck").textContent=msgs.join(" "); }
+["#fA1","#fA2","#fB1","#fB2","#dA","#dB"].forEach(id=>$(id).addEventListener("input",updLensTable));
+$("#saveLenses").onclick=()=>{ const A=lensAvg("A"), B=lensAvg("B");
+  if(!(A&&B)){ $("#lensMsg").textContent="Type at least one try for each lens first."; return; }
+  const L={A:{f:A.f,d:nv("#dA"),t1:nv("#fA1"),t2:nv("#fA2")},B:{f:B.f,d:nv("#dB"),t1:nv("#fB1"),t2:nv("#fB2")}};
+  store.set(LENS_KEY,L); $("#lensMsg").textContent="Saved. Steps 7, 8 and 9 now use your lenses."; tick(6,"saved"); lensResult(L); applyLenses(); renderResults(); };
+function lensResult(L){ state.res.lenses=`A: f ${fmt(L.A.f,1)} cm${L.A.d>0?`, ${fmt(L.A.d)} mm wide`:""} · B: f ${fmt(L.B.f,1)} cm${L.B.d>0?`, ${fmt(L.B.d)} mm wide`:""}`; }
+function loadLensInputs(){ const L=store.get(LENS_KEY); if(!L) return; [["#fA1",L.A?.t1??L.A?.f],["#fA2",L.A?.t2],["#dA",L.A?.d],["#fB1",L.B?.t1??L.B?.f],["#fB2",L.B?.t2],["#dB",L.B?.d]].forEach(([id,v])=>{ if(v>0) $(id).value=v; }); updLensTable(); }
+
+/* ================= STEP 7: magnifier ================= */
+let magF=5; const magSharpSeen=new Set();
+function magLensOptions(){ const L=myLenses(); return L? [["Lens A",L.A.f],["Lens B",L.B.f]] : [["Short lens (f = 5 cm)",5],["Long lens (f = 15 cm)",15]]; }
+function buildMagBtns(){ const box=$("#magLensBtns"); box.innerHTML=""; const opts=magLensOptions(); if(!opts.some(o=>o[1]===magF)){ magF=Math.min(...opts.map(o=>o[1])); magSharpSeen.clear(); }
+  opts.forEach(([n,f])=>{ const b=document.createElement("button"); b.className="chip"+(f===magF?" on":""); b.textContent=`${n}${n.startsWith("Lens")?` (f = ${fmt(f,1)} cm)`:""}`; b.onclick=()=>{ magF=f; buildMagBtns(); drawMag(); }; box.appendChild(b); }); }
+const magD=v=>magF*(0.45+v/1000*1.05), magV=d=>(d/magF-0.45)/1.05*1000; // 0.45f .. 1.5f
+function drawMag(){
+  const f=magF, d=magD(+$("#magS").value); const c=$("#magCanvas"); const {ctx,w,h}=setupCanvas(c); bg(ctx,w,h);
+  const inside=d<f*0.995; const v= inside? d*f/(f-d) : (d>f*1.005? d*f/(d-f) : Infinity);
+  const left=-f*2.6, right=f*1.9; const M=mapper(w,h,left,right,4.4,{cy:h/2-8}); axis(ctx,M,left,right);
+  const hO=1.2; const tip=[-d,hO], lim=y=>M.Y(clamp(y,-6,6));
+  ctx.lineWidth=1.6; ctx.strokeStyle=RAY;
+  ctx.beginPath(); ctx.moveTo(M.X(tip[0]),M.Y(hO)); ctx.lineTo(M.X(0),M.Y(hO)); ctx.lineTo(M.X(right),lim(hO-hO/f*right)); ctx.stroke();
+  const sC=hO/d; ctx.beginPath(); ctx.moveTo(M.X(tip[0]),M.Y(hO)); ctx.lineTo(M.X(right),lim(hO-sC*(right+d))); ctx.stroke();
+  if(inside){ const m=v/d, vx=Math.max(-v,left); ctx.strokeStyle="rgba(255,214,90,.4)"; ctx.setLineDash([4,4]); ctx.beginPath(); ctx.moveTo(M.X(0),M.Y(hO)); ctx.lineTo(M.X(vx),lim(hO+hO/f*(-vx))); ctx.moveTo(M.X(0),M.Y(0)); ctx.lineTo(M.X(vx),lim(-sC*vx)); ctx.stroke(); ctx.setLineDash([]);
+    if(-v>=left){ ctx.strokeStyle="rgba(140,220,140,.9)"; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(M.X(-v),M.Y(0)); ctx.lineTo(M.X(-v),lim(hO*m)); ctx.stroke(); arrowHead(ctx,M.X(-v),M.Y(0),M.X(-v),lim(hO*m),"rgba(140,220,140,.9)"); label(ctx,"what you see: bigger, upright",clamp(M.X(-v),90,w-90),lim(Math.min(hO*m,4.6))-8,"rgba(140,220,140,.95)","center",BOLD); }
+    else label(ctx,"← what you see is far off to the left",10,20,"rgba(140,220,140,.95)","left",BOLD); }
+  const BX=M.X(-d); ctx.strokeStyle="#fff"; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(BX,M.Y(0)); ctx.lineTo(BX,M.Y(hO)); ctx.stroke(); arrowHead(ctx,BX,M.Y(0),BX,M.Y(hO),"#fff"); label(ctx,"bug",BX,M.Y(0)+18,"#fff");
+  drawLens(ctx,M,0,2.8,f); dot(ctx,M.X(-f),M.Y(0),3.5,"rgba(255,255,255,.75)"); label(ctx,"F",M.X(-f),M.Y(0)+18,"rgba(255,255,255,.75)");
+  ctx.fillStyle="#fff"; ctx.beginPath(); ctx.ellipse(M.X(f*1.4),M.Y(0),9,6,0,0,7); ctx.fill(); dot(ctx,M.X(f*1.4)-2,M.Y(0),3,"#2a5"); label(ctx,"eye",M.X(f*1.4),M.Y(0)+20,"#ddd");
+  const step=f<8?1:f<20?2:5; ruler(ctx,M,Math.ceil(left/step)*step,0,h-6,step,step*5); grip(ctx,BX,M.Y(0)+40);
+  c._h=[{x:BX,set:px=>setSlider("#magS",magV(-M.inv(px)))}];
+  const M7=25/d; const tooClose= inside && v<25; const sharp= inside && !tooClose;
+  const blur= sharp? 0 : tooClose? Math.min(30,(25-v)/25*30+3) : Math.min(30,(d-f)/f*60+4);
+  const vc=$("#magView"); const r=setupCanvas(vc), x=r.ctx; x.fillStyle="#efe9dc"; x.fillRect(0,0,r.w,r.h);
+  const s=Math.min(r.h*0.9,8*M7); x.save(); x.translate(r.w/2,r.h/2); if(!inside) x.rotate(Math.PI);
+  blurDraw(x,blur,()=>{ drawBug(x,s); }); x.restore();
+  label(x, sharp? `${fmt(M7,1)}× bigger than at 25 cm` : tooClose? "blurry: too close for your eye" : "blurry and flipped: too far from the lens", 8, r.h-8, sharp?"#1f8a5b":"#8a6a40","left",'bold 13px "Atkinson Hyperlegible"');
+  $("#magOut").innerHTML=`${uCM(d,1)} <span class="small">(${d<f?"inside":"outside"} the focal length)</span>`;
+  $("#magTile").textContent= sharp? `${fmt(M7,1)}× bigger, right-side up` : tooClose? "blurry: move the bug a little farther away" : "blurry: move the bug closer";
+  $("#magPow").innerHTML= `about ${uX(25/f)} for this lens`;
+  $("#s7Yours").innerHTML=`<b>Your numbers:</b> 25 ÷ ${fmt(f,1)} = <b>${fmt(25/f,1)}×</b>. `+ (myLenses()? (()=>{ const L=myLenses(); return `Lens A: 25 ÷ ${fmt(L.A.f,1)} = ${fmt(25/L.A.f,1)}×; Lens B: 25 ÷ ${fmt(L.B.f,1)} = ${fmt(25/L.B.f,1)}×.`; })() : "");
+  if(sharp){ tick(7,"sharp"); magSharpSeen.add(f); if(magSharpSeen.size>=2) tick(7,"both"); }
+  if(d>f*1.02) tick(7,"past");
+}
+function drawBug(x,s){
+  x.fillStyle="#c42"; x.beginPath(); x.ellipse(0,0,s*0.32,s*0.4,0,0,7); x.fill(); x.fillStyle="#222"; x.beginPath(); x.arc(0,-s*0.42,s*0.15,0,7); x.fill();
+  x.strokeStyle="#222"; x.lineWidth=Math.max(1,s*0.02); x.beginPath(); x.moveTo(0,-s*0.38); x.lineTo(0,s*0.4); x.stroke();
+  [[-.14,-.12],[.14,-.12],[-.16,.12],[.16,.12],[-.08,.28],[.08,.28]].forEach(([a,b])=>{ x.fillStyle="#222"; x.beginPath(); x.arc(a*s,b*s,s*0.05,0,7); x.fill(); });
+}
+$("#magS").addEventListener("input",drawMag);
+predict("#p7",1,["Try both lenses: the long-focal-length one barely magnifies.","Right! Magnifying power ≈ 25 ÷ f, so a short focal length gives a big number. That's why the short lens is the eyepiece.","Try both."],()=>tick(7,"q"));
+
+/* ================= STEP 8: telescope ================= */
+const sepFromS=(v,fo,fe)=>Math.max(1,(fo+fe)*(0.4+v/1000*1.0));
+const sToSep=(sep,fo,fe)=>Math.round(((sep/(fo+fe))-0.4)/1.0*1000);
+let swapped=false, target="sign";
+function teleVals(){ const fo=+$("#foS").value, fe=+$("#feS").value; return {fo,fe,sep:sepFromS(+$("#sepS").value,fo,fe)}; }
+function focusState(fo,fe,sep){
+  const dE=sep-fo; if(dE<=0.01) return {b:1,ok:false,word:"blurry: lenses much too close"};
+  const D=1/dE-1/fe, blur=D<0? -D : Math.max(0,D-1/25), ok=blur<0.004;
+  return {b:Math.min(1,blur*8),ok,word: ok? "sharp ✓" : (D<0?"blurry: lenses too far apart":"blurry: lenses too close")};
+}
+function drawTele(){
+  const {fo,fe,sep}=teleVals(); const c=$("#teleCanvas"); const {ctx,w,h}=setupCanvas(c); bg(ctx,w,h);
+  const span=Math.max((fo+fe)*1.4,fo)+fe*1.3+4, xL=-span*0.12, xR=span; const M=mapper(w,h,xL,xR,4.2,{cy:h/2-12}); axis(ctx,M,xL,xR);
+  const th=-0.035, Do=3, De=Math.min(1.8,Math.max(1,fe*0.2));
+  [-2.4,-1.2,0,1.2,2.4].forEach(y0=>{ const u=th-y0/fo; const y1=y0+u*sep; const pts=[[xL,y0-th*(0-xL)],[0,y0],[sep,y1]]; if(Math.abs(y1)<De+0.6){ const u2=u-y1/fe; pts.push([xR,y1+u2*(xR-sep)]); }
+    ctx.strokeStyle="rgba(255,214,90,.85)"; ctx.lineWidth=1.4; ctx.beginPath(); pts.forEach((p,i)=>{ const X=M.X(p[0]), Y=M.Y(clamp(p[1],-6,6)); i?ctx.lineTo(X,Y):ctx.moveTo(X,Y); }); ctx.stroke(); });
+  drawLens(ctx,M,0,Do,fo); drawLens(ctx,M,sep,De+0.6,fe);
+  if(fo<xR){ dot(ctx,M.X(fo),M.Y(th*fo),3.5,"#fff"); ctx.strokeStyle="rgba(255,255,255,.3)"; ctx.setLineDash([2,3]); ctx.beginPath(); ctx.moveTo(M.X(fo),M.Y(Do+0.5)); ctx.lineTo(M.X(fo),M.Y(th*fo)); ctx.stroke(); ctx.setLineDash([]); label(ctx,"image made by the objective",clamp(M.X(fo),100,w-100),M.Y(Do+0.6)-4,"rgba(255,255,255,.85)"); }
+  label(ctx,"objective",M.X(0),M.Y(-Do)+18,"#cfe3ff"); label(ctx,"eyepiece",M.X(sep),M.Y(-Do)+18,"#cfe3ff");
+  const ex=Math.min(M.X(sep+fe*0.8)+14,w-14); ctx.fillStyle="#fff"; ctx.beginPath(); ctx.ellipse(ex,M.Y(0),9,6,0,0,7); ctx.fill(); dot(ctx,ex-2,M.Y(0),3,"#2a5");
+  const step=span>120?20:span>50?10:5; ruler(ctx,M,0,Math.floor(xR/step)*step,h-6,step/ (step>=10?2:1),step);
+  grip(ctx,M.X(sep),M.Y(-Do)+40);
+  c._h=[{x:M.X(sep),set:px=>{ const s=Math.max(1,M.inv(px)); setSlider("#sepS",sToSep(s,fo,fe)); }}];
+  const fs=focusState(fo,fe,sep), mag=fo/fe;
+  $("#foOut").innerHTML=uCM(fo,1); $("#feOut").innerHTML=uCM(fe,1); $("#sepOut").innerHTML=uCM(sep,1);
+  $("#magTile8").innerHTML= mag>=1? uX(mag) : `${fmt(mag,2)}× (smaller!)`; $("#sepTile").innerHTML=`${uCM(sep,1)} apart`;
+  $("#focusTile").textContent=fs.word; $("#focusTile").style.color= fs.ok? "var(--good)":"var(--bad)";
+  const moonsOK= target==="jup" && fs.ok && mag>=3;
+  $("#s8note").innerHTML= mag<1? `<b>Backwards telescope!</b> With the short-f lens in front, magnification is f<sub>o</sub> ÷ f<sub>e</sub> = ${fmt(fo,1)} ÷ ${fmt(fe,1)} = ${fmt(mag,2)}×: things look <b>smaller</b>, like looking through binoculars the wrong way. The long-f lens belongs in front.` :
+    !fs.ok? `Slide the eyepiece until the view is sharp. Your plan says about ${uCM(fo+fe,1)} apart (${fmt(fo,1)} + ${fmt(fe,1)}).` :
+    moonsOK? `<b class="step-done">Jupiter's moons!</b> At ${uX(mag)} the four tiny dots lined up beside Jupiter are its moons, just like Galileo saw in January 1610. By eye they're lost in Jupiter's glare.` :
+    `<b class="step-done">In focus!</b> Lenses ${uCM(sep,1)} apart. Your telescope makes things look ${uX(mag)} bigger. The view is <b>upside down</b> (and flipped left-right), just like the picture on your card in Step 5. Astronomers don't mind: space has no "up".`;
+  if(fs.ok&&mag>1){ tick(8,"sharp"); state.res.tele=`f_o ${fmt(fo,1)} + f_e ${fmt(fe,1)} → ${fmt(mag,1)}×, sharp at ${fmt(sep,1)} cm`; renderResults(); }
+  if(mag<1&&swapped) tick(8,"swap");
+  if(moonsOK) tick(8,"jup");
+  if(fs.ok&&Math.abs(mag-20)<=1.5) $("#dz1").classList.add("done"); if(mag>=10&&fo+fe<30) $("#dz2").classList.add("done"); if(mag<1) $("#dz3").classList.add("done");
+  drawViews(mag,fs);
+}
+/* the views: angular scene, 1 arcminute = A px at 1× */
+const CHART=[["LOOK",22],["UP AT",12],["THE MOON",7],["AND STARS",4],["SEE MORE",2.5]];
+function drawChart(ctx,sc){ const tot=CHART.reduce((s,r)=>s+r[1]*1.5,0); let y=-tot/2*sc; const W=60*sc, H=tot*sc+10*sc; ctx.fillStyle="#6b5a46"; ctx.fillRect(-2*sc,H/2,4*sc,40*sc); ctx.fillStyle="#f4f1e8"; ctx.fillRect(-W/2,-H/2,W,H); ctx.fillStyle="#141414"; ctx.textAlign="center"; ctx.textBaseline="top"; CHART.forEach(([t,a])=>{ const px=a*sc; if(px>=0.6){ ctx.font=`bold ${px}px "Atkinson Hyperlegible", sans-serif`; ctx.fillText(t,0,y+5*sc); } y+=a*1.5*sc; }); ctx.textBaseline="alphabetic"; }
+const MARIA=[[-4,-5,5,4],[3,-6,4,3],[5,1,4,5],[-3,3,6,3.5],[0,-1,2.5,2]], CRATERS=[[-6,8,1.4],[4,9,0.9],[8,-3,1.1],[-9,-1,0.8],[1,5,0.7],[-2,-10,1],[7,6,0.6],[-7,-7,0.7],[10,3,0.5],[2,12,0.6]];
+const JMOONS=[[-5.8,0.15],[-2.1,-0.05],[3.4,0.05],[9.6,-0.1]];
+function drawScene(ctx,w,h,s){ // s = px per arcminute
+  if(target==="sign"){ const sky=ctx.createLinearGradient(0,-h*3,0,h*3); ctx.fillStyle="#7fa7c9"; ctx.fillRect(-w*50,-h*50,w*100,h*50); ctx.fillStyle="#3d5a3a"; ctx.fillRect(-w*50,8*s,w*100,h*50); drawChart(ctx,s*15/60); return; }
+  ctx.fillStyle="#05070d"; ctx.fillRect(-w*50,-h*50,w*100,h*100);
+  if(target==="moon"){ const R=15*s; ctx.fillStyle="#d6d3c8"; ctx.beginPath(); ctx.arc(0,0,R,0,7); ctx.fill(); ctx.fillStyle="rgba(110,110,105,.55)"; MARIA.forEach(([x,y,a,b])=>{ ctx.beginPath(); ctx.ellipse(x*s,y*s,a*s,b*s,0.4,0,7); ctx.fill(); });
+    if(s>1.5) CRATERS.forEach(([x,y,r])=>{ ctx.strokeStyle="rgba(80,80,75,.8)"; ctx.lineWidth=Math.max(0.6,r*s*0.25); ctx.beginPath(); ctx.arc(x*s,y*s,r*s,0,7); ctx.stroke(); }); return; }
+  const g=ctx.createRadialGradient(0,0,0,0,0,9); g.addColorStop(0,"rgba(255,240,210,.9)"); g.addColorStop(1,"rgba(255,240,210,0)"); ctx.fillStyle=g; ctx.beginPath(); ctx.arc(0,0,9,0,7); ctx.fill();
+  const R=Math.max(1.6,0.37*s); ctx.fillStyle="#e8d7b8"; ctx.beginPath(); ctx.arc(0,0,R,0,7); ctx.fill();
+  if(R>5){ ctx.save(); ctx.beginPath(); ctx.arc(0,0,R,0,7); ctx.clip(); ctx.fillStyle="rgba(150,105,70,.7)"; ctx.fillRect(-R,-R*0.35,2*R,R*0.18); ctx.fillRect(-R,R*0.15,2*R,R*0.16); ctx.restore(); }
+  JMOONS.forEach(([x,y])=>{ const X=x*s, Y=y*s; if(Math.hypot(X,Y)<11) return; /* lost in the glare */ dot(ctx,X,Y,1.3,"rgba(255,250,235,.95)"); });
+}
+function drawViews(mag,fs){
+  for(const [id,m,blur,tele] of [["#nakedCanvas",1,0,false],["#viewCanvas",mag,fs.b,true]]){
+    const c=$(id); const {ctx,w,h}=setupCanvas(c); ctx.fillStyle="#0b1a2a"; ctx.fillRect(0,0,w,h);
+    const A=Math.min(w,h)/200, s=A*m; ctx.save(); ctx.translate(w/2,h/2); if(tele){ ctx.beginPath(); ctx.arc(0,0,Math.min(w,h)/2-4,0,7); ctx.clip(); ctx.rotate(Math.PI); }
+    const n=blur>0.02?12:1, r=blur*28;
+    for(let k=0;k<n;k++){ ctx.save(); if(n>1){ const a=k/n*2*Math.PI; ctx.translate(Math.cos(a)*r,Math.sin(a)*r); ctx.globalAlpha=2.2/n; } drawScene(ctx,w,h,s); ctx.restore(); }
+    ctx.restore(); ctx.globalAlpha=1; if(tele){ ctx.strokeStyle="#000"; ctx.lineWidth=8; ctx.beginPath(); ctx.arc(w/2,h/2,Math.min(w,h)/2-2,0,7); ctx.stroke(); }
+    ctx.fillStyle="rgba(0,0,0,.55)"; ctx.fillRect(0,h-26,w,26);
+    label(ctx, tele? `${fmt(mag,mag<10?1:0)}× · upside down${fs.ok?"":" · blurry"}`:"1× (your eye)",8,h-8,"#cfe3ff","left",BOLD);
+  }
+}
+function setTele(fo,fe){ $("#foS").value=clamp(fo,3,100); $("#feS").value=clamp(fe,1,40); }
+["#foS","#feS"].forEach(id=>$(id).addEventListener("input",()=>{ swapped=false; updSrc(); drawTele(); }));
+$("#sepS").addEventListener("input",drawTele);
+$$("#targetBtns .chip").forEach(b=>b.onclick=()=>{ target=b.dataset.t; $$("#targetBtns .chip").forEach(x=>x.classList.toggle("on",x===b)); drawTele(); });
+$("#swapBtn").onclick=()=>{ const fo=+$("#foS").value, fe=+$("#feS").value; setTele(fe,fo); swapped=!swapped; const a=+$("#foS").value,b=+$("#feS").value; $("#sepS").value=sToSep(a+b,a,b); updSrc(); drawTele(); };
+$("#autoSepBtn").onclick=()=>{ const {fo,fe}=teleVals(); $("#sepS").value=sToSep(fo+fe,fo,fe); drawTele(); };
+$("#useMineBtn").onclick=()=>{ if(!applyLenses()) $("#teleSrc").textContent="Enter your lenses' focal lengths in Step 6 first. For now, these are example lenses."; };
+let teleNames=null;
+function updSrc(){ const fo=+$("#foS").value, fe=+$("#feS").value;
+  $("#teleSrc").innerHTML= teleNames&&!swapped&&Math.abs(teleNames.fo-fo)<0.3&&Math.abs(teleNames.fe-fe)<0.3? `Using <b>your lenses</b>: objective = Lens ${teleNames.o} (f<sub>o</sub> = ${fmt(fo,1)} cm), eyepiece = Lens ${teleNames.e} (f<sub>e</sub> = ${fmt(fe,1)} cm).`
+    : `Using ${swapped?"the <b>swapped</b> lenses":"example lenses"}: front lens f<sub>o</sub> = ${fmt(fo,1)} cm, back lens f<sub>e</sub> = ${fmt(fe,1)} cm.${myLenses()||swapped?"":" Measure yours in Step 6 to use them here."}`; }
+function applyLenses(){ const L=myLenses(); buildMagBtns(); drawMag(); buildApPresets(); if(!L){ teleNames=null; updSrc(); return false; }
+  const [o,e]= L.A.f>=L.B.f? [["A",L.A],["B",L.B]] : [["B",L.B],["A",L.A]];
+  setTele(o[1].f,e[1].f); swapped=false; const fo=+$("#foS").value, fe=+$("#feS").value; teleNames={o:o[0],e:e[0],fo,fe};
+  $("#sepS").value=Math.max(0,sToSep(fo+0.5*fe,fo,fe)); // start out of focus so students find the sharp spot
+  $("#planSep").value=""; $("#planMag").value=""; $("#planFb").textContent=""; updSrc(); drawTele(); return true; }
+$("#planCheck").onclick=()=>{ const fo=+$("#foS").value, fe=+$("#feS").value, s=parseFloat($("#planSep").value), m=parseFloat($("#planMag").value), fb=$("#planFb");
+  const okS=Math.abs(s-(fo+fe))/(fo+fe)<=0.05, okM=Math.abs(m-fo/fe)/(fo/fe)<=0.08;
+  if(okS&&okM){ fb.className="fb good"; fb.innerHTML=`Plan checks out: ${fmt(fo,1)} + ${fmt(fe,1)} = ${fmt(fo+fe,1)} cm apart, and ${fmt(fo,1)} ÷ ${fmt(fe,1)} = ${fmt(fo/fe,1)}×. Write it in 8a, then go to 8c.`; tick(8,"plan"); }
+  else { fb.className="fb bad"; fb.textContent=[!(s>0)?"Type the spacing.":okS?"":`Spacing: add the two focal lengths (f_o + f_e).`, !(m>0)?"Type the magnification.":okM?"":`Magnification: divide f_o by f_e (the bigger number by the smaller).`].filter(Boolean).join(" "); } };
+predict("#p8",0,["Right! The objective has the long focal length. Magnification = f_o ÷ f_e, so long front ÷ short back gives a big number.","Try the swap button below and see what happens to the magnification.","It matters a lot: try the swap button below."],()=>tick(8,"q"));
+
+/* ================= STEP 9: light buckets ================= */
+const AP_PRESETS=[["Your eye",7],["Binoculars",50],["Backyard telescope",200],["Yerkes (biggest lens)",1020],["Hubble",2400],["Webb (JWST)",6500],["Keck",10000],["ELT (being built)",39000]];
+const apFromS=v=>2*Math.pow(39000/2,v/1000), sFromAp=d=>Math.round(Math.log(d/2)/Math.log(39000/2)*1000);
+const STARS=(()=>{ let s=12345; const r=()=>{ s=(s*16807)%2147483647; return s/2147483647; }; const out=[]; const k=0.13; for(let i=0;i<3000;i++){ const m=Math.log10(1+r()*(Math.pow(10,k*19)-1))/k+1.0; out.push({x:r(),y:r(),m,c:r()}); } return out; })();
+let apD=7;
+function drawSky(){
+  const c=$("#skyCanvas"); const {ctx,w,h}=setupCanvas(c); ctx.fillStyle="#05070d"; ctx.fillRect(0,0,w,h);
+  const lim=6+5*Math.log10(apD/7); let n=0;
+  STARS.forEach(s=>{ if(s.m>lim) return; n++; const dm=lim-s.m, r=Math.min(3.2,0.6+dm*0.28), a=Math.min(1,0.25+dm*0.18), col=s.c<0.15?"255,200,170":s.c>0.85?"190,210,255":"255,255,255"; ctx.fillStyle=`rgba(${col},${a})`; ctx.beginPath(); ctx.arc(s.x*w,s.y*h,r,0,7); ctx.fill(); });
+  const lg=Math.pow(apD/7,2);
+  $("#apOut").innerHTML=`<span class="u" data-mm="${apD}">${apD<1000?fmt(apD)+" mm":fmt(apD/1000,apD<10000?2:1)+" m"}</span>`;
+  $("#lgTile").textContent= lg<10? `${fmt(lg,1)}×` : `${fmt(lg,0)}×`; $("#nStarTile").textContent=fmt(n);
+  $("#s9Yours").innerHTML=`<b>Your numbers:</b> (${fmt(apD,0)} mm ÷ 7 mm)² = ${fmt(apD/7,apD<70?2:0)}² = <b>${fmt(lg,lg<10?1:0)}×</b> the light your eye collects.`;
+  ctx.fillStyle="rgba(0,0,0,.55)"; ctx.fillRect(0,h-26,w,26); label(ctx,`${fmt(n)} stars`,w-8,h-8,"#cfe3ff","right",BOLD);
+  $$("#apPresets .chip").forEach(b=>b.classList.toggle("on",Math.abs(+b.dataset.d-apD)<0.5));
+  if(n>=1000&&n<1100) tick(9,"thousand");
+  drawBucket();
+}
+function drawBucket(){
+  const c=$("#bucketCanvas"); const {ctx,w,h}=setupCanvas(c); bg(ctx,w,h);
+  const R=Math.min(w,h)/2-28, cx=w/2, cy=h/2-8, N=Math.pow(apD/7,2);
+  ctx.fillStyle="rgba(140,190,255,.18)"; ctx.strokeStyle="rgba(170,210,255,.9)"; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(cx,cy,R,0,7); ctx.fill(); ctx.stroke();
+  const p=R*2*7/apD; // pupil diameter in px
+  if(p>=3.5){ ctx.fillStyle="#f2b441"; const rr=p/2*0.92; let cnt=0; for(let j=-Math.ceil(R/p)-1;j<=Math.ceil(R/p)+1;j++){ const y=j*p*0.866; for(let i=-Math.ceil(R/p)-1;i<=Math.ceil(R/p)+1;i++){ const x=i*p+(j%2?p/2:0); if(Math.hypot(x,y)<=R-rr*0.6){ ctx.beginPath(); ctx.arc(cx+x,cy+y,rr,0,7); ctx.fill(); cnt++; } } } }
+  else { ctx.fillStyle="#f2b441"; ctx.fillRect(cx-1,cy-1,2,2); label(ctx,"← one pupil (7 mm) is this tiny dot",cx+6,cy+4,"#f2b441","left"); }
+  label(ctx,apD<=7?"your pupil: 7 mm":`≈ ${fmt(N,N<10?1:0)} pupils' worth of light`,cx,h-8,"#cfe3ff","center",BOLD);
+}
+function buildApPresets(){ const box=$("#apPresets"); box.innerHTML=""; const L=myLenses(); const list=AP_PRESETS.slice(); if(L){ const o=L.A.f>=L.B.f? L.A:L.B; if(o.d>0) list.splice(1,0,["My objective",o.d]); }
+  list.forEach(([n,d])=>{ const b=document.createElement("button"); b.className="chip"; b.textContent=n; b.dataset.d=d; b.onclick=()=>{ apD=d; $("#apS").value=sFromAp(d); drawSky(); if(n==="My objective"||n==="Binoculars") tick(9,"mine"); if(d>7){ state.res.ap=`${n}: ${fmt(Math.pow(d/7,2),0)}× your eye`; renderResults(); } }; box.appendChild(b); }); drawSky(); }
+$("#apS").addEventListener("input",e=>{ apD=Math.round(apFromS(+e.target.value)); drawSky(); });
+predict("#p9",1,["Not quite. Light is collected over the whole circle, and area grows with width squared.","Yes! Twice as wide means 2 × 2 = 4 times the area, so 4 times the light.","Close, but a lens collects over an area, not a volume: 2 × 2 = 4."],()=>tick(9,"q"));
+
+/* ================= STEP 10: mirrors ================= */
+let m10mode="lens", m10color=true;
+function drawMir(){
+  const c=$("#mirCanvas"); const {ctx,w,h}=setupCanvas(c); bg(ctx,w,h); const f=14; const M=mapper(w,h,-12,42,5); axis(ctx,M,-12,42);
+  const ys=[-4,-2.5,-1,1,2.5,4]; const cols= m10color? [["rgba(255,80,80,.9)",1.1],["rgba(90,140,255,.9)",0.9]] : [[RAY,1]];
+  if(m10mode==="lens"){ cols.forEach(([col,k])=>ys.forEach(y=>{ const ff=f*k; ctx.strokeStyle=col; ctx.lineWidth=1.6; ctx.beginPath(); ctx.moveTo(M.X(-12),M.Y(y)); ctx.lineTo(M.X(0),M.Y(y)); ctx.lineTo(M.X(42),M.Y(y-y/ff*42)); ctx.stroke(); })); drawLens(ctx,M,0,4.6,f);
+    if(m10color){ dot(ctx,M.X(f*0.9),M.Y(0),4.5,"rgb(120,165,255)"); dot(ctx,M.X(f*1.1),M.Y(0),4.5,"rgb(255,100,100)"); label(ctx,"blue",M.X(f*0.9),M.Y(0)+20,"rgb(150,185,255)"); label(ctx,"red",M.X(f*1.1),M.Y(0)+20,"rgb(255,130,130)"); label(ctx,"blue focuses here, red farther (exaggerated)",w-10,20,"#ddd","right"); } }
+  else { const mx=36; cols.forEach(([col],k)=>ys.forEach(y=>{ ctx.strokeStyle=col; ctx.lineWidth=1.6; const off=k*0.06; ctx.beginPath(); ctx.moveTo(M.X(-12),M.Y(y+off)); ctx.lineTo(M.X(mx),M.Y(y+off)); ctx.lineTo(M.X(mx-30),M.Y(y+off+y/f*30)); ctx.stroke(); }));
+    ctx.strokeStyle="#cfe3ff"; ctx.lineWidth=4; ctx.beginPath(); for(let y=-4.8;y<=4.8;y+=0.2){ const X=M.X(mx+y*y/(4*f)), Y=M.Y(y); y<-4.7?ctx.moveTo(X,Y):ctx.lineTo(X,Y);} ctx.stroke();
+    dot(ctx,M.X(mx-f),M.Y(0),5,"#fff"); if(m10color) label(ctx,"all colors meet at one spot: no fringes",10,20,"#ddd","left"); }
+}
+$("#modeLens").onclick=()=>{ m10mode="lens"; $("#modeLens").classList.add("on"); $("#modeMirror").classList.remove("on"); drawMir(); };
+$("#modeMirror").onclick=()=>{ m10mode="mirror"; $("#modeMirror").classList.add("on"); $("#modeLens").classList.remove("on"); tick(10,"mirror"); drawMir(); };
+$("#colorBtn").onclick=()=>{ m10color=!m10color; $("#colorBtn").classList.toggle("on",m10color); drawMir(); };
+function drawSizes(){
+  const c=$("#sizeCanvas"); const {ctx,w,h}=setupCanvas(c); bg(ctx,w,h);
+  const L=myLenses(); const mine=L? (L.A.f>=L.B.f?L.A:L.B).d : null;
+  const rows=[[mine>0?"Your objective":"Your eye",mine>0?mine/1000:0.007],["A person (height)",1.7,true],["Yerkes lens",1.02],["Hubble",2.4],["Webb",6.5],["Rubin",8.4],["Keck",10],["ELT",39]];
+  const lw=Math.min(150,w*0.34), x0=lw+8, x1=w-54, rh=(h-16)/rows.length;
+  rows.forEach(([n,d,person],i)=>{ const y=8+i*rh, bw=Math.max(1.5,(x1-x0)*d/39); label(ctx,n,lw,y+rh*0.66,"#ddd","right"); ctx.fillStyle=person?"#f2b441":"rgba(140,190,255,.75)"; ctx.fillRect(x0,y+rh*0.2,bw,rh*0.6); label(ctx,d<0.1?`${fmt(d*1000)} mm`:d+" m",x0+bw+6,y+rh*0.66,"#9aa6bd","left",MONO); });
+}
+predict("#p10",1,["A lens that big would sag and crack under its own weight, and the glass would have to be perfect all the way through.","Yes! The Extremely Large Telescope's 39 m mirror is made of 798 hexagon segments, each about 1.4 m across, working together as one.","Liquid mirrors do exist (spinning mercury), but the ELT uses hundreds of solid mirror segments."],()=>{ tick(10,"q"); state.res.mirror="✓"; renderResults(); });
+
+/* ================= results ================= */
+function renderResults(){
+  const R=state.res; const tiles=[["Steps done",`${Object.keys(state.done).filter(k=>+k<=10).length} / 10`],["Mystery lens",R.mys||"—"],["My lenses",R.lenses||"—"],["My telescope",R.tele||"—"],["Light bucket",R.ap||"—"]];
+  $("#resTiles").innerHTML=tiles.map(([k,v])=>`<div class="tile"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("");
+}
+$("#copyRes").onclick=async()=>{ const txt="Light Buckets: my report\n"+$$("#resTiles .tile").map(t=>t.querySelector(".k").textContent+": "+t.querySelector(".v").textContent).join("\n"); try{ await navigator.clipboard.writeText(txt); $("#copyMsg").textContent="Copied!"; }catch(e){ $("#copyMsg").textContent="Couldn't copy; take a screenshot instead."; } };
+
+/* ================= init ================= */
+renderTasks();
+["#s1Canvas","#imgCanvas","#mysCanvas","#magCanvas","#teleCanvas"].forEach(id=>makeDrag($(id)));
+loadLensInputs(); newMystery();
+if(myLenses()) lensResult(myLenses());
+function drawAll(){ drawS1(); drawS2(); drawS3(); drawRays(); drawImg(); drawMys(); drawMag(); drawTele(); drawSky(); drawMir(); drawSizes(); }
+buildMagBtns(); buildApPresets(); applyLenses(); drawAll(); renderResults();
+let rT; addEventListener("resize",()=>{ clearTimeout(rT); rT=setTimeout(drawAll,120); });
+if(document.fonts) document.fonts.ready.then(drawAll);
+if(matchMedia) matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change",drawAll);
+
+</script>
+</body>
+</html>

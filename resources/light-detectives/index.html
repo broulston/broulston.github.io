@@ -113,8 +113,29 @@ footer a{color:var(--ink2)}
 .check li{padding:4px 0}
 .check li::before{content:"○ ";color:var(--muted)}
 .check li.done::before{content:"● ";color:var(--good)}
+.loader{margin:10px 0}
+.filebtn{display:inline-flex;align-items:center;gap:6px;font:inherit;font-weight:700;font-size:16px;border-radius:10px;padding:10px 16px;min-height:48px;cursor:pointer;background:var(--amber);color:#1b1300;border:1px solid var(--amber)}
+.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.labmsg{margin-top:6px;color:var(--amber-ink)}
+.curphoto{margin:8px 0 6px}
+.photowrap{background:var(--plot-bg);border-radius:10px;min-height:120px;display:flex;justify-content:center;align-items:center;overflow:hidden}
+.photowrap canvas{border-radius:0;touch-action:manipulation;cursor:crosshair}
+.photoempty{color:var(--plot-text);padding:30px 16px;text-align:center;display:flex;justify-content:center}
+.ltable{border-collapse:collapse;width:100%;font-size:15px}
+.ltable th,.ltable td{border-bottom:1px solid var(--line);padding:6px 6px;text-align:left;vertical-align:top}
+.ltable th{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.tablewrap{overflow-x:auto}
+.nbrow{border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin:8px 0;background:var(--chip)}
+.nbhead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
+.nbhead .chip{min-height:36px;padding:4px 10px}
+.starcard{cursor:default}
+.hb button.right{background:var(--good-soft);border-color:var(--good)}
+.hb button.wrong{background:var(--bad-soft);border-color:var(--bad)}
+.hunt .predict{margin:12px 0}
+.ltable tr.ghost td{opacity:.6}
 </style>
-<meta name="description" content="Learn to read starlight: blackbody glow, atomic fingerprints, measuring spectral lines, and reading real stellar spectra.">
+
+<meta name="description" content="Photograph glowing gases through a homemade spectroscope, calibrate the photos into real wavelengths, identify a mystery gas, and read the barcodes in starlight.">
 <style>
 #br-sitebar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.25rem 1rem;
   padding:.5rem clamp(1rem,4vw,2rem);background:#f3f4f6;color:#374151;box-shadow:0 1px 3px rgba(0,0,0,.08);
@@ -135,67 +156,55 @@ footer a{color:var(--ink2)}
 <header class="hero">
   <h1>Light Detectives</h1>
   <div class="rain"></div>
-  <p class="lede">We can never visit a star. But its light carries a hidden message about what it's made of, how hot it is, and how fast it's moving. Your mission: learn to read that message.</p>
+  <p class="lede">We can never visit a star, but we can catch its light. Every element leaves its own barcode of colors in that light. In this lab you'll photograph glowing gases through your own spectroscope, turn the photos into real measurements, identify a mystery gas, and then read the barcodes hidden in starlight.</p>
   <nav class="missionnav" aria-label="Missions">
-    <a href="#m1" id="nav1"><span class="dot"></span>1 · Glow</a>
+    <a href="#m1" id="nav1"><span class="dot"></span>1 · Rainbows &amp; lines</a>
     <a href="#m2" id="nav2"><span class="dot"></span>2 · Atoms</a>
-    <a href="#m3" id="nav3"><span class="dot"></span>3 · Measure</a>
-    <a href="#m4" id="nav4"><span class="dot"></span>4 · Fingerprints</a>
-    <a href="#m5" id="nav5"><span class="dot"></span>5 · Starlight</a>
-    <a href="#results" id="nav6"><span class="dot"></span>My results</a>
+    <a href="#m3" id="nav3"><span class="dot"></span>3 · Your photo</a>
+    <a href="#m4" id="nav4"><span class="dot"></span>4 · Calibrate</a>
+    <a href="#m5" id="nav5"><span class="dot"></span>5 · Name that gas</a>
+    <a href="#m6" id="nav6"><span class="dot"></span>6 · Starlight</a>
+    <a href="#results" id="nav7"><span class="dot"></span>My results</a>
   </nav>
   <details class="math units">
-    <summary>Units cheat sheet</summary>
+    <summary>Units &amp; words cheat sheet</summary>
     <p class="small">Tip: tap any <span class="u" data-u="nm">underlined</span> number on this page to translate it.</p>
     <table>
       <tr><td>nm</td><td><b>nanometer</b>, a billionth of a meter. Visible light runs from about 400 nm (violet) to 700 nm (red). A human hair is about 70,000 nm wide.</td></tr>
-      <tr><td>K</td><td><b>kelvin</b>, a temperature scale that starts at absolute zero. Add 273 to °C. The Sun's surface, 5,800 K, is about 10,000 °F.</td></tr>
-      <tr><td>km/s</td><td><b>kilometers per second</b>. 1 km/s is about 2,200 mph.</td></tr>
-      <tr><td>eV</td><td><b>electron-volt</b>, a tiny unit of energy used for atoms and light.</td></tr>
       <tr><td>spectrum</td><td>light spread out by color (wavelength). Plural: <b>spectra</b>.</td></tr>
+      <tr><td>emission line</td><td>a bright line: one exact color given off by a glowing gas.</td></tr>
+      <tr><td>absorption line</td><td>a dark line: one exact color soaked up by a cooler gas in front of a bright light.</td></tr>
+      <tr><td>calibrate</td><td>teach your measurement which pixel on the camera matches which wavelength, using lines you already know.</td></tr>
+      <tr><td>eV</td><td><b>electron-volt</b>, a tiny unit of energy used for atoms and light.</td></tr>
     </table>
   </details>
 </header>
 
 <!-- ============ MISSION 1 ============ -->
 <section class="panel" id="m1">
-  <div class="mission-head"><div class="badge">1</div><div><h2>Hidden rainbows</h2><div class="sub">White light is a mix of every color. A diffraction grating spreads the mix out so you can see it.</div></div></div>
-  <p><span class="tag sim">Simulation</span>Anything hot glows: a stove burner, a light bulb, a star. Slide the temperature and watch the glow change.</p>
-
+  <div class="mission-head"><div class="badge">1</div><div><h2>Rainbows and lines</h2><div class="sub">A diffraction grating spreads light out by color. What you see depends on what made the light.</div></div></div>
   <div class="predict" id="p1">
-    <div class="q">Predict first: as something gets hotter, what color does it glow?</div>
+    <div class="q">Predict first: you look at a glowing tube of hydrogen gas through your grating. What will you see?</div>
     <div class="opts">
-      <button data-a="0">Redder</button>
-      <button data-a="1">Red → yellow-white → blue-white</button>
-      <button data-a="2">It stays the same color, just brighter</button>
+      <button data-a="0">A full rainbow, like a light bulb</button>
+      <button data-a="1">A few separate bright lines with dark gaps</button>
+      <button data-a="2">Nothing; gas has no color</button>
     </div>
     <div class="fb"></div>
   </div>
-
-  <canvas id="bbCanvas" height="230" aria-label="Glow spectrum plot"></canvas>
-  <div class="slider-row">
-    <label for="bbT">Temperature</label><output id="bbTout"></output>
-    <input type="range" id="bbT" min="2000" max="30000" step="100" value="5800">
+  <div class="row" id="absBtns">
+    <button class="chip on" data-m="0">Light bulb</button>
+    <button class="chip" data-m="1">Glowing hydrogen gas</button>
+    <button class="chip" data-m="2">Bulb seen through cool hydrogen</button>
   </div>
-  <div class="row" id="bbPresets"></div>
-  <div class="readouts">
-    <div class="tile"><div class="k">Glows</div><div class="v" id="bbColor">—</div></div>
-    <div class="tile"><div class="k">Brightest color</div><div class="v" id="bbPeak">—</div></div>
-    <div class="tile"><div class="k">Light per m² vs Sun</div><div class="v" id="bbPow">—</div></div>
-  </div>
-  <div class="callout"><b>Notice:</b> a hot glowing thing makes a <b>continuous</b> rainbow with no gaps. Hotter objects pump out more blue light. That's why the hottest stars look blue-white and cooler stars look orange-red.</div>
-  <details class="math"><summary>For the curious: how the math works</summary>
-    <p>The color where the glow is brightest moves with temperature (Wien's law):</p>
-    <div class="eq">peak wavelength = 2,898,000 nm·K ÷ temperature</div>
-    <p>And hotter objects give off far more light per square meter: double the temperature means 2⁴ = 16× more light (Stefan–Boltzmann law).</p>
-    <div class="eq">light per m² ∝ temperature⁴</div>
-    <div class="yours" id="bbYours"></div>
-  </details>
+  <canvas id="absCanvas" height="150" aria-label="Three kinds of spectra"></canvas>
+  <p id="absNote"></p>
+  <div class="callout"><b>Three kinds of spectra:</b> a hot, glowing solid (like a bulb filament) makes a <b>continuous</b> rainbow. A thin glowing gas makes <b>bright lines</b>. A cool gas in front of a bright light makes <b>dark lines</b> at exactly the same colors. You'll use the bright lines today, and the dark lines when we get to stars.</div>
 </section>
 
 <!-- ============ MISSION 2 ============ -->
 <section class="panel" id="m2">
-  <div class="mission-head"><div class="badge">2</div><div><h2>Where colors come from</h2><div class="sub">Glowing gas is different. It only gives off a few exact colors. Why?</div></div></div>
+  <div class="mission-head"><div class="badge">2</div><div><h2>Where the lines come from</h2><div class="sub">Why does a gas give off only a few exact colors?</div></div></div>
   <p><span class="tag sim">Model</span>Electrons in an atom can only sit on certain "steps" (energy levels), like a ladder. When an electron <b>jumps down</b>, the atom shoots out a bit of light (a photon). Bigger jump = more energy = bluer light.</p>
   <canvas id="atomCanvas" height="300" aria-label="Hydrogen atom model"></canvas>
   <div class="row"><b style="min-width:110px">Start on step</b><span id="fromBtns" class="row" style="margin:0"></span></div>
@@ -204,8 +213,8 @@ footer a{color:var(--ink2)}
   <div class="callout" id="jumpMsg">Pick a start step and an end step, then make the jump.</div>
   <h3>Your hydrogen spectrum</h3>
   <canvas id="hStrip" height="70" aria-label="Hydrogen lines found"></canvas>
-  <p id="hFound"><b>Challenge:</b> find all <b>4</b> jumps that make <b>visible</b> light. <span class="mono" id="hCount">0 / 4</span></p>
-  <div class="story hide" id="hWin"><h3>You built hydrogen's fingerprint!</h3>These 4 lines are the same ones you see in the hydrogen tube. Every hydrogen atom in the universe makes exactly these colors. Other elements have different ladders, so they make different patterns.</div>
+  <p><b>Challenge:</b> find all <b>4</b> jumps that make <b>visible</b> light. <span class="mono" id="hCount">0 / 4</span></p>
+  <div class="story hide" id="hWin"><h3>You built hydrogen's fingerprint!</h3>These are the <b>Balmer lines</b>: Hα (red, 3→2), Hβ (aqua, 4→2), Hγ (5→2) and Hδ (6→2, both violet). They're the same lines you'll photograph in the hydrogen tube, and you'll use them to calibrate your spectroscope in Mission 4. Other elements have different ladders, so they make different patterns.</div>
   <details class="math"><summary>For the curious: how the math works</summary>
     <p>Hydrogen's steps have energies E = −13.6 eV ÷ n². The light's energy is the gap between the steps, and its wavelength is:</p>
     <div class="eq">wavelength (nm) = 1240 ÷ energy gap (eV)</div>
@@ -215,114 +224,173 @@ footer a{color:var(--ink2)}
 
 <!-- ============ MISSION 3 ============ -->
 <section class="panel" id="m3">
-  <div class="mission-head"><div class="badge">3</div><div><h2>Measure it like a scientist</h2><div class="sub">Turn your phone into a spectrometer with phyphox.</div></div></div>
-  <p>Your eye sees the colors. A phone camera behind the grating can <b>measure</b> them. phyphox's <b>Spectroscopy</b> experiment averages the picture into a graph: brightness vs. position on the camera chip (in pixels). But pixels aren't colors yet. You have to <b>calibrate</b>: teach the graph which pixel is which wavelength, using lines you already know.</p>
-  <div class="callout"><b>The trick:</b> use the hydrogen lines you already built in Mission 2. Hydrogen's aqua Hβ line is at <span class="u" data-l="486">486 nm</span> and its bright red Hα line is at <span class="u" data-l="656">656 nm</span>. Find them, tell the graph, and every other pixel falls into place.</div>
-  <p><span class="tag sim">Simulated phone screen</span>The hydrogen tube seen through a grating: the four <b>Balmer lines</b> you made in Mission 2. Hα is red, Hβ is aqua, Hγ and Hδ are violet. The graph only knows pixels, not colors. Tap a peak, then pick which Balmer line it is. (Tip: use the two brightest lines; they're far apart, so your scale comes out most accurate.)</p>
-  <canvas id="calCanvas" height="300" aria-label="Simulated phyphox brightness vs pixel graph"></canvas>
-  <div class="row" id="calAssign">
-    <span id="calSel" class="mono">Tap a peak on the graph.</span>
+  <div class="mission-head"><div class="badge">3</div><div><h2>From photo to spectrum</h2><div class="sub">Turn a picture of colored lines into a real measurement.</div></div></div>
+  <p>Take a photo of a glowing tube through your spectroscope, then load it here. The page lines up the rainbow and adds up the brightness at each spot along it. That turns the 2D photo into a <b>1D spectrum</b>: brightness vs. position on the camera.</p>
+  <div class="callout"><b>What's in your photo?</b> The bright stripe in the middle, inside a glow, is the <b>slit itself</b>: light that went straight through the grating (astronomers call it the "zero order"). The grating bends each color off to the side, so you get a <b>copy of the spectrum on each side</b>, mirror images, with violet closest to the slit and red farthest out. You may also see a faint smear of extra colors and dim "ghost" lines from light bouncing around inside the tube. That's normal; the page knows to look for the sharp lines.</div>
+  <p class="small">🔒 Your photos never leave your device. All the measuring happens right here in your browser.</p>
+  <details class="math"><summary>📱 Taking a good spectrum photo</summary>
+    <ul>
+      <li><b>Lock the phone to the spectroscope</b> (rubber bands or tape) so the camera looks through the grating at the slit. <b>Don't move it between photos.</b> That's what lets one calibration work for every photo.</li>
+      <li>Use the normal camera at <b>1×</b>. Don't zoom. On iPhone Pro models, turn <b>Macro</b> off so the phone doesn't switch lenses.</li>
+      <li>Darken the room. Tap the screen on the colored lines to focus, then slide the brightness down a little so the bright lines aren't washed out to white.</li>
+      <li>Turn the phone until the colors spread <b>sideways</b> across the screen, with the bright slit in the middle and a rainbow copy on each side.</li>
+      <li><b>Sharper lines:</b> make the slit narrow (two pieces of tape or card edges almost touching), put the slit right up against the glowing tube, and line the inside of the tube with black paper to cut down on ghosts.</li>
+      <li>Take one photo per tube: hydrogen first, then the others.</li>
+    </ul>
+  </details>
+  <div class="loader" id="load3"></div>
+  <div class="curphoto"><span class="small">Current photo:</span> <b class="curname">none yet</b></div>
+  <div class="photowrap"><canvas id="photoCanvas" aria-label="Your photo with the measuring band"></canvas><div class="photoempty" id="photoEmpty">Load a photo or try an example above.</div></div>
+  <p class="small">The amber box is the <b>measuring box</b>: only light inside it gets measured. Tap the photo to move it up or down, or draw your own box around just the lines you want (for example, one side of the slit).</p>
+  <div class="row">
+    <button class="chip" id="drawBoxBtn">✏️ Draw a box</button>
+    <button class="chip" id="sideR">Right of slit only</button>
+    <button class="chip" id="sideL">Left of slit only</button>
+    <button class="chip" id="sideAll">Full width</button>
   </div>
   <div class="row">
-    <button class="chip" data-w="410.2"><span class="sw" style="background:#7a00d6"></span>Hδ · 6→2 · 410 nm</button>
-    <button class="chip" data-w="434.0"><span class="sw" style="background:#4a24ff"></span>Hγ · 5→2 · 434 nm</button>
-    <button class="chip" data-w="486.1"><span class="sw" style="background:#00d0ff"></span>Hβ · 4→2 · 486 nm</button>
-    <button class="chip" data-w="656.3"><span class="sw" style="background:#ff1a1a"></span>Hα · 3→2 · 656 nm</button>
-    <button id="calReset">Reset</button>
+    <button class="chip" id="rotBtn">⟳ Rotate 90°</button>
+    <button class="chip" id="flipBtn">⇋ Flip</button>
+    <button class="chip" id="autoTiltBtn">Auto-straighten</button>
+    <button class="chip" id="autoBandBtn">Auto-find lines</button>
   </div>
-  <div class="readouts">
-    <div class="tile"><div class="k">Point 1</div><div class="v" id="cal1">—</div></div>
-    <div class="tile"><div class="k">Point 2</div><div class="v" id="cal2">—</div></div>
-    <div class="tile"><div class="k">nm per pixel</div><div class="v" id="calSlope">—</div></div>
+  <div class="slider-row"><label for="tiltS">Straighten (tilt)</label><output id="tiltOut"></output><input type="range" id="tiltS" min="-15" max="15" step="0.25" value="0"></div>
+  <div class="grid2">
+    <div class="slider-row"><label for="bandC">Band position</label><output id="bandCOut"></output><input type="range" id="bandC" min="0" max="1000" value="500"></div>
+    <div class="slider-row"><label for="bandH">Band thickness</label><output id="bandHOut"></output><input type="range" id="bandH" min="5" max="500" value="150"></div>
+    <div class="slider-row"><label for="xLS">Left edge</label><output id="xLOut"></output><input type="range" id="xLS" min="0" max="1000" value="0"></div>
+    <div class="slider-row"><label for="xRS">Right edge</label><output id="xROut"></output><input type="range" id="xRS" min="0" max="1000" value="1000"></div>
   </div>
-  <div class="callout hide" id="calDone"></div>
+  <h3>Your 1D spectrum</h3>
+  <canvas id="rawCanvas" height="230" aria-label="Brightness along the spectrum"></canvas>
+  <p id="rawNote" class="small"></p>
   <div class="predict" id="p3">
-    <div class="q">Check yourself: after calibrating with the red and aqua lines, the small violet peak just left of the aqua one lands at about…</div>
+    <div class="q">Check yourself: why do the lines look straight up-and-down in the photo, but become peaks in the graph?</div>
     <div class="opts">
-      <button data-a="0">400 nm</button>
-      <button data-a="1">434 nm</button>
-      <button data-a="2">500 nm</button>
+      <button data-a="0">The page adds up the brightness down each column of the band</button>
+      <button data-a="1">The camera turns the light into a graph</button>
+      <button data-a="2">The grating bends the lines into peaks</button>
     </div>
     <div class="fb"></div>
   </div>
-  <details class="math"><summary>Real phyphox tips (for your phone)</summary>
-    <ul>
-      <li>Open phyphox → find the <b>Spectroscopy</b> experiment (camera section). Allow camera access.</li>
-      <li>Rubber-band the phone so the main camera sits flat against the grating, looking down the tube at the slit.</li>
-      <li>Rotate until the rainbow runs <b>across</b> the screen, then lock it in place. If the phone moves, recalibrate.</li>
-      <li>Point at the <b>hydrogen tube</b>, tap its red and aqua peaks, and enter 656 and 486. (The violet lines are faint and may not show up on a phone. That's fine; you only need two.)</li>
-      <li>Backup: the mercury tube's blue 436 nm and green 546 nm lines work too. Old-style fluorescent lights contain mercury; LED lights don't.</li>
-      <li>Now point at other tubes and write down the wavelengths of the peaks. Bring them to Mission 4!</li>
-      <li>No phone? No problem. Use your eyes and your worksheet, or pair up.</li>
-    </ul>
-  </details>
-  <details class="math"><summary>For the curious: how a grating works</summary>
-    <p>A grating has about 1,000 tiny grooves per millimeter, so the grooves are 1,000 nm apart. Light bends by an angle that depends on its wavelength:</p>
-    <div class="eq">sin(angle) = wavelength ÷ groove spacing</div>
-    <div class="slider-row"><label for="grL">Wavelength</label><output id="grLout"></output><input type="range" id="grL" min="400" max="700" value="656"></div>
-    <div class="yours" id="grYours"></div>
-    <p>Red bends more than violet, and that spreads the colors apart.</p>
+  <details class="math"><summary>How the page builds a 1D spectrum</summary>
+    <ol>
+      <li><b>Straighten.</b> The page rotates the photo so the colors run exactly left to right. Auto-straighten tries many small tilts and keeps the one where the lines come out sharpest.</li>
+      <li><b>Pick the band.</b> Only the rows inside the amber box are used. That keeps out the dark sky around the lines and any glare.</li>
+      <li><b>Add down each column.</b> For every column of pixels, the page adds up the brightness of each pixel in the band. A colored line is bright in every row, so its column adds up to a tall peak.</li>
+      <li><b>Find the peaks.</b> A peak counts if it's the brightest spot nearby and stands well above its surroundings. Its exact center is the balance point of the bright pixels, so even a washed-out line gets a precise position.</li>
+    </ol>
+    <div class="yours" id="rawYours">Load a photo to see your numbers.</div>
   </details>
 </section>
 
 <!-- ============ MISSION 4 ============ -->
 <section class="panel" id="m4">
-  <div class="mission-head"><div class="badge">4</div><div><h2>Element fingerprints</h2><div class="sub">Every element makes its own barcode of bright lines. Match the barcode, name the gas.</div></div></div>
-  <p><span class="tag real">Lab wavelengths</span>Line positions are lab-measured values from the NIST Atomic Spectra Database. Brightness is approximate.</p>
-  <h3>The reference tubes</h3>
-  <div class="row" id="gasBtns"></div>
-  <div class="tubewrap"><div class="tube" id="tube"></div><div id="tubeNote" class="small"></div></div>
-  <canvas id="gasCanvas" height="220" aria-label="Gas emission spectrum"></canvas>
-
-  <h3>Mystery signals</h3>
-  <p>Three unknown glowing gases. Turn on reference fingerprints to compare. When every bright line is explained, pick your answer. <b>Careful:</b> one signal is a <b>mix</b> of two gases.</p>
-  <div class="row" id="mysBtns"></div>
-  <canvas id="mysCanvas" height="220" aria-label="Mystery spectrum with overlays"></canvas>
-  <div class="row"><b>Overlay:</b> <span id="ovBtns" class="row" style="margin:0"></span></div>
-  <div class="row"><b>My answer:</b> <span id="ansBtns" class="row" style="margin:0"></span></div>
-  <div class="row"><button class="primary" id="mysCheck">Check answer</button><span class="fb" id="mysFb"></span></div>
-
-  <h3>Your phone's numbers</h3>
-  <p>Type the wavelengths (in nm) of the peaks your phone found, separated by commas. The matcher compares them with every fingerprint.</p>
-  <input type="text" id="myPeaks" placeholder="e.g. 437, 547, 579" inputmode="decimal" aria-label="Measured peak wavelengths">
-  <div class="row"><button class="primary" id="matchBtn">Find my element</button><button id="tryDemo">Try an example</button></div>
-  <div class="matchbars" id="matchOut"></div>
-  <p class="small">Phone calibrations are usually good to about ±5–10 nm, so the matcher allows some wiggle room.</p>
+  <div class="mission-head"><div class="badge">4</div><div><h2>Calibrate with hydrogen</h2><div class="sub">Teach your spectroscope which pixel is which color, once.</div></div></div>
+  <p>Right now your graph is in <b>pixels</b>. To turn pixels into wavelengths, use lines you already know: hydrogen's Balmer lines from Mission 2. Load your <b>hydrogen</b> photo, tap a peak on <b>one side</b> of the slit, and tell the page which line it is. Two lines are enough: the red <b>Hα</b> (farthest from the slit) and the aqua <b>Hβ</b>. The page measures every line from the slit, so it can also work out what kind of grating you have.</p>
+  <div class="loader" id="load4"></div>
+  <div class="curphoto"><span class="small">Current photo:</span> <b class="curname">none yet</b></div>
+  <canvas id="calCanvas" height="270" aria-label="Your spectrum in pixels, tap peaks to calibrate"></canvas>
+  <div class="row"><span id="calSel" class="mono">Tap a peak on the graph.</span></div>
+  <div class="row" id="calChips">
+    <button class="chip" data-w="410.17"><span class="sw" style="background:#7a00d6"></span>Hδ · 6→2 · 410 nm</button>
+    <button class="chip" data-w="434.05"><span class="sw" style="background:#4a24ff"></span>Hγ · 5→2 · 434 nm</button>
+    <button class="chip" data-w="486.13"><span class="sw" style="background:#00d0ff"></span>Hβ · 4→2 · 486 nm</button>
+    <button class="chip" data-w="656.28"><span class="sw" style="background:#ff1a1a"></span>Hα · 3→2 · 656 nm</button>
+    <button id="calReset">Start over</button>
+  </div>
+  <div class="row" id="gratBtns"><span class="small">My grating:</span>
+    <button class="chip on" data-g="auto">Figure it out</button>
+    <button class="chip" data-g="500">500 lines/mm</button>
+    <button class="chip" data-g="1000">1000 lines/mm</button>
+  </div>
+  <div class="readouts">
+    <div class="tile"><div class="k">Lines used</div><div class="v" id="calN">—</div></div>
+    <div class="tile"><div class="k">Groove spacing</div><div class="v" id="calSlope">—</div></div>
+    <div class="tile"><div class="k">Saved calibration</div><div class="v" id="calSaved">none</div></div>
+  </div>
+  <div class="callout hide" id="calDone"></div>
+  <div class="predict" id="p4">
+    <div class="q">Your calibration is saved. You take a new photo of a different tube, but your friend bumped your phone. What happens?</div>
+    <div class="opts">
+      <button data-a="0">Nothing; the calibration still works</button>
+      <button data-a="1">The lines land on different pixels, so the wavelengths come out wrong</button>
+      <button data-a="2">The photo won't load</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+  <details class="math"><summary>For the curious: how the calibration works</summary>
+    <ol>
+      <li><b>The grating equation.</b> A grating with grooves d apart bends light of wavelength λ by an angle θ where
+        <br><span class="eq">sin θ = λ ÷ d</span> &nbsp; (d = 1,000,000 nm ÷ lines per mm)</li>
+      <li><b>The camera turns angles into pixels.</b> A line bent by θ lands a distance from the center of the pattern of
+        <br><span class="eq">distance = F × tan θ</span> &nbsp; where F depends on your phone's lens.</li>
+      <li><b>Two known lines pin it down.</b> Each Balmer line you identify gives one (pixel, wavelength) pair. With two, the page solves for F and the exact center. Trying both common gratings, it keeps the one whose center lands on the slit you photographed.</li>
+      <li><b>Every later photo</b> uses the same F, measured from wherever the slit lands in that photo. So small shifts of the phone are handled automatically, but tilting or zooming the camera is not.</li>
+      <li>If the page can't find the slit (for example, it's cropped out), it falls back to a simple straight-line scale between your two lines.</li>
+    </ol>
+    <div class="yours" id="calYours">Calibrate to see your numbers.</div>
+  </details>
 </section>
 
 <!-- ============ MISSION 5 ============ -->
 <section class="panel" id="m5">
-  <div class="mission-head"><div class="badge">5</div><div><h2>Reading starlight</h2><div class="sub">Now point it at the sky. These are <b>real</b> spectra of stars.</div></div></div>
+  <div class="mission-head"><div class="badge">5</div><div><h2>Name that gas</h2><div class="sub">Every element has its own barcode of lines. Match the barcode, name the gas.</div></div></div>
+  <h3>The reference fingerprints</h3>
+  <p><span class="tag real">Lab wavelengths</span>Line positions are lab-measured values from the NIST Atomic Spectra Database. Brightness is approximate.</p>
+  <div class="row" id="gasBtns"></div>
+  <div class="tubewrap"><div class="tube" id="tube"></div><div id="tubeNote" class="small"></div></div>
+  <canvas id="gasCanvas" height="200" aria-label="Reference emission spectrum"></canvas>
 
-  <h3>A. Why stars have dark lines</h3>
-  <p>A star is a hot glowing ball (rainbow) wrapped in a thinner, cooler gas layer. That gas <b>absorbs</b> its own fingerprint colors, leaving <b>dark</b> lines in exactly the spots where it would make bright ones.</p>
-  <div class="row" id="absBtns">
-    <button class="chip on" data-m="0">Hot glow only</button>
-    <button class="chip" data-m="1">Glowing gas only</button>
-    <button class="chip" data-m="2">Hot glow seen through cool gas</button>
-  </div>
-  <canvas id="absCanvas" height="150" aria-label="Kirchhoff demo"></canvas>
-  <p class="small" id="absNote"></p>
+  <h3>Your measured spectrum</h3>
+  <p>Load a photo of each gas tube here (keep the phone where it was for the hydrogen photo). With your calibration, the graph now reads in <b>nanometers</b>. Turn on reference fingerprints and see which one lines up with your peaks.</p>
+  <div class="loader" id="load5"></div>
+  <div class="curphoto"><span class="small">Gas photo:</span> <b id="testName">none yet</b> <span class="small">· your hydrogen calibration photo stays in Mission 4</span></div>
+  <div class="photowrap"><canvas id="testCanvas" aria-label="Your gas photo with the measuring box"></canvas><div class="photoempty" id="testEmpty">Load a photo of a gas tube above.</div></div>
+  <p class="small">The same measuring box as your calibration is used. Tap the photo if you need to move it up or down.</p>
+  <div class="callout hide" id="needCal">Calibrate first in Mission 4 (your hydrogen photo, or the example hydrogen photo).</div>
+  <canvas id="idCanvas" height="260" aria-label="Your calibrated spectrum with reference overlays"></canvas>
+  <div class="row"><b>Overlay:</b> <span id="ovBtns" class="row" style="margin:0"></span></div>
+  <div class="slider-row"><label for="nudgeS">Fine-tune (if your phone moved a little)</label><output id="nudgeOut"></output><input type="range" id="nudgeS" min="-15" max="15" step="0.5" value="0"></div>
+  <div class="row"><button class="chip" id="nudgeSave">Save this shift into my calibration</button></div>
+  <h3>Your lines</h3>
+  <div id="peakTable" class="tablewrap"></div>
+  <h3>Best matches</h3>
+  <div class="matchbars" id="matchOut"></div>
+  <p class="small">Phone measurements are usually good to a few nm, so the matcher allows some wiggle room. A mix of gases can match more than one element.</p>
+  <div class="row"><b>My answer:</b> <span id="ansBtns" class="row" style="margin:0"></span></div>
+  <div class="row"><button class="primary" id="ansCheck">Check / record answer</button><span class="fb" id="ansFb"></span></div>
 
-  <h3>B. What is the Sun made of?</h3>
+  <h3>My lab notebook</h3>
+  <p>Save each spectrum you measure to build your own wall of barcodes.</p>
+  <div class="row"><input type="text" id="nbName" placeholder="Name this spectrum (e.g. Tube 3)" aria-label="Spectrum name" style="max-width:320px"><button class="primary" id="nbSave">Save to notebook</button></div>
+  <div id="nbList"></div>
+</section>
+
+<!-- ============ MISSION 6 ============ -->
+<section class="panel" id="m6">
+  <div class="mission-head"><div class="badge">6</div><div><h2>Barcodes in starlight</h2><div class="sub">Now point it at the sky. These are <b>real</b> spectra of stars.</div></div></div>
+  <p>A star is a hot glowing ball wrapped in thinner gas. That gas <b>absorbs</b> its own fingerprint colors, so star spectra show <b>dark</b> lines in exactly the places your gas tubes made bright ones. Same barcodes, opposite color.</p>
+
+  <h3>A. What is the Sun made of?</h3>
   <p><span class="tag real">Real data</span>Spectrum of a star just like the Sun (type G2). Turn on each element's fingerprint. If its lines land on dark dips, that element is in the star!</p>
   <canvas id="sunCanvas" height="250" aria-label="Sun-like star spectrum"></canvas>
   <div class="row" id="sunBtns"></div>
   <ul class="check" id="sunChecklist"></ul>
-  <div class="story"><h3>The element found in the Sun first</h3>In 1868, astronomers watching a solar eclipse saw a bright yellow line at <span class="u" data-u="587nm">587.6 nm</span> that matched <i>no</i> element known on Earth. They named the mystery element after the Greek word for the Sun, <b>helios</b>. Helium wasn't found on Earth until 1895. Try the helium fingerprint above: it doesn't show up as dips in ordinary sunlight, which is why it hid for so long.</div>
+  <div class="story"><h3>The element found in the Sun first</h3>In 1868, astronomers watching a solar eclipse saw a bright yellow line at <span class="u" data-l="587.6">587.6 nm</span> that matched <i>no</i> element known on Earth. They named the mystery element after the Greek word for the Sun, <b>helios</b>. Helium wasn't found on Earth until 1895. Check your helium tube's brightest line: it's that same yellow line. Then try the helium fingerprint above: it doesn't show up as dips in ordinary sunlight, which is why it hid for so long.</div>
 
-  <h3>C. Sort the stars by temperature</h3>
-  <p><span class="tag real">Real data</span>Seven real star spectra, each scaled so its brightest point reaches the top. Hotter stars give off more <b>blue</b>; cooler stars give off more <b>red</b>. <b>Tap the stars in order from hottest to coolest.</b></p>
+  <h3>B. Different stars, different barcodes</h3>
+  <p><span class="tag real">Real data</span>Seven real stars, from the hottest type (O) to the coolest (M). Turn on fingerprints and hunt for the lines.</p>
+  <div class="row" id="starOvBtns"></div>
   <div class="starcards" id="starCards"></div>
-  <div class="row"><button class="primary" id="starCheck" disabled>Check my order</button><button id="starReset">Start over</button></div>
-  <div class="fb" id="starFb"></div>
-  <div class="callout hide" id="starReveal"></div>
+  <div class="hunt" id="hunt"></div>
+  <div class="callout hide" id="huntWhy"><b>Why do the barcodes change?</b> Every star contains hydrogen, but a line only shows up if the gas is at the right conditions to absorb it. Hydrogen's visible lines are strongest around 10,000 K (type A). In the hottest stars the hydrogen is too stirred up to absorb these colors; in the coolest stars it's too calm. Cool stars are cool enough for atoms to stick together into molecules like titanium oxide (TiO), which carve wide bands. So a star's barcode tells you what it's made of <i>and</i> what conditions its gas is in.</div>
 
-  <h3>D. A star that breaks the rules</h3>
+  <h3>C. A star that breaks the rules</h3>
   <p><span class="tag real">Real data · SDSS</span>This is <b>SDSS J215018.83+003547.8</b>, a <b>dwarf carbon star</b>. Normal stars have more oxygen than carbon. This one has more carbon, which forms molecules like C₂ that carve wide, sawtooth bands into the spectrum. Dwarf carbon stars probably got their carbon from a companion star that has since died, which makes them clues to how pairs of stars live and die together.</p>
   <canvas id="dcCanvas" height="230" aria-label="Dwarf carbon star spectrum"></canvas>
   <div class="row"><button class="chip" id="dcCompare">Compare with the Sun-like star</button><button class="chip" id="dcBands">Show C₂ bands</button></div>
-  <div class="predict" id="p5">
+  <div class="predict" id="p6">
     <div class="q">The wide dips at 474, 517 and 564 nm come from…</div>
     <div class="opts">
       <button data-a="0">Single atoms, like hydrogen</button>
@@ -331,18 +399,6 @@ footer a{color:var(--ink2)}
     </div>
     <div class="fb"></div>
   </div>
-
-  <h3>E. Is that star moving?</h3>
-  <p><span class="tag sim">Simulated shift of real data</span>When a star moves away from us, all its lines slide toward <b>red</b>. Moving toward us, they slide toward <b>blue</b> (the Doppler effect, like a passing siren). We took a real hot star and gave it a secret speed. Slide the lab fingerprint until the hydrogen lines line up with the dips.</p>
-  <canvas id="dopCanvas" height="230" aria-label="Doppler shift challenge"></canvas>
-  <div class="slider-row"><label for="dopV">Your guess for its speed</label><output id="dopVout"></output>
-    <input type="range" id="dopV" min="-1500" max="1500" step="50" value="0"></div>
-  <div class="row"><button class="primary" id="dopCheck">Lock in my speed</button><span class="fb" id="dopFb"></span></div>
-  <details class="math"><summary>For the curious: how the math works</summary>
-    <div class="eq">speed = speed of light × (shift ÷ lab wavelength)</div>
-    <p>The speed of light is 300,000 km/s.</p>
-    <div class="yours" id="dopYours"></div>
-  </details>
 </section>
 
 <!-- ============ RESULTS ============ -->
@@ -350,11 +406,11 @@ footer a{color:var(--ink2)}
   <div class="mission-head"><div class="badge">★</div><div><h2>My detective report</h2><div class="sub">Fills in as you go.</div></div></div>
   <div class="readouts" id="resTiles"></div>
   <div class="row"><button class="primary" id="copyRes">Copy my results</button><span class="small" id="copyMsg"></span></div>
-  <div class="story"><h3>Closing thought</h3>We can't visit a star, but its light tells us what it's made of, how hot it is, and how fast it's moving.</div>
+  <div class="story"><h3>Closing thought</h3>We can't visit a star, but its light carries the barcode of every element in it. The same lines you photographed today are how astronomers know what the universe is made of.</div>
 </section>
 
 <footer>
-  <p><b>Data sources.</b> Star spectra: Pickles (1998), <i>A Stellar Spectral Flux Library: 1150–25000 Å</i>, PASP 110, 863, via the STScI reference atlases (types O5V, B3V, A0V, F5V, G2V, K5V, M5V), binned to 1 nm. Dwarf carbon star: Sloan Digital Sky Survey DR18 spectrum, plate 9231, MJD 58017, fiber 212, binned to 1 nm and lightly smoothed. Line wavelengths: NIST Atomic Spectra Database. Glow curves, the atom model, the phone screen and the Doppler shift are simulations built from the physics described on the page.</p>
+  <p><b>Data sources.</b> Star spectra: Pickles (1998), <i>A Stellar Spectral Flux Library: 1150–25000 Å</i>, PASP 110, 863, via the STScI reference atlases (types O5V, B3V, A0V, F5V, G2V, K5V, M5V), binned to 1 nm. Dwarf carbon star: Sloan Digital Sky Survey DR18 spectrum, plate 9231, MJD 58017, fiber 212, binned to 1 nm and lightly smoothed. Line wavelengths: NIST Atomic Spectra Database. The example photos and the atom model are simulations built from those line lists.</p>
 </footer>
 </div>
 
@@ -372,21 +428,33 @@ const GAS = {
   Na: {name:"Sodium",   glow:"#ffb21f", lines:[[588.995,1],[589.59,.6],[568.8,.06],[498.3,.03]]}
 };
 const GAS_NOTES = {H:"Pink-red glow. 4 visible lines.", He:"Peach-yellow glow. Strong yellow line.", Ne:"Red-orange glow, like a neon sign. Dozens of red & orange lines.", Hg:"Blue-white glow. Bright green line.", Na:"Orange-yellow glow, like old streetlights or salt in a flame."};
-const MYST = [
-  {id:"Signal 1", ans:["He"]},
-  {id:"Signal 2", ans:["Ne"]},
-  {id:"Signal 3", ans:["H","Hg"]}
-];
+const OVCOL={H:"#ff5a8a",He:"#ffd6a0",Ne:"#ff7a3f",Hg:"#7fb0ff",Na:"#ffcf3f"};
+// example photos (simulated until real ones are added)
+const EXAMPLES = {
+  H:{label:"Hydrogen (real photo)", gases:["H"], real:"data:image/jpeg;base64,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"},
+  He:{label:"Helium (sim)", gases:["He"]},
+  Ne:{label:"Neon (sim)", gases:["Ne"]},
+  Hg:{label:"Mercury (sim)", gases:["Hg"]},
+  M1:{label:"Mystery 1", gases:["He"], mystery:true},
+  M2:{label:"Mystery 2", gases:["Hg"], mystery:true},
+  M3:{label:"Mystery 3", gases:["H","Ne"], mystery:true}
+};
 const STARS = [
-  {k:"O5V", type:"O5", T:41000, note:"a rare, ultra-hot blue star"},
-  {k:"B3V", type:"B3", T:18000, note:"a hot blue-white star"},
-  {k:"A0V", type:"A0", T:9600,  note:"like Vega: strongest hydrogen lines of all"},
-  {k:"F5V", type:"F5", T:6500,  note:"like Procyon"},
-  {k:"G2V", type:"G2", T:5800,  note:"like our Sun"},
-  {k:"K5V", type:"K5", T:4400,  note:"like 61 Cygni A, an orange dwarf"},
-  {k:"M5V", type:"M5", T:3000,  note:"like Proxima Centauri, the closest star to the Sun; bands from TiO molecules"}
+  {k:"O5V", type:"O5", note:"the hottest, bluest kind of star"},
+  {k:"B3V", type:"B3", note:"a hot blue-white star"},
+  {k:"A0V", type:"A0", note:"like Vega"},
+  {k:"F5V", type:"F5", note:"like Procyon"},
+  {k:"G2V", type:"G2", note:"like our Sun"},
+  {k:"K5V", type:"K5", note:"an orange dwarf, like 61 Cygni A"},
+  {k:"M5V", type:"M5", note:"a red dwarf, like Proxima Centauri"}
 ];
-const STAR_SHUFFLE = [4,0,6,2,5,1,3]; // fixed display order (G,O,M,A,K,B,F)
+const STAR_EL = {
+  H:  {name:"Hydrogen", col:"#ff5a8a", lines:[656.3,486.1,434.0,410.2]},
+  Ca: {name:"Calcium",  col:"#c9a6ff", lines:[393.4,396.8,422.7]},
+  Na: {name:"Sodium",   col:"#ffb21f", lines:[589.0,589.6]},
+  Mg: {name:"Magnesium",col:"#7ee08a", lines:[516.7,517.3,518.4]},
+  TiO:{name:"TiO molecule", col:"#ff9a6a", lines:[476.1,495.4,516.7,544.8,615.9,705.5]}
+};
 const SUN_EL = {
   H:  {name:"Hydrogen", col:"#ff5a8a", lines:[656.3,486.1,434.0,410.2], inSun:true},
   Na: {name:"Sodium",   col:"#ffb21f", lines:[589.0,589.6], inSun:true},
@@ -395,14 +463,19 @@ const SUN_EL = {
   Fe: {name:"Iron",     col:"#7fd3ff", lines:[438.4,527.0,495.7,404.6], inSun:true},
   He: {name:"Helium",   col:"#ffd6a0", lines:[587.6,447.1,501.6,667.8], inSun:false}
 };
-const DOP_TRUE = 1150; // km/s, secret speed
 
 /* ---------------- helpers ---------------- */
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
-const fmt = (x,d=0) => x.toLocaleString("en-US",{maximumFractionDigits:d,minimumFractionDigits:d});
+const fmt = (x,d=0) => Number(x).toLocaleString("en-US",{maximumFractionDigits:d,minimumFractionDigits:d});
 const state = {done:{}, res:{}};
+const store = {
+  get(k){ try{ const s=localStorage.getItem(k); return s?JSON.parse(s):(store._m[k]??null); }catch(e){ return store._m[k]??null; } },
+  set(k,v){ store._m[k]=v; try{ v==null?localStorage.removeItem(k):localStorage.setItem(k,JSON.stringify(v)); }catch(e){} },
+  _m:{}
+};
+const CAL_KEY="lightdetectives.cal.v2", NB_KEY="lightdetectives.notebook.v1";
 
 function setupCanvas(c){
   if(!c.dataset.h) c.dataset.h = c.getAttribute("height");
@@ -411,7 +484,6 @@ function setupCanvas(c){
   const ctx = c.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0);
   return {ctx,w,h};
 }
-// wavelength (nm) -> [r,g,b] 0..255
 function wl2rgb(l){
   let r=0,g=0,b=0;
   if(l>=380&&l<440){r=-(l-440)/60;b=1}
@@ -425,17 +497,7 @@ function wl2rgb(l){
   if(l<380||l>780) f=0;
   return [r,g,b].map(c=>Math.round(255*Math.pow(c*f,.8)));
 }
-const rgbStr = (a,al=1)=>`rgba(${a[0]},${a[1]},${a[2]},${al})`;
-// blackbody colour (approximate, Tanner Helland fit)
-function bbRGB(T){
-  const t=T/100; let r,g,b;
-  if(t<=66){r=255; g=99.47*Math.log(t)-161.12; b = t<=19?0:138.52*Math.log(t-10)-305.04;}
-  else {r=329.7*Math.pow(t-60,-.1332); g=288.12*Math.pow(t-60,-.0755); b=255;}
-  return [r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v))));
-}
-function planck(lnm,T){ const l=lnm*1e-9; return 1/(Math.pow(l,5)*(Math.exp(0.0143877735/(l*T))-1)); }
-
-// generic plot frame: returns mapping helpers
+const rgbStr = (a,al=1)=>`rgba(${a[0]|0},${a[1]|0},${a[2]|0},${al})`;
 function frame(ctx,w,h,opt){
   const pad = {l:opt.l??40, r:12, t:opt.t??12, b:opt.b??34};
   const x0=pad.l, x1=w-pad.r, y0=pad.t, y1=h-pad.b;
@@ -443,7 +505,7 @@ function frame(ctx,w,h,opt){
   const X = v => x0+(v-xmin)/(xmax-xmin)*(x1-x0);
   const Y = v => y1-(v-ymin)/(ymax-ymin)*(y1-y0);
   ctx.fillStyle=css("--plot-bg"); ctx.fillRect(0,0,w,h);
-  if(opt.rainbow){ // faint rainbow band under the plot
+  if(opt.rainbow){
     for(let px=Math.max(x0,X(380));px<Math.min(x1,X(720));px++){
       const l = xmin+(px-x0)/(x1-x0)*(xmax-xmin);
       ctx.fillStyle=rgbStr(wl2rgb(l),opt.rainbowAlpha??.13); ctx.fillRect(px,y0,1,y1-y0);
@@ -454,88 +516,56 @@ function frame(ctx,w,h,opt){
   const step = opt.xstep ?? 50;
   for(let v=Math.ceil(xmin/step)*step; v<=xmax; v+=step){
     ctx.beginPath(); ctx.moveTo(X(v),y0); ctx.lineTo(X(v),y1); ctx.stroke();
-    if(w>420 || v% (step*2)===0) ctx.fillText(v, X(v), y1+14);
+    if(w>420 || Math.round(v/step)%2===0) ctx.fillText(v, X(v), y1+14);
   }
-  ctx.fillText(opt.xlabel??"wavelength (nm)", (x0+x1)/2, h-4);
+  if(opt.xlabel!=="") ctx.fillText(opt.xlabel??"wavelength (nm)", (x0+x1)/2, h-4);
   if(opt.ylabel){ ctx.save(); ctx.translate(12,(y0+y1)/2); ctx.rotate(-Math.PI/2); ctx.fillText(opt.ylabel,0,0); ctx.restore(); }
-  return {X,Y,x0,x1,y0,y1};
-}
-function strip(ctx,x,y,w,h,fn){ // fn(lambda) -> {rgb, a}
-  for(let px=0;px<w;px++){
-    const l=L0+px/w*(L1-L0); const v=fn(l);
-    ctx.fillStyle = v; ctx.fillRect(x+px,y,1.2,h);
-  }
+  return {X,Y,x0,x1,y0,y1,xmin,xmax};
 }
 function markDone(n){ if(state.done[n]) return; state.done[n]=true; const a=$("#nav"+n); if(a) a.classList.add("done"); renderResults(); }
-
-/* predict-then-check boxes */
-function predict(id, right, msgs){
+function predict(id, right, msgs, onRight){
   const box=$(id); const fb=box.querySelector(".fb");
   box.querySelectorAll(".opts button").forEach(b=>b.addEventListener("click",()=>{
     const a=+b.dataset.a; box.querySelectorAll(".opts button").forEach(x=>x.classList.remove("right","wrong"));
     b.classList.add(a===right?"right":"wrong");
     fb.className="fb "+(a===right?"good":"bad"); fb.textContent=msgs[a];
+    if(a===right && onRight) onRight();
   }));
 }
-
-/* tap-to-translate units */
-const UNITS = {
-  "nm":"nm = nanometer, one billionth of a meter. Visible light is about 400–700 nm.",
-  "436nm":"436 nm: blue light. About 1/160 the width of a human hair.",
-  "546nm":"546 nm: green light, the color your eyes are most sensitive to.",
-  "587nm":"587.6 nm: yellow light. 587.6 nanometers = 0.0005876 millimeters."
-};
-function tempWords(T){ const C=T-273, F=C*9/5+32; return `${fmt(T)} K = ${fmt(C)} °C = ${fmt(Math.round(F/10)*10)} °F`; }
-function nmWords(l){ const hair=70000/l; return `${fmt(l,0)} nm is ${colorName(l)} light. About 1/${fmt(Math.round(hair/10)*10)} the width of a human hair.`; }
-function speedWords(v){ const mph=Math.abs(v)*2237; return `${fmt(Math.abs(v))} km/s ≈ ${fmt(Math.round(mph/1000)*1000)} mph. At that speed you'd cross the USA in about ${fmt(4500/Math.max(1,Math.abs(v)),1)} seconds.`; }
+function colorName(l){ return l<380?"ultraviolet (invisible)": l<450?"violet": l<485?"blue": l<500?"blue-green": l<565?"green": l<590?"yellow": l<625?"orange": l<=750?"red":"infrared (invisible)"; }
+/* tap-to-translate */
+const UNITS = {"nm":"nm = nanometer, one billionth of a meter. Visible light is about 400–700 nm."};
+function nmWords(l){ const hair=70000/l; return `${fmt(l,l%1?1:0)} nm is ${colorName(l)} light. About 1/${fmt(Math.round(hair/10)*10)} the width of a human hair.`; }
 document.addEventListener("click",e=>{
   const u=e.target.closest(".u"); const bub=$("#bubble");
   if(!u){ bub.style.display="none"; return; }
-  let txt = UNITS[u.dataset.u];
-  if(u.dataset.t) txt = tempWords(+u.dataset.t);
-  if(u.dataset.l) txt = nmWords(+u.dataset.l);
-  if(u.dataset.v) txt = speedWords(+u.dataset.v);
+  let txt = UNITS[u.dataset.u]; if(u.dataset.l) txt = nmWords(+u.dataset.l);
   bub.textContent=txt; bub.style.display="block";
   const r=u.getBoundingClientRect(); const bw=bub.offsetWidth;
   bub.style.left=Math.max(16,Math.min(window.innerWidth-bw-16,r.left))+"px";
   bub.style.top=(r.bottom+8 > window.innerHeight-90 ? r.top-bub.offsetHeight-8 : r.bottom+8)+"px";
 });
 window.addEventListener("scroll",()=>{$("#bubble").style.display="none";},{passive:true});
-const uT = T=>`<span class="u" data-t="${T}">${fmt(T)} K</span>`;
 const uL = (l,d=0)=>`<span class="u" data-l="${l}">${fmt(l,d)} nm</span>`;
-const uV = v=>`<span class="u" data-v="${v}">${v>0?"+":""}${fmt(v)} km/s</span>`;
-function colorName(l){ return l<380?"ultraviolet (invisible)": l<450?"violet": l<485?"blue": l<500?"blue-green": l<565?"green": l<590?"yellow": l<625?"orange": l<=750?"red":"infrared (invisible)"; }
+function emission(lines, l, width=1.1){ let s=0; for(const [c,a] of lines){ const d=(l-c)/width; s+=a*Math.exp(-d*d/2);} return s; }
 
-/* ================= MISSION 1: glow ================= */
-const BB_PRESETS=[["Candle",1900],["Light bulb",2700],["Proxima Cen",3000],["Sun",5800],["Vega",9600],["Rigel",12000],["Hot O star",30000]];
-function drawBB(){
-  const T=+$("#bbT").value; const c=$("#bbCanvas"); const {ctx,w,h}=setupCanvas(c);
-  const xmin=300,xmax=1000;
-  const F=frame(ctx,w,h,{xmin,xmax,ymin:0,ymax:1.08,xstep:100,rainbow:true,rainbowAlpha:.22,ylabel:"brightness",b:40});
-  let mx=0; for(let l=xmin;l<=xmax;l+=2) mx=Math.max(mx,planck(l,T));
-  ctx.beginPath(); for(let l=xmin;l<=xmax;l+=2){const v=planck(l,T)/mx; l===xmin?ctx.moveTo(F.X(l),F.Y(v)):ctx.lineTo(F.X(l),F.Y(v));}
-  ctx.strokeStyle="#fff"; ctx.lineWidth=2.5; ctx.stroke();
-  // labels for UV/IR
-  ctx.fillStyle=css("--plot-text"); ctx.font='11px "Atkinson Hyperlegible"'; ctx.textAlign="center";
-  ctx.fillText("ultraviolet",F.X(340),F.y1-6); ctx.fillText("infrared",F.X(860),F.y1-6);
-  const peak=2898000/T;
-  if(peak<=xmax){ ctx.setLineDash([4,4]); ctx.strokeStyle=css("--amber"); ctx.beginPath(); ctx.moveTo(F.X(Math.max(xmin,peak)),F.y0); ctx.lineTo(F.X(Math.max(xmin,peak)),F.y1); ctx.stroke(); ctx.setLineDash([]); }
-  // glowing ball
-  const col=bbRGB(T); const r=Math.min(30,h*.14); const cx=w-r-22, cy=F.y0+r+16;
-  const g=ctx.createRadialGradient(cx,cy,2,cx,cy,r*1.8); g.addColorStop(0,"#fff"); g.addColorStop(.35,rgbStr(col)); g.addColorStop(1,rgbStr(col,0));
-  ctx.fillStyle=g; ctx.beginPath(); ctx.arc(cx,cy,r*1.8,0,7); ctx.fill();
-  $("#bbTout").innerHTML = uT(T);
-  const name = T<3500?"orange-red":T<5000?"orange":T<6500?"yellow-white":T<8500?"white":"blue-white";
-  $("#bbColor").textContent=name;
-  $("#bbPeak").innerHTML = peak<380? `${fmt(peak)} nm (UV!)` : peak>750 ? `${fmt(peak)} nm (IR!)` : `${fmt(peak)} nm`;
-  const pw=Math.pow(T/5800,4);
-  $("#bbPow").textContent = (pw<1? fmt(pw,2): fmt(pw, pw<10?1:0))+" ×";
-  $("#bbYours").innerHTML = `<b>Your numbers:</b> 2,898,000 ÷ ${fmt(T)} K = <b>${fmt(peak)} nm</b> (${colorName(peak)}).<br>(${fmt(T)} ÷ 5,800)⁴ = <b>${fmt(pw,pw<1?3:1)}×</b> the Sun's light per square meter.`;
-  if(Math.abs(T-5800)>1500) markDone(1);
+/* ================= MISSION 1 ================= */
+let absMode=0;
+const ABS_NOTES=["A hot, glowing solid makes a continuous rainbow: every color, no gaps.","A thin glowing gas makes only bright lines: its fingerprint. This is what your gas tubes do.","Shine a bright light through cooler gas and the gas soaks up its fingerprint colors, leaving dark lines in the same places. This is what starlight looks like!"];
+function drawAbs(){
+  const c=$("#absCanvas"); const {ctx,w,h}=setupCanvas(c);
+  ctx.fillStyle="#05070d"; ctx.fillRect(0,0,w,h);
+  const H=GAS.H.lines; const pad=14, sw=w-2*pad, sh=h-46;
+  for(let px=0;px<sw;px++){ const l=L0+px/sw*(L1-L0); let a;
+    if(absMode===0) a=1; else if(absMode===1) a=Math.min(1,emission(H,l,0.9)*1.4); else a=1-Math.min(.92,emission(H,l,0.9)*1.6);
+    ctx.fillStyle=rgbStr(wl2rgb(l),a); ctx.fillRect(pad+px,14,1.2,sh); }
+  ctx.fillStyle="#8892a6"; ctx.font='11px "JetBrains Mono"'; ctx.textAlign="center";
+  for(let v=400;v<=700;v+=50) ctx.fillText(v,pad+(v-L0)/(L1-L0)*sw,h-16);
+  ctx.fillText("wavelength (nm)",w/2,h-2);
+  $("#absNote").textContent=ABS_NOTES[absMode];
 }
-BB_PRESETS.forEach(([n,T])=>{const b=document.createElement("button"); b.className="chip"; b.textContent=n; b.onclick=()=>{$("#bbT").value=T; drawBB();}; $("#bbPresets").appendChild(b);});
-$("#bbT").addEventListener("input",drawBB);
-predict("#p1",1,["Not quite. Hot things start out red, but as they heat up they glow orange, then yellow-white, then blue-white. Try the slider!","Yes! Red-hot → white-hot → blue-hot. The hottest stars are blue.","Not quite. The color changes too. Slide from 2,000 K to 30,000 K and watch."]);
+$$("#absBtns button").forEach(b=>b.onclick=()=>{absMode=+b.dataset.m; $$("#absBtns button").forEach(x=>x.classList.toggle("on",x===b)); drawAbs(); if(absMode===2) markDone(1);});
+predict("#p1",1,["Not quite. A light bulb's hot filament makes a full rainbow, but a thin glowing gas is different. Try the buttons below.","Yes! A glowing gas gives off only a few exact colors: separate bright lines.","It does have color! Each gas glows its own color, and the grating splits that glow into lines."]);
 
 /* ================= MISSION 2: hydrogen atom ================= */
 const atom={from:3,to:2,anim:null,found:new Set(),lines:[],t:0,electronN:3,photon:null};
@@ -551,13 +581,11 @@ function drawAtom(){
   ctx.fillStyle=css("--plot-bg"); ctx.fillRect(0,0,w,h);
   const cx=Math.min(w*.32, h*.5+10), cy=h/2, R=Math.min(h*.46, w*.3);
   for(let n=1;n<=6;n++){ ctx.beginPath(); ctx.arc(cx,cy,rN(n,R),0,7); ctx.strokeStyle= (n===atom.from||n===atom.to)? "rgba(255,255,255,.55)":"rgba(255,255,255,.16)"; ctx.lineWidth=(n===atom.from||n===atom.to)?2:1; ctx.stroke();
-    ctx.fillStyle="rgba(255,255,255,.7)"; ctx.font='12px "JetBrains Mono"'; ctx.textAlign="center"; ctx.fillText(n, cx+rN(n,R)*Math.cos(2.35)+ (n===1?0:0), cy+rN(n,R)*Math.sin(2.35)+4); }
+    ctx.fillStyle="rgba(255,255,255,.7)"; ctx.font='12px "JetBrains Mono"'; ctx.textAlign="center"; ctx.fillText(n, cx+rN(n,R)*Math.cos(2.35), cy+rN(n,R)*Math.sin(2.35)+4); }
   const ng=ctx.createRadialGradient(cx,cy,1,cx,cy,10); ng.addColorStop(0,"#fff"); ng.addColorStop(1,"#ff9a4a"); ctx.fillStyle=ng; ctx.beginPath(); ctx.arc(cx,cy,7,0,7); ctx.fill();
-  // electron
   let er=rN(atom.electronN,R); if(atom.anim){ const p=Math.min(1,atom.t/0.5); er = rN(atom.from,R)+(rN(atom.to,R)-rN(atom.from,R))*p; }
   const ang=-0.7; const ex=cx+er*Math.cos(ang), ey=cy+er*Math.sin(ang);
   ctx.fillStyle="#7fd3ff"; ctx.beginPath(); ctx.arc(ex,ey,6,0,7); ctx.fill();
-  // photon wave
   if(atom.photon){
     const P=atom.photon; const vis=P.l>=380&&P.l<=750; const col = vis? rgbStr(wl2rgb(P.l)) : "rgba(200,200,200,.7)";
     const sx=P.x, sy=P.y, dist=Math.max(0,(atom.t-0.45))*w*0.9; const len=Math.min(dist, w-sx-10);
@@ -567,7 +595,6 @@ function drawAtom(){
     ctx.stroke();
     if(len>40){ ctx.fillStyle=col; ctx.font='bold 14px "JetBrains Mono"'; ctx.textAlign="right"; ctx.fillText(vis? `${fmt(P.l)} nm`: (P.l<380?`${fmt(P.l)} nm UV`:`${fmt(P.l)} nm IR`), w-12, sy-14); }
   }
-  // energy ladder on the right
   const lx=w-60, ly0=18, ly1=h-18;
   const Ey=n=> ly0 + (ly1-ly0)*( (13.6/(n*n)) /13.6 ) * 0.98;
   if(w>380){ ctx.textAlign="right"; ctx.font='11px "JetBrains Mono"';
@@ -590,8 +617,7 @@ $("#jumpBtn").onclick=()=>{
   const l=hLam(atom.from,atom.to);
   const c=$("#atomCanvas"); const w=c.clientWidth, h=+c.dataset.h; const cx=Math.min(w*.32,h*.5+10), R=Math.min(h*.46,w*.3);
   atom.electronN=atom.from; atom.t=0; atom.photon={l, x:cx+rN(atom.to,R)*Math.cos(-.7)+6, y:h/2+rN(atom.to,R)*Math.sin(-.7)};
-  const t0=performance.now();
-  atom.anim=true;
+  const t0=performance.now(); atom.anim=true;
   const step=now=>{ atom.t=(now-t0)/1000; drawAtom(); if(atom.t<1.6) requestAnimationFrame(step); else { atom.anim=false; atom.electronN=atom.to; drawAtom(); } };
   requestAnimationFrame(step);
   const vis=l>=380&&l<=750; const gap=13.6057*(1/(atom.to**2)-1/(atom.from**2));
@@ -609,217 +635,467 @@ $("#jumpBtn").onclick=()=>{
 };
 $("#atomReset").onclick=()=>{ atom.lines=[]; atom.found.clear(); atom.photon=null; atom.electronN=atom.from; $("#hCount").textContent="0 / 4"; $("#hWin").classList.add("hide"); $("#jumpMsg").textContent="Pick a start step and an end step, then make the jump."; drawAtom(); drawHStrip(); };
 
-/* ================= MISSION 3: calibrate ================= */
-// simulated phone: pixel = 52 + 2.47*(lambda-380) + small curvature
-const pixOf = l => 52 + 2.47*(l-380) + 0.0003*(l-380)*(l-380);
-const PIXMAX = 1000;
-const calPeaks = GAS.H.lines.map(([l,a])=>({l,a,p:pixOf(l)}));
-// add noise-free simulated brightness at each pixel
-function calSignal(p){ let s=0.035+0.008*Math.sin(p/37); for(const k of calPeaks){ const d=(p-k.p)/4.2; s+=k.a*Math.exp(-d*d/2);} return Math.min(1.05,s); }
-// local maxima of simulated signal
-const calMax=[]; for(let p=2;p<PIXMAX-2;p++){ const v=calSignal(p); if(v>0.1 && v>=calSignal(p-1)&&v>calSignal(p+1)) calMax.push(p); }
-const cal={sel:null, pts:[]};
-function calFit(){ if(cal.pts.length<2) return null; const [a,b]=cal.pts; const m=(b.l-a.l)/(b.p-a.p); return {m, c:a.l-m*a.p}; }
-function drawCal(){
+/* ================= PHOTO LAB (Missions 3–5) ================= */
+// Two separate photo slots: the calibration photo (Missions 3–4) and the test photo (Mission 5).
+const newLab=()=>({base:null,name:"",ex:null,rot:0,tilt:0,flip:false,bandC:.5,bandH:.15,xL:0,xR:1,work:null,wd:null,prof:null,col:null,peaks:[],zero:null,nudge:0});
+const CALLAB=newLab(), TESTLAB=newLab(); let LAB=CALLAB;
+function withLab(L,fn){ const prev=LAB; LAB=L; try{ return fn(); } finally{ LAB=prev; } }
+function applyCalSettings(cal){ Object.assign(LAB,{rot:cal.rot,tilt:cal.tilt,flip:cal.flip,bandC:cal.bandC,bandH:cal.bandH,xL:cal.xL??0,xR:cal.xR??1}); rebuild(); }
+const MAXDIM=1400;
+function mulberry(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+const U=(l,d)=>{ const s=l/d; return s<1? Math.tan(Math.asin(s)) : NaN; };
+/* Simulated example photos copy the geometry of a real toilet-paper-tube spectroscope with a
+   500 line/mm grating (measured from a real hydrogen photo): slit (zero order) in the middle,
+   a mirror-image spectrum on each side, glow around the slit, soft lines, a faint reflection. */
+const SIMG={W:1050,H:1400,zero:.4503,R:{x0:.4415,F:.9733},L:{x0:.4490,F:1.0481},y:.4969,hh:.026,d:2000};
+const exCache={};
+function simPhoto(key){
+  if(exCache[key]) return exCache[key];
+  if(EXAMPLES[key].real) return EXAMPLES[key].real;
+  const {W,H}=SIMG, lines=EXAMPLES[key].gases.flatMap(g=>GAS[g].lines);
+  const glow=hexRGB(GAS[EXAMPLES[key].gases[0]].glow);
+  const c=document.createElement("canvas"); c.width=W; c.height=H; const x=c.getContext("2d");
+  const img=x.createImageData(W,H), d=img.data, rnd=mulberry(key.charCodeAt(0)*977+key.length*31+(key.charCodeAt(1)||0));
+  const cR=new Float32Array(W), cG=new Float32Array(W), cB=new Float32Array(W);
+  const add=(px,a,rgb,sig)=>{ for(let X=Math.max(0,Math.floor(px-5*sig));X<Math.min(W,px+5*sig);X++){ const q=(X-px)/sig; const k=a*Math.exp(-q*q/2); cR[X]+=k*rgb[0]; cG[X]+=k*rgb[1]; cB[X]+=k*rgb[2]; } };
+  const zx=SIMG.zero*W;
+  for(const [l,a] of lines){ const u=U(l,SIMG.d), rgb=wl2rgb(l).map(v=>Math.max(v,40));
+    const xr=(SIMG.R.x0+SIMG.R.F*u)*W, xl=(SIMG.L.x0-SIMG.L.F*u)*W;
+    for(const xx of [xr,xl]){ add(xx,a*1.25,rgb,3.2); add(xx,a*0.12,rgb,14); }
+    if(a>=0.8){ add(zx+(xr-zx)*0.62,a*0.16,rgb,5); add(zx-(zx-xl)*0.62,a*0.12,rgb,5); } // faint internal reflection ("ghost")
+  }
+  add(zx,1.6,glow.map(v=>Math.min(255,v*0.6+110)),3.5); // the slit itself (zero order)
+  const yc=SIMG.y*H, hh=SIMG.hh*H, hcx=zx-10, hcy=yc+4;
+  for(let Y=0;Y<H;Y++){ const v=(Y-yc)/hh; const prof=Math.exp(-Math.pow(Math.abs(v),4)); const pz=Math.exp(-Math.pow(Math.abs(v)/1.9,4));
+    for(let X=0;X<W;X++){ const o=(Y*W+X)*4; const n=3+rnd()*5; const r2=((X-hcx)**2+(Y-hcy)**2)/(2*110*110); const halo=0.55*Math.exp(-r2)+0.12*Math.exp(-r2/6);
+      const zp=Math.abs(X-zx)<12? pz:prof;
+      for(let ch=0;ch<3;ch++){ const lineV=(ch===0?cR:ch===1?cG:cB)[X]; d[o+ch]=Math.min(255,n+zp*lineV+halo*glow[ch]*0.55+ (zp*lineV>255? (zp*lineV-255)*0.5:0)); }
+      d[o+3]=255; } }
+  x.putImageData(img,0,0);
+  exCache[key]=c.toDataURL("image/jpeg",0.88); return exCache[key];
+}
+function hexRGB(h){ const n=parseInt(h.slice(1),16); return [(n>>16)&255,(n>>8)&255,n&255]; }
+function labMsg(t,target){ $$(".labmsg").forEach(e=>{ if(!target||e.dataset.t===(target===TESTLAB?"test":"cal")) e.textContent=t||""; }); }
+function loadURL(url,name,ex,target=CALLAB){
+  const im=new Image(); const isTest=target===TESTLAB;
+  labMsg("Measuring your photo…",target);
+  im.onload=()=>setTimeout(()=>withLab(target,()=>{
+    const s=Math.min(1,MAXDIM/Math.max(im.naturalWidth,im.naturalHeight));
+    const c=document.createElement("canvas"); c.width=Math.max(1,Math.round(im.naturalWidth*s)); c.height=Math.max(1,Math.round(im.naturalHeight*s));
+    c.getContext("2d").drawImage(im,0,0,c.width,c.height);
+    LAB.base=c; LAB.name=name; LAB.ex=ex||null; LAB.nudge=0;
+    if(isTest){ $("#nudgeS").value=0; $("#nudgeOut").textContent="0 nm"; ansSet.clear(); $("#ansFb").textContent=""; buildOv(); }
+    else { calSel=null; calPts=[]; $("#calN").textContent="—"; }
+    const cal=store.get(CAL_KEY);
+    if(cal){ applyCalSettings(cal); const sh=slitShift(cal,LAB.wd.width); labMsg((isTest?"Measured with your saved calibration.":"Using your saved calibration settings. To recalibrate, tap the lines below again.")+(sh?` The slit moved ${fmt(Math.abs(sh))} pixels since you calibrated (was the phone bumped?), so the scale moved with it. Check your lines, and use the fine-tune slider if needed.`:""),target); }
+    else { // no calibration yet: try both orientations and keep the sharper one
+      LAB.xL=0; LAB.xR=1; let best=null; for(const r of [0,90]){ LAB.rot=r; LAB.flip=false; LAB.tilt=0; rebuild(); autoBand(); autoTilt(); const sc=sharpness(LAB.prof)*Math.min(1,LAB.peaks.length/2); if(!best||sc>best.sc) best={sc,rot:LAB.rot,tilt:LAB.tilt,bandC:LAB.bandC,bandH:LAB.bandH}; }
+      Object.assign(LAB,{rot:best.rot,tilt:best.tilt,bandC:best.bandC,bandH:best.bandH}); rebuild(); labMsg(isTest?"Calibrate in Mission 4 first, then this photo will be measured in nanometers.":"",target); }
+    if(url.startsWith("blob:")) URL.revokeObjectURL(url);
+    if(!isTest && !ex) markDone(3);
+  }),30);
+  im.onload=((f)=>()=>{ f(); setTimeout(()=>{ syncLabControls(); labChanged(); },40); })(im.onload);
+  im.onerror=()=>labMsg("Couldn't open that file as a picture. Try a JPEG or PNG photo.",target);
+  im.src=url;
+}
+function rebuild(){
+  const b=LAB.base; if(!b) return;
+  const sw=LAB.rot%180? b.height:b.width, sh=LAB.rot%180? b.width:b.height;
+  const c=document.createElement("canvas"); c.width=sw; c.height=sh; const x=c.getContext("2d",{willReadFrequently:true});
+  x.fillStyle="#000"; x.fillRect(0,0,sw,sh); x.translate(sw/2,sh/2); if(LAB.flip) x.scale(-1,1); x.rotate((LAB.rot+LAB.tilt)*Math.PI/180); x.drawImage(b,-b.width/2,-b.height/2);
+  LAB.work=c; LAB.wd=x.getImageData(0,0,sw,sh); extract();
+}
+function xRange(w){ const a=Math.max(0,Math.round(Math.min(LAB.xL,LAB.xR)*(w-1))), b=Math.min(w-1,Math.round(Math.max(LAB.xL,LAB.xR)*(w-1))); return b-a<10? [0,w-1]:[a,b]; }
+function bandRows(h){ const y0=Math.max(0,Math.round((LAB.bandC-LAB.bandH/2)*h)), y1=Math.min(h-1,Math.round((LAB.bandC+LAB.bandH/2)*h)); return [y0,Math.max(y0,y1)]; }
+function smooth(a,r){ const n=a.length, o=new Float32Array(n); let s=0; const c=[0]; for(let i=0;i<n;i++){ s+=a[i]; c.push(s); } for(let i=0;i<n;i++){ const lo=Math.max(0,i-r), hi=Math.min(n-1,i+r); o[i]=(c[hi+1]-c[lo])/(hi-lo+1); } return o; }
+function runMin(a,r){ const n=a.length, o=new Float32Array(n); for(let i=0;i<n;i++){ let m=Infinity; for(let j=Math.max(0,i-r);j<=Math.min(n-1,i+r);j++) if(a[j]<m) m=a[j]; o[i]=m; } return o; }
+function columnProfile(wd,y0,y1){
+  const {width:w,data}=wd; const p=new Float32Array(w), r=new Float32Array(w), g=new Float32Array(w), b=new Float32Array(w), mn=new Float32Array(w);
+  for(let y=y0;y<=y1;y++){ let o=y*w*4; for(let x=0;x<w;x++,o+=4){ const R=data[o],G=data[o+1],B=data[o+2]; p[x]+=Math.max(R,G,B); mn[x]+=Math.min(R,G,B); r[x]+=R; g[x]+=G; b[x]+=B; } }
+  return {p,r,g,b,mn};
+}
+function extract(){
+  if(!LAB.wd) return;
+  const {width:w,height:h}=LAB.wd; const [y0,y1]=bandRows(h);
+  const {p,r,g,b,mn}=columnProfile(LAB.wd,y0,y1);
+  const s=smooth(p,1), white=smooth(mn,1);
+  // remove the broad glow (around the slit, scattered light) so only sharp lines remain
+  const rw=Math.max(4,Math.round(w*0.045)); const base=smooth(runMin(s,rw),rw);
+  const hp=Array.from(s,(v,i)=>Math.max(0,v-base[i]));
+  // find the slit (zero order). Clue 1: the round glow around the slit reaches far above and below the
+  // band, while the spectrum lines don't. Clue 2: the two spectra are mirror images around the slit.
+  const bh=y1-y0+1, ya0=Math.max(0,y0-3*bh), yb1=Math.min(h-1,y1+3*bh);
+  const up=y0-1>=ya0? columnProfile(LAB.wd,ya0,y0-1).p : new Float32Array(w), dn=yb1>=y1+1? columnProfile(LAB.wd,y1+1,yb1).p : new Float32Array(w);
+  const halo=smooth(Array.from(up,(v,i)=>v+dn[i]),Math.round(w*0.03));
+  let zc=0; for(let i=1;i<w;i++) if(halo[i]>halo[zc]) zc=i;
+  const hs=Array.from(halo).sort((a,b)=>a-b), hmed=hs[Math.floor(w*0.5)]||1e-9;
+  let zero=null, zguess=null;
+  if(halo[zc]>hmed*1.4+1) zguess=zc;
+  else { // mirror symmetry of the sharp lines
+    let best=-1, bi=-1; for(let c=Math.round(w*0.2);c<=Math.round(w*0.8);c+=1){ let sum=0; for(let k=Math.round(w*0.03);k<Math.round(w*0.45);k+=1){ const a1=hp[c-k], a2=hp[c+k]; if(a1==null||a2==null) break; sum+=Math.min(a1,a2); } if(sum>best){best=sum;bi=c;} }
+    if(bi>0) zguess=bi; }
+  // the slit passes every color at once, so it is the whitest stripe (all three color channels bright)
+  if(zguess!=null){ const R=Math.round(w*0.035); let zi=zguess; for(let i=Math.max(0,zguess-R);i<=Math.min(w-1,zguess+R);i++) if(white[i]>white[zi]) zi=i;
+    const ws=Array.from(white).sort((a,b)=>a-b); if(white[zi]>ws[Math.floor(w*0.5)]*1.5+1) zero={x:refine(white,zi,Math.max(2,Math.round(w*0.004))),auto:true}; }
+  if(LAB.zero&&LAB.zero.manual&&LAB.zeroFor===LAB.base) zero=LAB.zero;
+  LAB.zero=zero; LAB.zeroFor=LAB.base;
+  const zw=Math.round(w*0.015), [xa,xb]=xRange(w); let mx=1e-9; for(let i=xa;i<=xb;i++){ if(zero&&Math.abs(i-zero.x)<zw) continue; if(hp[i]>mx) mx=hp[i]; }
+  LAB.prof=hp.map((v,i)=> i<xa||i>xb? 0 : Math.min(1.3,v/mx));
+  LAB.col=Array.from({length:w},(_,i)=>{ const m=Math.max(r[i],g[i],b[i],1); return [255*r[i]/m,255*g[i]/m,255*b[i]/m]; });
+  LAB.peaks=findPeaks(LAB.prof).filter(q=>(!zero||Math.abs(q.x-zero.x)>=zw)&&q.x>xa+2&&q.x<xb-2);
+}
+function refine(p,i,w){ const v=p[i]; let lo=v; for(let j=Math.max(0,i-3*w);j<=Math.min(p.length-1,i+3*w);j++) lo=Math.min(lo,p[j]); let sx=0,sw=0; for(let j=Math.max(0,i-2*w);j<=Math.min(p.length-1,i+2*w);j++){ const q=p[j]-(lo+v)/2; if(q>0){sx+=q*j;sw+=q;} } return sw?sx/sw:i; }
+function findPeaks(p){
+  const n=p.length, w=Math.max(3,Math.round(n*0.006)), W=Math.round(n*0.03), out=[];
+  for(let i=1;i<n-1;i++){
+    const v=p[i]; if(v<0.05) continue; let ok=true;
+    for(let j=Math.max(0,i-w);j<=Math.min(n-1,i+w);j++){ if(p[j]>v||(p[j]===v&&j<i)){ok=false;break;} }
+    if(!ok) continue;
+    let lo=v; for(let j=Math.max(0,i-W);j<=Math.min(n-1,i+W);j++) lo=Math.min(lo,p[j]);
+    if(v-lo<0.05) continue;
+    out.push({x:refine(p,i,w),h:Math.min(1.1,v)});
+  }
+  out.sort((a,b)=>b.h-a.h); const keep=[];
+  for(const q of out){ if(!keep.some(k=>Math.abs(k.x-q.x)<w*1.5)) keep.push(q); if(keep.length>=40) break; }
+  return keep.sort((a,b)=>a.x-b.x);
+}
+function sharpness(prof){ let num=0,den=1e-9; for(let i=1;i<prof.length;i++){ const d=prof[i]-prof[i-1]; num+=d*d; den+=prof[i]*prof[i]; } return num/den; }
+function autoBand(){
+  if(!LAB.wd) return;
+  // rows that contain sharp up-and-down lines score high; the smooth glow around the slit does not
+  const {width:w,height:h,data}=LAB.wd; const rows=new Float32Array(h);
+  const [xa,xb]=xRange(w);
+  for(let y=0;y<h;y++){ let s=0,o=(y*w+xa)*4,prev=0; for(let x=xa;x<=xb;x++,o+=4){ const v=Math.max(data[o],data[o+1],data[o+2]); if(x>xa) s+=Math.abs(v-prev); prev=v; } rows[y]=s/(xb-xa+1); }
+  const sm=smooth(rows,Math.max(2,Math.round(h*0.006))); const sorted=Array.from(sm).sort((a,b)=>a-b);
+  const base=sorted[Math.floor(h*0.5)]; let iy=0; for(let y=1;y<h;y++) if(sm[y]>sm[iy]) iy=y;
+  const thr=base+0.3*(sm[iy]-base); let a=iy,b=iy; while(a>0&&sm[a-1]>thr) a--; while(b<h-1&&sm[b+1]>thr) b++;
+  const pad=(b-a)*0.05;
+  LAB.bandC=((a+b)/2)/h; LAB.bandH=Math.max(0.015,Math.min(0.6,(b-a+2*pad)/h));
+  extract();
+}
+function autoTilt(){
+  const b=LAB.base; if(!b) return;
+  const s=Math.min(1,600/Math.max(b.width,b.height)); const sm=document.createElement("canvas"); sm.width=Math.round(b.width*s); sm.height=Math.round(b.height*s);
+  sm.getContext("2d").drawImage(b,0,0,sm.width,sm.height);
+  const sw=LAB.rot%180? sm.height:sm.width, sh=LAB.rot%180? sm.width:sm.height;
+  const c=document.createElement("canvas"); c.width=sw; c.height=sh; const x=c.getContext("2d",{willReadFrequently:true});
+  let best=0,bs=-1;
+  for(let t=-12;t<=12.001;t+=0.5){
+    x.setTransform(1,0,0,1,0,0); x.fillStyle="#000"; x.fillRect(0,0,sw,sh); x.translate(sw/2,sh/2); if(LAB.flip) x.scale(-1,1); x.rotate((LAB.rot+t)*Math.PI/180); x.drawImage(sm,-sm.width/2,-sm.height/2);
+    const wd=x.getImageData(0,0,sw,sh); const y0=Math.max(0,Math.round((LAB.bandC-LAB.bandH/2)*sh)), y1=Math.min(sh-1,Math.round((LAB.bandC+LAB.bandH/2)*sh));
+    const {p}=columnProfile(wd,y0,y1); let num=0,den=1; for(let i=1;i<p.length;i++){ const dd=p[i]-p[i-1]; num+=dd*dd; den+=p[i]*p[i]; }
+    const sc=num/den; if(sc>bs){bs=sc;best=t;}
+  }
+  LAB.tilt=best; rebuild(); autoBand();
+}
+function syncLabControls(){
+  $("#tiltS").value=LAB.tilt; $("#tiltOut").textContent=fmt(LAB.tilt,2)+"°";
+  $("#bandC").value=Math.round(LAB.bandC*1000); $("#bandCOut").textContent=fmt(LAB.bandC*100)+"% down";
+  $("#bandH").value=Math.round(LAB.bandH*1000); $("#bandHOut").textContent=fmt(LAB.bandH*100,1)+"% of photo";
+  $("#xLS").value=Math.round(LAB.xL*1000); $("#xLOut").textContent=fmt(LAB.xL*100)+"%"; $("#xRS").value=Math.round(LAB.xR*1000); $("#xROut").textContent=fmt(LAB.xR*100)+"%";
+  ["#sideR","#sideL"].forEach(id=>$(id).disabled=!LAB.zero);
+}
+$("#tiltS").addEventListener("input",e=>{ if(!LAB.base) return; LAB.tilt=+e.target.value; rebuild(); syncLabControls(); labChanged(); });
+$("#bandC").addEventListener("input",e=>{ LAB.bandC=+e.target.value/1000; extract(); syncLabControls(); labChanged(); });
+$("#bandH").addEventListener("input",e=>{ LAB.bandH=+e.target.value/1000; extract(); syncLabControls(); labChanged(); });
+$("#rotBtn").onclick=()=>{ if(!LAB.base) return; LAB.rot=(LAB.rot+90)%360; LAB.tilt=0; rebuild(); autoBand(); autoTilt(); syncLabControls(); labChanged(); };
+$("#flipBtn").onclick=()=>{ if(!LAB.base) return; LAB.flip=!LAB.flip; rebuild(); syncLabControls(); labChanged(); };
+$("#autoTiltBtn").onclick=()=>{ if(!LAB.base) return; autoTilt(); syncLabControls(); labChanged(); };
+$("#autoBandBtn").onclick=()=>{ if(!LAB.base) return; autoBand(); syncLabControls(); labChanged(); };
+// Tap = move the box up/down. Drag (mouse, or touch after pressing "Draw a box") = draw a new box.
+let boxDrag=null, drawMode=false;
+const pc=$("#photoCanvas");
+function setDrawMode(on){ drawMode=on; $("#drawBoxBtn").classList.toggle("on",on); pc.style.touchAction=on?"none":"manipulation"; $("#drawBoxBtn").textContent=on?"✏️ Drag on the photo…":"✏️ Draw a box"; }
+$("#drawBoxBtn").onclick=()=>setDrawMode(!drawMode);
+pc.addEventListener("pointerdown",e=>{ if(!LAB.work) return; const r=pc.getBoundingClientRect(); boxDrag={x0:e.clientX-r.left,y0:e.clientY-r.top,x1:e.clientX-r.left,y1:e.clientY-r.top,moved:false,can:drawMode||e.pointerType!=="touch"}; if(boxDrag.can) pc.setPointerCapture(e.pointerId); });
+pc.addEventListener("pointermove",e=>{ if(!boxDrag||!boxDrag.can) return; const r=pc.getBoundingClientRect(); boxDrag.x1=e.clientX-r.left; boxDrag.y1=e.clientY-r.top; if(Math.hypot(boxDrag.x1-boxDrag.x0,boxDrag.y1-boxDrag.y0)>8){ boxDrag.moved=true; drawPhoto(); } });
+pc.addEventListener("pointerup",e=>{ if(!boxDrag) return; const r=pc.getBoundingClientRect(), W=r.width, H=r.height, b=boxDrag; boxDrag=null;
+  if(b.moved){ const xa=Math.min(b.x0,b.x1)/W, xb=Math.max(b.x0,b.x1)/W, ya=Math.min(b.y0,b.y1)/H, yb=Math.max(b.y0,b.y1)/H;
+    LAB.xL=Math.max(0,xa); LAB.xR=Math.min(1,xb); LAB.bandC=Math.max(0,Math.min(1,(ya+yb)/2)); LAB.bandH=Math.max(0.01,Math.min(1,yb-ya)); setDrawMode(false); }
+  else LAB.bandC=Math.max(0,Math.min(1,(e.clientY-r.top)/H));
+  extract(); syncLabControls(); labChanged(); });
+pc.addEventListener("pointercancel",()=>{ boxDrag=null; drawPhoto(); });
+$("#xLS").addEventListener("input",e=>{ LAB.xL=+e.target.value/1000; extract(); syncLabControls(); labChanged(); });
+$("#xRS").addEventListener("input",e=>{ LAB.xR=+e.target.value/1000; extract(); syncLabControls(); labChanged(); });
+function sideOnly(s){ if(!LAB.zero||!LAB.wd) return; const W=LAB.wd.width, z=LAB.zero.x/W, gap=0.035; if(s>0){LAB.xL=Math.min(1,z+gap);LAB.xR=1;} else if(s<0){LAB.xL=0;LAB.xR=Math.max(0,z-gap);} else {LAB.xL=0;LAB.xR=1;} extract(); syncLabControls(); labChanged(); }
+$("#sideR").onclick=()=>sideOnly(1); $("#sideL").onclick=()=>sideOnly(-1); $("#sideAll").onclick=()=>sideOnly(0);
+function drawPhoto(cs="#photoCanvas",es="#photoEmpty"){
+  const c=$(cs), empty=$(es);
+  if(!LAB.work){ c.style.display="none"; empty.style.display="flex"; return; }
+  c.style.display="block"; empty.style.display="none";
+  const cw=c.parentElement.clientWidth, dpr=window.devicePixelRatio||1; const W=LAB.work.width, H=LAB.work.height;
+  const ch=Math.min(440, Math.round(cw*H/W)); const dw=Math.min(cw, Math.round(ch*W/H));
+  c.width=Math.round(dw*dpr); c.height=Math.round(ch*dpr); c.style.width=dw+"px"; c.style.height=ch+"px";
+  const x=c.getContext("2d"); x.setTransform(dpr,0,0,dpr,0,0); x.drawImage(LAB.work,0,0,dw,ch);
+  const [y0,y1]=bandRows(H), [xa,xb]=xRange(W); const Y0=y0/H*ch, Y1=(y1+1)/H*ch, X0=xa/W*dw, X1=(xb+1)/W*dw;
+  x.fillStyle="rgba(0,0,0,.5)"; x.fillRect(0,0,dw,Y0); x.fillRect(0,Y1,dw,ch-Y1); x.fillRect(0,Y0,X0,Y1-Y0); x.fillRect(X1,Y0,dw-X1,Y1-Y0);
+  x.strokeStyle=css("--amber"); x.lineWidth=2; x.strokeRect(Math.max(1,X0),Y0,Math.min(dw-1,X1)-Math.max(1,X0),Y1-Y0);
+  if(cs==="#photoCanvas"&&boxDrag&&boxDrag.moved){ x.setLineDash([5,4]); x.strokeStyle="#fff"; x.strokeRect(Math.min(boxDrag.x0,boxDrag.x1),Math.min(boxDrag.y0,boxDrag.y1),Math.abs(boxDrag.x1-boxDrag.x0),Math.abs(boxDrag.y1-boxDrag.y0)); x.setLineDash([]); }
+  if(LAB.zero){ const zx=LAB.zero.x/W*dw; x.fillStyle="#fff"; x.font='bold 11px "Atkinson Hyperlegible"'; x.textAlign="center"; x.fillText("slit",zx,Math.max(12,Y0-6)); }
+}
+/* ---- calibration model ----
+   grating:  pixel = x0 + F·tan(asin(λ/d))  on the calibrated side of the slit (the real grating equation, seen through a camera lens)
+   linear:   λ = a + b·(pixel/width)        fallback when no slit is visible */
+// The phone is meant to stay locked in place, so use the saved position. If the slit has clearly
+// moved since calibrating (the phone was bumped), follow the slit instead.
+function slitShift(cal,W){ if(!LAB.zero||cal.zeroAbs==null) return 0; const sh=LAB.zero.x-cal.zeroAbs*W; return Math.abs(sh)>W*0.012? sh:0; }
+function calX0(cal,W){ return cal.x0abs*W+(cal.model==="grating"? slitShift(cal,W):0); }
+function lamOf(x){
+  const cal=store.get(CAL_KEY); if(!cal||!LAB.wd) return null; const W=LAB.wd.width;
+  const dl=(cal.dl||0)+LAB.nudge;
+  if(cal.model==="linear") return cal.a+cal.b*(x/W)+dl;
+  const x0=calX0(cal,W), t=(x-x0)*cal.side/(cal.F*W); if(t<=0) return null;
+  return cal.d*Math.sin(Math.atan(t))+dl;
+}
+function xOfLam(l){
+  const cal=store.get(CAL_KEY); if(!cal||!LAB.wd) return null; const W=LAB.wd.width; l-=(cal.dl||0)+LAB.nudge;
+  if(cal.model==="linear") return (l-cal.a)/cal.b*W;
+  const u=U(l,cal.d); if(isNaN(u)) return null; return calX0(cal,W)+cal.side*cal.F*W*u;
+}
+function drawRaw(){
+  const c=$("#rawCanvas"); const {ctx,w,h}=setupCanvas(c);
+  if(!LAB.prof){ ctx.fillStyle=css("--plot-bg"); ctx.fillRect(0,0,w,h); ctx.fillStyle=css("--plot-text"); ctx.font='13px "Atkinson Hyperlegible"'; ctx.textAlign="center"; ctx.fillText("Load a photo to see its spectrum",w/2,h/2); $("#rawNote").textContent=""; return; }
+  const n=LAB.prof.length, [xa,xb]=xRange(n); const F=frame(ctx,w,h,{xmin:xa,xmax:xb+1,ymin:0,ymax:1.2,xstep:niceStep(xb-xa),xlabel:"position along the spectrum (pixels)",ylabel:"brightness"});
+  plotProfile(ctx,F,i=>i); drawZero(ctx,F);
+  const lam=store.get(CAL_KEY);
+  $("#rawNote").textContent = `${LAB.peaks.length} bright line${LAB.peaks.length===1?"":"s"} found` + (LAB.zero?", plus the slit itself in the middle.":".") + (lam?" You're calibrated: see Mission 5 for wavelengths.":" Next: calibrate in Mission 4.");
+  const strong=LAB.peaks.slice().sort((a,b)=>b.h-a.h)[0]; const nr=bandRows(LAB.wd.height).reduce((a,b)=>b-a+1);
+  $("#rawYours").innerHTML = `<b>Your numbers:</b> the band is ${nr} pixel rows tall, so each point on the graph adds up ${nr} pixels. The photo is ${LAB.wd.width} pixels wide.` + (LAB.zero?` The slit (zero order) is at pixel <b>${fmt(LAB.zero.x,1)}</b>.`:"") + (strong?` Your brightest line is at pixel <b>${fmt(strong.x,1)}</b>`+(LAB.zero?`, which is ${fmt(Math.abs(strong.x-LAB.zero.x),1)} pixels from the slit.`:"."):"");
+}
+function drawZero(ctx,F){ if(!LAB.zero||LAB.zero.x<F.xmin||LAB.zero.x>F.xmax) return; const X=F.X(LAB.zero.x); ctx.strokeStyle="rgba(255,255,255,.75)"; ctx.setLineDash([2,3]); ctx.beginPath(); ctx.moveTo(X,F.y0); ctx.lineTo(X,F.y1); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle="#fff"; ctx.font='bold 11px "Atkinson Hyperlegible"'; ctx.textAlign="center"; ctx.fillText("slit (0)",X,F.y0+10); }
+function niceStep(n){ const raw=n/6, p=Math.pow(10,Math.floor(Math.log10(raw))), m=raw/p; return (m<1.5?1:m<3.5?2:m<7.5?5:10)*p; }
+function plotProfile(ctx,F,xmap){
+  const P=LAB.prof, C=LAB.col, n=P.length;
+  for(let i=0;i<n;i++){ const X=xmap(i), X2=xmap(i+1); if(X==null||X2==null||X<F.xmin||X>F.xmax) continue; const v=Math.min(1.15,P[i]); if(v<0.01) continue; const x0=F.X(X), x1=F.X(X2); ctx.fillStyle=rgbStr(C[i],.75); ctx.fillRect(Math.min(x0,x1),F.Y(v),Math.max(1,Math.abs(x1-x0)+0.6),F.Y(0)-F.Y(v)); }
+  ctx.beginPath(); let st=false; for(let i=0;i<n;i++){ const X=xmap(i); if(X==null||X<F.xmin||X>F.xmax){st=false;continue;} const x=F.X(X), y=F.Y(Math.min(1.15,P[i])); st?ctx.lineTo(x,y):ctx.moveTo(x,y); st=true; }
+  ctx.strokeStyle="#e7ecf5"; ctx.lineWidth=1.4; ctx.stroke();
+}
+function makeLoader(el, keys, target=CALLAB, withUpload=true){
+  el.innerHTML="";
+  if(withUpload){
+    const lab=document.createElement("label"); lab.className="btn primary filebtn"; lab.innerHTML="📷 Take or choose a photo";
+    const inp=document.createElement("input"); inp.type="file"; inp.accept="image/*"; inp.className="visually-hidden";
+    inp.onchange=()=>{ const f=inp.files&&inp.files[0]; if(!f) return; loadURL(URL.createObjectURL(f), f.name.replace(/\.[^.]+$/,"")||"My photo", null, target); inp.value=""; };
+    lab.appendChild(inp); el.appendChild(lab);
+  }
+  const ex=document.createElement("div"); ex.className="row"; ex.style.margin="8px 0 0";
+  const t=document.createElement("span"); t.className="small"; t.textContent="Example photos:"; ex.appendChild(t);
+  keys.forEach(k=>{ const b=document.createElement("button"); b.className="chip"; b.textContent=EXAMPLES[k].label; b.onclick=()=>loadURL(simPhoto(k),"Example: "+EXAMPLES[k].label,k,target); ex.appendChild(b); });
+  el.appendChild(ex);
+  const m=document.createElement("div"); m.className="labmsg small"; m.dataset.t=target===TESTLAB?"test":"cal"; el.appendChild(m);
+}
+
+/* ---- Mission 4: calibration ---- */
+let calSel=null, calPts=[], gratingChoice="auto";
+function drawCalPlot(){
   const c=$("#calCanvas"); const {ctx,w,h}=setupCanvas(c);
-  const fit=calFit();
-  const F=frame(ctx,w,h,{xmin:0,xmax:PIXMAX,ymin:0,ymax:1.4,xstep:100,xlabel: fit?"pixel   ·   amber numbers = your nm scale":"pixel on the camera chip",ylabel:"brightness",b:88});
-  // colour each Balmer peak by its real colour
-  calPeaks.forEach(k=>{ const col=wl2rgb(k.l); ctx.beginPath(); ctx.moveTo(F.X(k.p-16),F.Y(0));
-    for(let p=k.p-16;p<=k.p+16;p+=0.5){ const d=(p-k.p)/4.2; ctx.lineTo(F.X(p),F.Y(k.a*Math.exp(-d*d/2)+0.035)); }
-    ctx.lineTo(F.X(k.p+16),F.Y(0)); ctx.closePath(); ctx.fillStyle=rgbStr(col,.75); ctx.fill(); });
-  ctx.beginPath(); for(let p=0;p<=PIXMAX;p+=1){ const v=calSignal(p); p===0?ctx.moveTo(F.X(p),F.Y(v)):ctx.lineTo(F.X(p),F.Y(v)); }
-  ctx.strokeStyle="#e7ecf5"; ctx.lineWidth=1.6; ctx.stroke();
-  // camera view strip (what the phone's camera sees)
-  const sy=F.y1+22, sh=24;
-  ctx.fillStyle="#05070d"; ctx.fillRect(F.x0,sy,F.x1-F.x0,sh);
-  calPeaks.forEach(k=>{ const col=wl2rgb(k.l); const x=F.X(k.p); const a=Math.min(1,.35+k.a);
-    const g=ctx.createLinearGradient(x-5,0,x+5,0); g.addColorStop(0,rgbStr(col,0)); g.addColorStop(.5,rgbStr(col,a)); g.addColorStop(1,rgbStr(col,0)); ctx.fillStyle=g; ctx.fillRect(x-5,sy,10,sh); });
-  ctx.fillStyle=css("--plot-text"); ctx.font='10px "Atkinson Hyperlegible"'; ctx.textAlign="right"; ctx.fillText("camera view",F.x1-4,sy+sh-6);
-  cal.pts.forEach((q,i)=>{ ctx.fillStyle=css("--amber"); ctx.beginPath(); ctx.arc(F.X(q.p),F.Y(calSignal(q.p))-10,6,0,7); ctx.fill(); ctx.fillStyle="#1b1300"; ctx.font='bold 10px "JetBrains Mono"'; ctx.textAlign="center"; ctx.fillText(i+1,F.X(q.p),F.Y(calSignal(q.p))-7); });
-  if(cal.sel!=null){ ctx.strokeStyle=css("--amber"); ctx.setLineDash([3,3]); ctx.beginPath(); ctx.moveTo(F.X(cal.sel),F.y0); ctx.lineTo(F.X(cal.sel),F.y1); ctx.stroke(); ctx.setLineDash([]); }
-  if(fit){ ctx.fillStyle=css("--amber"); ctx.font='11px "JetBrains Mono"'; ctx.textAlign="center";
-    for(let l=400;l<=700;l+=50){ const p=(l-fit.c)/fit.m; if(p<0||p>PIXMAX) continue; if(w<=420 && l%100) continue; ctx.fillRect(F.X(p),sy+sh,1,5); ctx.fillText(l,F.X(p),sy+sh+16); }
-    calMax.forEach(p=>{ const l=fit.m*p+fit.c; ctx.fillStyle="#fff"; ctx.textAlign="center"; ctx.font='bold 11px "JetBrains Mono"'; ctx.fillText(fmt(l),F.X(p),F.Y(calSignal(p))-(cal.pts.some(q=>q.p===p)?22:8)); });
+  if(!LAB.prof){ ctx.fillStyle=css("--plot-bg"); ctx.fillRect(0,0,w,h); ctx.fillStyle=css("--plot-text"); ctx.font='13px "Atkinson Hyperlegible"'; ctx.textAlign="center"; ctx.fillText("Load your hydrogen photo (or the example) above",w/2,h/2); c._F=null; return; }
+  const n=LAB.prof.length, [xa,xb]=xRange(n); const F=frame(ctx,w,h,{xmin:xa,xmax:xb+1,ymin:0,ymax:1.45,xstep:niceStep(xb-xa),xlabel:"pixel",ylabel:"brightness",b:48});
+  plotProfile(ctx,F,i=>i); drawZero(ctx,F);
+  const cal=store.get(CAL_KEY);
+  if(cal&&cal.model==="grating"){ const x0=calX0(cal,n); const xc=Math.max(F.xmin,Math.min(F.xmax,x0)); const a=cal.side>0? F.X(F.xmin):F.X(xc), b=cal.side>0? F.X(xc):F.X(F.xmax); ctx.fillStyle="rgba(0,0,0,.35)"; ctx.fillRect(Math.min(a,b),F.y0,Math.abs(b-a),F.y1-F.y0); }
+  LAB.peaks.forEach(p=>{ ctx.fillStyle="rgba(255,255,255,.85)"; ctx.beginPath(); ctx.arc(F.X(p.x),F.Y(Math.min(1.15,p.h))-6,2.5,0,7); ctx.fill(); });
+  calPts.forEach((q,i)=>{ const X=F.X(q.x), Y=F.Y(Math.min(1.15,q.h))-16; ctx.fillStyle=css("--amber"); ctx.beginPath(); ctx.arc(X,Y,8,0,7); ctx.fill(); ctx.fillStyle="#1b1300"; ctx.font='bold 10px "JetBrains Mono"'; ctx.textAlign="center"; ctx.fillText(i+1,X,Y+3.5); ctx.fillStyle="#fff"; ctx.font='bold 11px "JetBrains Mono"'; ctx.fillText(fmt(q.l),X,Y-12); });
+  if(calSel){ ctx.strokeStyle=css("--amber"); ctx.setLineDash([3,3]); ctx.beginPath(); ctx.moveTo(F.X(calSel.x),F.y0); ctx.lineTo(F.X(calSel.x),F.y1); ctx.stroke(); ctx.setLineDash([]); }
+  if(cal){
+    ctx.font='11px "JetBrains Mono"'; ctx.textAlign="center"; ctx.fillStyle=css("--amber");
+    let lastX=-1e9; for(let l=400;l<=700;l+=50){ const x=xOfLam(l); if(x==null||x<F.xmin||x>F.xmax) continue; const X=F.X(x); ctx.fillRect(X,F.y1+18,1,5); if(Math.abs(X-lastX)>=30){ ctx.fillText(l,X,F.y1+34); lastX=X; } }
+    ctx.fillStyle=css("--plot-text"); ctx.textAlign="right"; ctx.fillText("amber = your nm scale",F.x1,h-2);
+    [656.28,486.13,434.05,410.17].forEach(l=>{ const x=xOfLam(l); if(x==null||x<F.xmin||x>F.xmax) return; ctx.strokeStyle="rgba(255,90,138,.6)"; ctx.setLineDash([2,4]); ctx.beginPath(); ctx.moveTo(F.X(x),F.y0); ctx.lineTo(F.X(x),F.y1); ctx.stroke(); ctx.setLineDash([]); });
   }
   c._F=F;
 }
 $("#calCanvas").addEventListener("click",e=>{
-  const c=$("#calCanvas"); const F=c._F; if(!F) return; const r=c.getBoundingClientRect(); const x=e.clientX-r.left;
-  const p=(x-F.x0)/(F.x1-F.x0)*PIXMAX; let best=null,bd=1e9; calMax.forEach(m=>{const d=Math.abs(m-p); if(d<bd){bd=d;best=m;}});
-  if(bd>60){ $("#calSel").textContent="Tap closer to a peak."; return; }
-  cal.sel=best; $("#calSel").innerHTML=`Selected peak at pixel <b>${best}</b>. Which line is it? ↓`; drawCal();
+  const c=$("#calCanvas"), F=c._F; if(!F) return; const r=c.getBoundingClientRect(); const X=F.xmin+(e.clientX-r.left-F.x0)/(F.x1-F.x0)*(F.xmax-F.xmin);
+  const cands=LAB.peaks.slice(); if(LAB.zero) cands.push({x:LAB.zero.x,h:1.1,zero:true});
+  let best=null,bd=1e9; cands.forEach(p=>{const d=Math.abs(p.x-X); if(d<bd){bd=d;best=p;}});
+  if(!best||bd>(F.xmax-F.xmin)*0.04){ $("#calSel").textContent="Tap closer to a peak (the white dots)."; return; }
+  calSel=best; $("#calSel").innerHTML= best.zero? `That's the slit itself (pixel ${fmt(best.x,1)}). Tap a colored line instead.` : `Selected the peak at pixel <b>${fmt(best.x,1)}</b>. Which Balmer line is it? ↓`; if(best.zero) calSel=null; drawCalPlot();
 });
-$$("#m3 .chip[data-w]").forEach(b=>b.addEventListener("click",()=>{
-  if(cal.sel==null){ $("#calSel").textContent="First tap a peak on the graph."; return; }
-  const l=+b.dataset.w; const truthL = calPeaks.reduce((a,k)=>Math.abs(k.p-cal.sel)<Math.abs(a.p-cal.sel)?k:a).l;
-  const wrong = Math.abs(truthL-l)>3;
-  cal.pts = cal.pts.filter(q=>q.p!==cal.sel); if(cal.pts.length>=2) cal.pts.shift();
-  cal.pts.push({p:cal.sel,l});
-  $("#calSel").innerHTML = wrong? `Hmm, pixel ${cal.sel} set to ${l} nm. Check the color order: violet is on the left, red on the right.` : `Pixel ${cal.sel} = ${l} nm. ${cal.pts.length<2?"Now tap a second peak.":""}`;
-  cal.sel=null; updCal(); drawCal();
+$$("#calChips .chip[data-w]").forEach(b=>b.addEventListener("click",()=>{
+  if(!calSel){ $("#calSel").textContent="First tap a peak on the graph."; return; }
+  const l=+b.dataset.w; let note="";
+  if(LAB.zero&&calPts.length){ const s0=Math.sign(calPts[0].x-LAB.zero.x), s1=Math.sign(calSel.x-LAB.zero.x); if(s0!==s1){ calPts=[]; note=`Switched to the spectrum on the ${s1>0?"right":"left"} of the slit. `; } }
+  calPts=calPts.filter(q=>Math.abs(q.x-calSel.x)>1 && q.l!==l);
+  calPts.push({x:calSel.x,h:calSel.h,l}); calSel=null;
+  fitCal(note); drawCalPlot();
 }));
-function updCal(){
-  $("#cal1").textContent = cal.pts[0]? `px ${cal.pts[0].p} = ${cal.pts[0].l}`:"—";
-  $("#cal2").textContent = cal.pts[1]? `px ${cal.pts[1].p} = ${cal.pts[1].l}`:"—";
-  const fit=calFit(); const d=$("#calDone");
-  if(fit){ $("#calSlope").textContent=fmt(fit.m,3);
-    const vio=calMax.map(p=>fit.m*p+fit.c).filter(l=>l>420&&l<450);
-    const good = fit.m>0.3 && fit.m<0.5 && cal.pts.every(q=>Math.abs(q.l-calPeaks.reduce((a,k)=>Math.abs(k.p-q.p)<Math.abs(a.p-q.p)?k:a).l)<3);
-    d.classList.remove("hide");
-    d.innerHTML = good ? `<b class="step-done">Calibrated!</b> Each pixel is ${fmt(fit.m,3)} nm wide. Now the graph reads in nm: the faint violet peak lands near <b>${vio.length?fmt(vio[0]):"?"} nm</b>, and hydrogen's 5 → 2 line (from Mission 2) is really at 434 nm. A few nm off is normal for a two-point phone calibration.` : `<b style="color:var(--bad)">Something's off.</b> Your scale runs ${fit.m<0?"backwards":"too stretched or squished"}. Make sure each peak got its real wavelength, then try again.`;
-    state.res.cal = good? `${fmt(fit.m,3)} nm/pixel`:"needs another try";
-    if(good) markDone(3);
-  } else { $("#calSlope").textContent="—"; d.classList.add("hide"); }
-  renderResults();
+$$("#gratBtns .chip").forEach(b=>b.addEventListener("click",()=>{ gratingChoice=b.dataset.g==="auto"?"auto":+b.dataset.g; $$("#gratBtns .chip").forEach(x=>x.classList.toggle("on",x===b)); if(calPts.length>=2) fitCal(""); }));
+function fitCal(note=""){
+  const n=calPts.length; $("#calN").textContent=n?String(n):"—";
+  if(n<2){ $("#calSel").textContent= note+(n? "Good. Now tap a second line and pick which one it is." : "Tap a peak on the graph."); return; }
+  const W=LAB.wd.width, z=LAB.zero?LAB.zero.x:null, d=$("#calDone"); d.classList.remove("hide");
+  let cal, msg;
+  if(z!=null){
+    const side=Math.sign(calPts[0].x-z)||1; const cands=gratingChoice==="auto"?[500,1000]:[gratingChoice];
+    let best=null;
+    for(const lpm of cands){ const dd=1e6/lpm; const v=calPts.map(q=>side*U(q.l,dd)); if(v.some(isNaN)) continue;
+      const mv=v.reduce((a,b)=>a+b,0)/n, mx=calPts.reduce((a,q)=>a+q.x,0)/n; let sxy=0,sxx=0; v.forEach((vi,i)=>{ sxy+=(vi-mv)*(calPts[i].x-mx); sxx+=(vi-mv)*(vi-mv); });
+      if(sxx<1e-12) continue; const Fs=sxy/sxx, x0=mx-Fs*mv; const rms=Math.sqrt(calPts.reduce((a,q,i)=>a+Math.pow(x0+Fs*v[i]-q.x,2),0)/n);
+      const off=Math.abs(x0-z); if(!best||off+3*rms<best.score) best={lpm,dd,Fs,x0,rms,off,score:off+3*rms}; }
+    if(!best||best.Fs<=0||best.off>0.08*W||best.rms>0.012*W){ d.innerHTML=`<b style="color:var(--bad)">Something's off.</b> Those choices don't fit a real grating. Check the color order: going <b>away from the slit</b>, the lines come violet (Hδ, Hγ), then aqua (Hβ), then red (Hα) farthest out.`; return; }
+    cal={model:"grating",lpm:best.lpm,d:best.dd,F:best.Fs/W,side,x0abs:best.x0/W,zeroAbs:z/W};
+    msg=`Your grating looks like a <b>${best.lpm} lines per mm</b> grating${gratingChoice==="auto"?" (the page worked this out from where your lines and the slit sit)":""}. Your fit puts the center ${fmt(best.off,0)} pixels from the slit you photographed${best.off<0.02*W?", a good match":""}.`;
+    $("#calYours").innerHTML=`<b>Your numbers:</b> ${calPts.map(q=>`pixel ${fmt(q.x,1)} → ${fmt(q.l,1)} nm`).join("; ")}; slit at pixel ${fmt(z,1)}.<br>Grating spacing d = 1,000,000 ÷ ${best.lpm} = <b>${fmt(best.dd)} nm</b>.<br>Best fit: distance from center = <b>${fmt(best.Fs,0)} px</b> × tan(asin(wavelength ÷ ${fmt(best.dd)})), with the center at pixel ${fmt(best.x0,1)}.`;
+  } else {
+    let su=0,sl=0,suu=0,sul=0; calPts.forEach(q=>{const u=q.x/W; su+=u;sl+=q.l;suu+=u*u;sul+=u*q.l;}); const den=n*suu-su*su; if(Math.abs(den)<1e-12) return;
+    const b=(n*sul-su*sl)/den, a=(sl-b*su)/n; const pxs=Math.abs(b/W);
+    if(pxs<0.02||pxs>5){ d.innerHTML=`<b style="color:var(--bad)">Something's off.</b> Check the color order of the lines you picked.`; return; }
+    cal={model:"linear",a,b}; msg=`The page couldn't find the slit in this photo, so it used a straight-line scale (${fmt(pxs,3)} nm per pixel).`;
+    $("#calYours").innerHTML=`<b>Your numbers:</b> ${calPts.map(q=>`pixel ${fmt(q.x,1)} → ${fmt(q.l,1)} nm`).join("; ")}.<br>Straight-line fit: wavelength = ${fmt(a,1)} + ${fmt(b/W,4)} × pixel.`;
+  }
+  Object.assign(cal,{rot:LAB.rot,tilt:LAB.tilt,flip:LAB.flip,bandC:LAB.bandC,bandH:LAB.bandH,xL:LAB.xL,xR:LAB.xR,when:new Date().toISOString()});
+  store.set(CAL_KEY,cal); TESTLAB.nudge=0; $("#nudgeS").value=0; $("#nudgeOut").textContent="0 nm";
+  if(TESTLAB.base) withLab(TESTLAB,()=>{ applyCalSettings(cal); labMsg("Measured with your new calibration.",TESTLAB); });
+  const pred=[434.05,410.17].filter(l=>!calPts.some(q=>q.l===l)).map(l=>{ const x=xOfLam(l); if(x==null) return {l,ok:false}; const pk=LAB.peaks.reduce((m,p)=>Math.abs(p.x-x)<Math.abs(m.x-x)?p:m,{x:1e9}); return {l,got:lamOf(pk.x),ok:Math.abs(pk.x-x)<W*0.012}; });
+  d.innerHTML=`${note}<b class="step-done">Calibrated and saved!</b> ${msg}` +
+    (pred.length? "<br>Check: " + pred.map(p=>p.ok?`a peak sits near ${fmt(p.l)} nm, where ${p.l<420?"Hδ":"Hγ"} should be (measured ${fmt(p.got,1)} nm) ✓`:`no clear peak at ${fmt(p.l)} nm (${p.l<420?"Hδ":"Hγ"} is faint or blurred into its neighbor; that's OK)`).join("; ") : "") +
+    "<br>Every photo you load now will use this calibration. Head to Mission 5!";
+  state.res.cal= cal.model==="grating"? `${cal.lpm} lines/mm grating` : `${fmt(Math.abs(cal.b/W),3)} nm/pixel`; markDone(4); updCalSaved(); labChanged();
 }
-$("#calReset").onclick=()=>{cal.pts=[];cal.sel=null;$("#calSel").textContent="Tap a peak on the graph."; updCal(); drawCal();};
-predict("#p3",1,["Too far violet. 400 nm is past even the faintest hydrogen line (410 nm).","Right! That's the 434 nm line from the 5 → 2 jump in Mission 2.","Too red. 500 nm would sit to the right of the aqua 486 nm line, not the left."]);
-function drawGr(){ const l=+$("#grL").value; const s=l/1000; const ang=Math.asin(s)*180/Math.PI; $("#grLout").textContent=l+" nm"; $("#grYours").innerHTML=`<b>Your numbers:</b> sin(angle) = ${l} ÷ 1000 = ${fmt(s,3)}, so the angle = <b>${fmt(ang,1)}°</b> (${colorName(l)}).`; }
-$("#grL").addEventListener("input",drawGr);
+$("#calReset").onclick=()=>{ calPts=[]; calSel=null; store.set(CAL_KEY,null); TESTLAB.nudge=0; $("#nudgeS").value=0; $("#calDone").classList.add("hide"); $("#calN").textContent="—"; $("#calSel").textContent="Tap a peak on the graph."; state.res.cal=null; updCalSaved(); labChanged(); };
+function updCalSaved(){ const cal=store.get(CAL_KEY); $("#calSaved").textContent=cal? (cal.model==="grating"?`${cal.lpm}/mm ✓`:"yes ✓"):"none"; $("#calSlope").textContent=cal? (cal.model==="grating"? fmt(cal.d,0)+" nm":"—"):"—"; }
+predict("#p4",1,["Not if it moved a lot. The calibration remembers how far each color lands from the slit, so the lines would land at the wrong distances.","Right, unless the move is tiny. The page measures every line from the slit, so small shifts are handled automatically. A bigger bump changes the angles, so recalibrate with hydrogen or use the fine-tune slider in Mission 5.","The photo still loads fine; it's the wavelengths that would be wrong."]);
 
-/* ================= MISSION 4: gases ================= */
+/* ---- Mission 5: identify ---- */
 let gasSel="H";
-function emission(lines, l, width=1.1){ let s=0; for(const [c,a] of lines){ const d=(l-c)/width; s+=a*Math.exp(-d*d/2);} return s; }
-function drawEmission(c, lines, overlays=[]){
-  const {ctx,w,h}=setupCanvas(c);
-  const stripH=34;
+function drawEmission(c, lines){
+  const {ctx,w,h}=setupCanvas(c); const stripH=30;
   const F=frame(ctx,w,h,{xmin:L0,xmax:L1,ymin:0,ymax:1.15,b:20+stripH+26,ylabel:"brightness",xlabel:""});
-  // graph
   ctx.beginPath(); for(let l=L0;l<=L1;l+=0.25){ const v=Math.min(1.1,emission(lines,l)); l===L0?ctx.moveTo(F.X(l),F.Y(v)):ctx.lineTo(F.X(l),F.Y(v)); }
   ctx.strokeStyle="#e7ecf5"; ctx.lineWidth=1.6; ctx.stroke();
-  overlays.forEach((o,i)=>{ ctx.strokeStyle=o.col; ctx.lineWidth=2; ctx.setLineDash([5,4]);
-    o.lines.forEach(([l,a])=>{ if(a<0.1) return; ctx.beginPath(); ctx.moveTo(F.X(l),F.y0+i*4); ctx.lineTo(F.X(l),F.y1); ctx.stroke(); }); ctx.setLineDash([]); });
-  // strip view (what the eye sees)
-  const sy=F.y1+22;
-  ctx.fillStyle="#05070d"; ctx.fillRect(F.x0,sy,F.x1-F.x0,stripH);
+  const sy=F.y1+22; ctx.fillStyle="#05070d"; ctx.fillRect(F.x0,sy,F.x1-F.x0,stripH);
   for(let px=F.x0;px<F.x1;px++){ const l=L0+(px-F.x0)/(F.x1-F.x0)*(L1-L0); const v=Math.min(1,emission(lines,l,0.9)*1.3); if(v<0.02) continue; ctx.fillStyle=rgbStr(wl2rgb(l),v); ctx.fillRect(px,sy,1.2,stripH); }
   ctx.fillStyle=css("--plot-text"); ctx.font='11px "Atkinson Hyperlegible"'; ctx.textAlign="center"; ctx.fillText("wavelength (nm) · strip = what your eye sees",(F.x0+F.x1)/2,h-6);
 }
-function drawGas(){
-  const g=GAS[gasSel]; $("#tube").style.background=`linear-gradient(180deg, #fff 0%, ${g.glow} 35%, ${g.glow} 65%, #fff0 100%)`; $("#tube").style.boxShadow=`0 0 24px 6px ${g.glow}`;
-  $("#tubeNote").textContent=GAS_NOTES[gasSel];
-  drawEmission($("#gasCanvas"), g.lines);
-}
+function drawGas(){ const g=GAS[gasSel]; $("#tube").style.background=`linear-gradient(180deg, #fff 0%, ${g.glow} 35%, ${g.glow} 65%, #fff0 100%)`; $("#tube").style.boxShadow=`0 0 24px 6px ${g.glow}`; $("#tubeNote").textContent=GAS_NOTES[gasSel]; drawEmission($("#gasCanvas"), g.lines); }
 Object.keys(GAS).forEach(k=>{ const b=document.createElement("button"); b.className="chip"+(k===gasSel?" on":""); b.textContent=GAS[k].name; b.onclick=()=>{gasSel=k; $$("#gasBtns button").forEach(x=>x.classList.toggle("on",x===b)); drawGas();}; $("#gasBtns").appendChild(b); });
-
-const OVCOL={H:"#ff5a8a",He:"#ffd6a0",Ne:"#ff7a3f",Hg:"#7fb0ff",Na:"#ffcf3f"};
-const mys={i:0, ov:new Set(), ans:new Set(), solved:new Set()};
-function mysLines(i){ return MYST[i].ans.flatMap(k=>GAS[k].lines); }
-function drawMys(){ drawEmission($("#mysCanvas"), mysLines(mys.i), [...mys.ov].map(k=>({col:OVCOL[k],lines:GAS[k].lines}))); }
-function buildMys(){
-  $("#mysBtns").innerHTML=""; MYST.forEach((m,i)=>{ const b=document.createElement("button"); b.className="chip"+(i===mys.i?" on":""); b.textContent=(mys.solved.has(i)?"✓ ":"")+m.id; b.onclick=()=>{mys.i=i; mys.ans.clear(); $("#mysFb").textContent=""; buildMys(); drawMys();}; $("#mysBtns").appendChild(b); });
+const ov=new Set(), ansSet=new Set();
+function buildOv(){
   $("#ovBtns").innerHTML=""; $("#ansBtns").innerHTML="";
   Object.keys(GAS).forEach(k=>{
-    const b=document.createElement("button"); b.className="chip"+(mys.ov.has(k)?" on":""); b.innerHTML=`<span style="color:${OVCOL[k]}">┊</span> ${GAS[k].name}`; b.onclick=()=>{ mys.ov.has(k)?mys.ov.delete(k):mys.ov.add(k); buildMys(); drawMys(); }; $("#ovBtns").appendChild(b);
-    const a=document.createElement("button"); a.className="chip"+(mys.ans.has(k)?" on":""); a.textContent=GAS[k].name; a.onclick=()=>{ mys.ans.has(k)?mys.ans.delete(k):mys.ans.add(k); buildMys(); }; $("#ansBtns").appendChild(a);
+    const b=document.createElement("button"); b.className="chip"+(ov.has(k)?" on":""); b.innerHTML=`<span style="color:${OVCOL[k]}">┊</span> ${GAS[k].name}`; b.onclick=()=>{ ov.has(k)?ov.delete(k):ov.add(k); buildOv(); drawId(); }; $("#ovBtns").appendChild(b);
+    const a=document.createElement("button"); a.className="chip"+(ansSet.has(k)?" on":""); a.textContent=GAS[k].name; a.onclick=()=>{ ansSet.has(k)?ansSet.delete(k):ansSet.add(k); buildOv(); }; $("#ansBtns").appendChild(a);
   });
 }
-$("#mysCheck").onclick=()=>{
-  const want=new Set(MYST[mys.i].ans); const got=mys.ans; const fb=$("#mysFb");
-  if(!got.size){ fb.className="fb bad"; fb.textContent="Pick at least one element."; return; }
-  const ok = want.size===got.size && [...want].every(k=>got.has(k));
-  if(ok){ fb.className="fb good"; fb.textContent= want.size>1? "Solved! Two fingerprints at once, just like a star, which holds many elements." : `Solved! It's ${GAS[[...want][0]].name}.`; mys.solved.add(mys.i); buildMys(); }
-  else { const some=[...got].some(k=>want.has(k)); fb.className="fb bad"; fb.textContent= some? (got.size<want.size? "Part right! Some bright lines are still unexplained. Is it a mix?" : "Close, but one of your picks has lines that aren't in the signal.") : "Not a match. Turn on overlays and look for lines that land exactly on the peaks."; }
-  state.res.mys=mys.solved.size; if(mys.solved.size===3) markDone(4); renderResults();
-};
-// phone matcher
-function matchPeaks(peaks){
+function hueOf(c){ const [r,g,b]=c.map(v=>v/255), mx=Math.max(r,g,b), mn=Math.min(r,g,b), dd=mx-mn; if(dd<0.25) return null; let h= mx===r? ((g-b)/dd)%6 : mx===g? (b-r)/dd+2 : (r-g)/dd+4; return (h*60+360)%360; }
+function ghostish(x,l){ const hc=hueOf(LAB.col[Math.round(x)]||[0,0,0]), he=hueOf(wl2rgb(l)); if(hc==null||he==null) return false; let dh=Math.abs(hc-he); dh=Math.min(dh,360-dh); return dh>75; }
+function measuredLines(){ if(!LAB.peaks.length||!store.get(CAL_KEY)) return []; return LAB.peaks.map(p=>{ const l=lamOf(p.x); return l==null?null:{l,h:p.h,ghost:ghostish(p.x,l)}; }).filter(q=>q&&q.l>=L0&&q.l<=L1); }
+function drawId(){ return withLab(TESTLAB,_drawId); }
+function _drawId(){
+  const c=$("#idCanvas"); const {ctx,w,h}=setupCanvas(c); const cal=store.get(CAL_KEY);
+  $("#needCal").classList.toggle("hide",!!cal || !LAB.prof);
+  if(!LAB.prof||!cal){ ctx.fillStyle=css("--plot-bg"); ctx.fillRect(0,0,w,h); ctx.fillStyle=css("--plot-text"); ctx.font='13px "Atkinson Hyperlegible"'; ctx.textAlign="center"; ctx.fillText(!cal?"Calibrate in Mission 4 first":"Load a photo above",w/2,h/2); return; }
+  const stripH=26; const F=frame(ctx,w,h,{xmin:L0,xmax:L1,ymin:0,ymax:1.15,b:20+stripH+26,ylabel:"brightness",xlabel:""});
+  plotProfile(ctx,F,i=>lamOf(i));
+  [...ov].forEach((k,i)=>{ ctx.strokeStyle=OVCOL[k]; ctx.lineWidth=2; ctx.setLineDash([5,4]); GAS[k].lines.forEach(([l,a])=>{ if(a<0.1) return; ctx.beginPath(); ctx.moveTo(F.X(l),F.y0+i*4); ctx.lineTo(F.X(l),F.y1); ctx.stroke(); }); ctx.setLineDash([]); });
+  measuredLines().forEach(q=>{ ctx.fillStyle=q.ghost?"#888":"#fff"; ctx.beginPath(); ctx.arc(F.X(q.l),F.Y(Math.min(1.1,q.h))-6,2.5,0,7); ctx.fill(); });
+  const sy=F.y1+22; ctx.fillStyle="#05070d"; ctx.fillRect(F.x0,sy,F.x1-F.x0,stripH);
+  const n=LAB.prof.length; for(let i=0;i<n;i++){ const l=lamOf(i), l2=lamOf(i+1); if(l==null||l2==null||l<L0||l>L1) continue; const v=Math.min(1,LAB.prof[i]*1.2); if(v<0.03) continue; const x0=F.X(l), x1=F.X(l2); ctx.fillStyle=rgbStr(LAB.col[i],v); ctx.fillRect(Math.min(x0,x1),sy,Math.abs(x1-x0)+0.8,stripH); }
+  ctx.fillStyle=css("--plot-text"); ctx.font='11px "Atkinson Hyperlegible"'; ctx.textAlign="center"; ctx.fillText("wavelength (nm) · strip = your camera's view",(F.x0+F.x1)/2,h-6);
+}
+function nearestRef(l){ let best=null; Object.keys(GAS).forEach(k=>GAS[k].lines.forEach(([c,a])=>{ if(a<0.1) return; const d=Math.abs(c-l); if(d<=6 && (!best||d<best.d-1e-9||(Math.abs(d-best.d)<1e-9&&a>best.a))) best={k,c,d,a}; })); return best; }
+function alts(l,r){ const o=[]; Object.keys(GAS).forEach(k=>{ if(k===r.k) return; GAS[k].lines.forEach(([c,a])=>{ if(a>=0.1&&Math.abs(c-l)<=4&&!o.some(x=>x.k===k)) o.push({k,c}); }); }); return o.length? `<br><span class="small">or ${o.map(x=>`${GAS[x.k].name} ${fmt(x.c,1)}`).join(", ")}</span>`:""; }
+function matchScores(ms){
+  const tot=ms.reduce((s,q)=>s+q.h,0)||1; const lo=Math.min(...ms.map(q=>q.l)), hi=Math.max(...ms.map(q=>q.l));
   return Object.keys(GAS).map(k=>{
-    const strong=GAS[k].lines.filter(x=>x[1]>=0.2).map(x=>x[0]);
-    let hit=0; peaks.forEach(p=>{ if(strong.some(l=>Math.abs(l-p)<=8)) hit++; });
-    const top=GAS[k].lines.slice().sort((a,b)=>b[1]-a[1]).slice(0,3).map(x=>x[0]);
-    const cover=top.filter(l=>peaks.some(p=>Math.abs(l-p)<=8)).length/top.length;
-    const score=Math.round(100*(0.65*hit/peaks.length + 0.35*cover));
-    return {k,score};
+    const ls=GAS[k].lines; let ex=0; ms.forEach(q=>{ if(ls.some(([c,a])=>a>=0.1&&Math.abs(c-q.l)<=6)) ex+=q.h; });
+    const top=ls.filter(([c])=>c>=L0&&c<=L1).sort((a,b)=>b[1]-a[1]).slice(0,3);
+    const cov=top.length? top.filter(([c])=>ms.some(q=>Math.abs(q.l-c)<=6)).length/top.length : 0;
+    return {k,score:Math.round(100*(0.6*ex/tot+0.4*cov))};
   }).sort((a,b)=>b.score-a.score);
 }
-$("#matchBtn").onclick=()=>{
-  const peaks=($("#myPeaks").value.match(/\d+(\.\d+)?/g)||[]).map(Number).filter(x=>x>=350&&x<=750);
-  const out=$("#matchOut");
-  if(!peaks.length){ out.innerHTML='<p class="fb bad">Type some numbers between 380 and 720 first.</p>'; return; }
-  const r=matchPeaks(peaks);
-  out.innerHTML = r.map(x=>`<div class="mb"><b>${GAS[x.k].name}</b><div class="bar"><span style="width:${x.score}%"></span></div><span class="mono">${x.score}%</span></div>`).join("") +
-    `<p><b>Best match: ${GAS[r[0].k].name}.</b> ${r[0].score<60?"Not a strong match, though. Maybe recalibrate, or it's a mix of gases?":""}</p>`;
-  state.res.phone=`${peaks.map(p=>fmt(p)).join(", ")} nm → ${GAS[r[0].k].name}`; renderResults();
-};
-$("#tryDemo").onclick=()=>{ $("#myPeaks").value="652, 483, 431"; $("#matchBtn").click(); };
-
-/* ================= MISSION 5: stars ================= */
-// A. Kirchhoff demo
-let absMode=0;
-const ABS_NOTES=["A hot, dense glow makes a continuous rainbow, no gaps.","A thin glowing gas makes only bright lines: its fingerprint.","Shine a hot glow through cooler gas and the gas steals its fingerprint colors, leaving dark lines in the same places. This is what starlight looks like!"];
-function drawAbs(){
-  const c=$("#absCanvas"); const {ctx,w,h}=setupCanvas(c);
-  ctx.fillStyle="#05070d"; ctx.fillRect(0,0,w,h);
-  const H=GAS.H.lines; const pad=14, sw=w-2*pad, sh=h-46;
-  for(let px=0;px<sw;px++){ const l=L0+px/sw*(L1-L0); let a;
-    if(absMode===0) a=1; else if(absMode===1) a=Math.min(1,emission(H,l,0.9)*1.4); else a=1-Math.min(.92,emission(H,l,0.9)*1.6);
-    ctx.fillStyle=rgbStr(wl2rgb(l),a); ctx.fillRect(pad+px,14,1.2,sh); }
-  ctx.fillStyle="#8892a6"; ctx.font='11px "JetBrains Mono"'; ctx.textAlign="center";
-  for(let v=400;v<=700;v+=50) ctx.fillText(v,pad+(v-L0)/(L1-L0)*sw,h-16);
-  ctx.fillText("wavelength (nm) · gas = hydrogen",w/2,h-2);
-  $("#absNote").textContent=ABS_NOTES[absMode];
+function updId(){ return withLab(TESTLAB,_updId); }
+function _updId(){
+  const ms=measuredLines(); const pt=$("#peakTable"), mo=$("#matchOut");
+  if(!ms.length){ pt.innerHTML=`<p class="small">${store.get(CAL_KEY)?"Load a photo to list its lines.":"Calibrate first to turn your peaks into wavelengths."}</p>`; mo.innerHTML=""; return; }
+  pt.innerHTML=`<table class="ltable"><tr><th>Your line</th><th>Color</th><th>Closest known line</th></tr>`+ms.map(q=>{ const r=nearestRef(q.l); return `<tr${q.ghost?' class="ghost"':''}><td class="mono">${fmt(q.l,1)} nm</td><td><span class="sw" style="background:${rgbStr(wl2rgb(q.l))}"></span>${colorName(q.l)}${q.ghost?'<br><span class="small">⚠ camera saw a different color here: probably a reflection ("ghost"), skipped by the matcher</span>':''}</td><td>${r?`${GAS[r.k].name} ${fmt(r.c,1)} nm <span class="small">(off by ${fmt(r.d,1)})</span>`+alts(q.l,r):'<span class="small">none within 6 nm</span>'}</td></tr>`; }).join("")+`</table>`;
+  const sc=matchScores(ms.filter(q=>!q.ghost).length? ms.filter(q=>!q.ghost):ms);
+  mo.innerHTML=sc.map(x=>`<div class="mb"><b>${GAS[x.k].name}</b><div class="bar"><span style="width:${x.score}%"></span></div><span class="mono">${x.score}%</span></div>`).join("")+`<p><b>Best match: ${GAS[sc[0].k].name}.</b> ${sc[0].score<60?"Not a strong match. Is it a mix of gases, or does your calibration need a nudge?":""}</p>`;
 }
-$$("#absBtns button").forEach(b=>b.onclick=()=>{absMode=+b.dataset.m; $$("#absBtns button").forEach(x=>x.classList.toggle("on",x===b)); drawAbs();});
+$("#nudgeS").addEventListener("input",e=>{ TESTLAB.nudge=+e.target.value; $("#nudgeOut").textContent=(TESTLAB.nudge>0?"+":"")+fmt(TESTLAB.nudge,1)+" nm"; labChanged(); return; drawId(); updId(); drawCalPlot(); });
+$("#nudgeSave").onclick=()=>{ const cal=store.get(CAL_KEY); if(!cal||!TESTLAB.nudge) return; cal.dl=(cal.dl||0)+TESTLAB.nudge; store.set(CAL_KEY,cal); TESTLAB.nudge=0; $("#nudgeS").value=0; $("#nudgeOut").textContent="0 nm"; labChanged(); };
+$("#ansCheck").onclick=()=>withLab(TESTLAB,()=>{
+  const fb=$("#ansFb"); if(!ansSet.size){ fb.className="fb bad"; fb.textContent="Pick at least one element."; return; }
+  const names=[...ansSet].map(k=>GAS[k].name).join(" + ");
+  if(LAB.ex){ const want=new Set(EXAMPLES[LAB.ex].gases); const ok=want.size===ansSet.size&&[...want].every(k=>ansSet.has(k));
+    if(ok){ fb.className="fb good"; fb.textContent= want.size>1? "Solved! Two fingerprints at once, just like a star, which holds many elements." : `Correct: it's ${names}.`; if(EXAMPLES[LAB.ex].mystery){ state.res.mys=state.res.mys||new Set(); state.res.mys.add(LAB.ex); if(state.res.mys.size>=3) markDone(5);} }
+    else { const some=[...ansSet].some(k=>want.has(k)); fb.className="fb bad"; fb.textContent= some? (ansSet.size<want.size?"Part right! Some bright lines are still unexplained. Is it a mix?":"Close, but one of your picks has lines that aren't there.") : "Not a match. Turn on overlays and look for lines that land right on your peaks."; }
+  } else { fb.className="fb good"; fb.textContent=`Recorded: "${LAB.name}" looks like ${names}. Ask your instructor to reveal the answer!`; state.res.own=state.res.own||{}; state.res.own[LAB.name]=names; markDone(5); }
+  renderResults();
+});
+// notebook
+function nbGet(){ return store.get(NB_KEY)||[]; }
+$("#nbSave").onclick=()=>withLab(TESTLAB,()=>{
+  if(!LAB.prof||!store.get(CAL_KEY)){ $("#nbList").insertAdjacentHTML("afterbegin",'<p class="fb bad">Calibrate and load a photo first.</p>'); return; }
+  const arr=new Array(L1-L0+1).fill(0); const n=LAB.prof.length; for(let i=0;i<n;i++){ const lv=lamOf(i); if(lv==null) continue; const l=Math.round(lv); if(l>=L0&&l<=L1) arr[l-L0]=Math.max(arr[l-L0],Math.round(LAB.prof[i]*100)); }
+  const nb=nbGet(); nb.push({name:($("#nbName").value.trim()||LAB.name).slice(0,40), s:arr, lines:measuredLines().map(q=>+q.l.toFixed(1))}); store.set(NB_KEY,nb.slice(-20)); $("#nbName").value=""; drawNb();
+});
+function drawNb(){
+  const nb=nbGet(), box=$("#nbList"); box.innerHTML="";
+  if(!nb.length){ box.innerHTML='<p class="small">Nothing saved yet.</p>'; return; }
+  nb.forEach((e,idx)=>{
+    const row=document.createElement("div"); row.className="nbrow";
+    row.innerHTML=`<div class="nbhead"><b></b><button class="chip nbdel" aria-label="Delete">✕</button></div><canvas height="34"></canvas><div class="small mono"></div>`;
+    row.querySelector("b").textContent=e.name; row.querySelector(".small").textContent=e.lines.length? e.lines.map(l=>fmt(l,0)).join(" · ")+" nm":"";
+    row.querySelector(".nbdel").onclick=()=>{ const a=nbGet(); a.splice(idx,1); store.set(NB_KEY,a); drawNb(); };
+    box.appendChild(row);
+    const c=row.querySelector("canvas"); const {ctx,w,h}=setupCanvas(c); ctx.fillStyle="#05070d"; ctx.fillRect(0,0,w,h);
+    e.s.forEach((v,i)=>{ if(v<4) return; const l=L0+i; ctx.fillStyle=rgbStr(wl2rgb(l),Math.min(1,v/80)); ctx.fillRect(i/(L1-L0)*w,0,w/(L1-L0)+1,h); });
+  });
+  state.res.nb=nb.length; renderResults();
+}
 
-// B. Sun
-const sunOn=new Set();
+function labChanged(){
+  withLab(CALLAB,()=>{ $$(".curname").forEach(e=>e.textContent=LAB.base?LAB.name:"none yet"); drawPhoto(); drawRaw(); drawCalPlot(); });
+  withLab(TESTLAB,()=>{ $("#testName").textContent=LAB.base?LAB.name:"none yet"; drawPhoto("#testCanvas","#testEmpty"); drawId(); updId(); });
+  updCalSaved();
+}
+$("#testCanvas").addEventListener("pointerdown",e=>{ if(!TESTLAB.work) return; const r=e.currentTarget.getBoundingClientRect(); withLab(TESTLAB,()=>{ LAB.bandC=Math.max(0,Math.min(1,(e.clientY-r.top)/r.height)); extract(); }); labChanged(); });
+
+/* ================= MISSION 6: stars ================= */
 function drawSpecLine(ctx,F,arr,col,lw=1.8){ ctx.beginPath(); arr.forEach((v,i)=>{ const x=F.X(L0+i), y=F.Y(v/1000); i?ctx.lineTo(x,y):ctx.moveTo(x,y); }); ctx.strokeStyle=col; ctx.lineWidth=lw; ctx.stroke(); }
-function drawSun(){
-  const c=$("#sunCanvas"); const {ctx,w,h}=setupCanvas(c);
-  const F=frame(ctx,w,h,{xmin:L0,xmax:L1,ymin:0,ymax:1.08,rainbow:true,rainbowAlpha:.16,ylabel:"brightness"});
-  drawSpecLine(ctx,F,STAR.G2V,"#fff");
-  [...sunOn].forEach((k,i)=>{ const e=SUN_EL[k]; ctx.strokeStyle=e.col; ctx.lineWidth=2; ctx.setLineDash([4,3]);
+function drawTicks(ctx,F,set,els,compact){
+  [...set].forEach((k,i)=>{ const e=els[k]; ctx.strokeStyle=e.col; ctx.lineWidth=compact?1.5:2; ctx.setLineDash(compact?[3,3]:[4,3]);
     e.lines.forEach(l=>{ ctx.beginPath(); ctx.moveTo(F.X(l),F.y0+i*3); ctx.lineTo(F.X(l),F.y1); ctx.stroke(); }); ctx.setLineDash([]);
-    ctx.fillStyle=e.col; ctx.font='bold 11px "Atkinson Hyperlegible"'; ctx.textAlign="center"; ctx.fillText(k, F.X(e.lines[0]), F.y0+10+i*12); });
+    if(!compact){ ctx.fillStyle=e.col; ctx.font='bold 11px "Atkinson Hyperlegible"'; ctx.textAlign="center"; ctx.fillText(k, F.X(e.lines[0]), F.y0+10+i*12); } });
 }
-const sunChecked=new Set();
+const sunOn=new Set(), sunChecked=new Set();
+function drawSun(){ const c=$("#sunCanvas"); const {ctx,w,h}=setupCanvas(c); const F=frame(ctx,w,h,{xmin:L0,xmax:L1,ymin:0,ymax:1.08,rainbow:true,rainbowAlpha:.16,ylabel:"brightness"}); drawSpecLine(ctx,F,STAR.G2V,"#fff"); drawTicks(ctx,F,sunOn,SUN_EL,false); }
 function buildSun(){
   $("#sunBtns").innerHTML=""; Object.keys(SUN_EL).forEach(k=>{ const e=SUN_EL[k]; const b=document.createElement("button"); b.className="chip"+(sunOn.has(k)?" on":""); b.innerHTML=`<span style="color:${e.col}">┊</span> ${e.name}`;
     b.onclick=()=>{ sunOn.has(k)?sunOn.delete(k):sunOn.add(k); sunChecked.add(k); buildSun(); drawSun(); }; $("#sunBtns").appendChild(b); });
   $("#sunChecklist").innerHTML=Object.keys(SUN_EL).map(k=>{ const e=SUN_EL[k]; const seen=sunChecked.has(k);
     return `<li class="${seen?"done":""}"><b>${e.name}</b>: ${seen? (e.inSun? "lines land on dips → <b>in the star</b> ✓" : "lines miss the dips → <b>not visible here</b>") : "not checked yet"}</li>`; }).join("");
   const found=Object.keys(SUN_EL).filter(k=>sunChecked.has(k)&&SUN_EL[k].inSun).map(k=>SUN_EL[k].name);
-  state.res.sun = found.length? found.join(", "):undefined;
-  m5check();
-  renderResults();
+  state.res.sun = found.length? found.join(", "):undefined; m6check(); renderResults();
 }
-
-// C. sort
-const sortSeq=[];
+const starOv=new Set(["H"]);
+function buildStarOv(){ $("#starOvBtns").innerHTML=""; Object.keys(STAR_EL).forEach(k=>{ const e=STAR_EL[k]; const b=document.createElement("button"); b.className="chip"+(starOv.has(k)?" on":""); b.innerHTML=`<span style="color:${e.col}">┊</span> ${e.name}`; b.onclick=()=>{ starOv.has(k)?starOv.delete(k):starOv.add(k); buildStarOv(); drawStarThumbs(); }; $("#starOvBtns").appendChild(b); }); }
 function buildStars(){
   const box=$("#starCards"); box.innerHTML="";
-  STAR_SHUFFLE.forEach((si,pos)=>{
-    const b=document.createElement("button"); b.className="starcard"; b.dataset.si=si;
-    const r=sortSeq.indexOf(si);
-    b.innerHTML=`<div class="top"><span>Star ${pos+1}</span><span class="rank">${r>=0?r+1:"·"}</span></div><canvas height="110"></canvas>`;
-    if(r>=0) b.classList.add("picked");
-    b.onclick=()=>{ if(sortSeq.includes(si)) return; sortSeq.push(si); buildStars(); $("#starCheck").disabled=sortSeq.length<STARS.length; };
-    box.appendChild(b);
-  });
+  STARS.forEach((s,i)=>{ const d=document.createElement("div"); d.className="starcard"; d.dataset.si=i;
+    d.innerHTML=`<div class="top"><span>Type ${s.type}</span><span class="small">${i===0?"hottest":i===STARS.length-1?"coolest":""}</span></div><canvas height="120"></canvas><div class="small">${s.note}</div>`; box.appendChild(d); });
   drawStarThumbs();
 }
 function drawStarThumbs(){
   $$("#starCards .starcard").forEach(card=>{ const c=card.querySelector("canvas"); const {ctx,w,h}=setupCanvas(c); const si=+card.dataset.si;
-    const F=frame(ctx,w,h,{xmin:L0,xmax:L1,ymin:0,ymax:1.08,rainbow:true,rainbowAlpha:.28,b:18,t:6,l:8,xstep:100,xlabel:""});
-    drawSpecLine(ctx,F,STAR[STARS[si].k],"#fff",1.5);
-  });
+    const F=frame(ctx,w,h,{xmin:L0,xmax:L1,ymin:0,ymax:1.08,rainbow:true,rainbowAlpha:.22,b:18,t:6,l:8,xstep:100,xlabel:""});
+    drawTicks(ctx,F,starOv,STAR_EL,true); drawSpecLine(ctx,F,STAR[STARS[si].k],"#fff",1.5); });
 }
-$("#starCheck").onclick=()=>{
-  let right=0; sortSeq.forEach((si,i)=>{ if(si===i) right++; });
-  const cards=$$("#starCards .starcard"); cards.forEach(cd=>{ const si=+cd.dataset.si; cd.classList.add(sortSeq.indexOf(si)===si?"ok":"no"); });
-  const fb=$("#starFb");
-  fb.className="fb "+(right===7?"good":"bad");
-  fb.textContent = right===7? "Perfect order! You read temperature from starlight." : `${right} of 7 in the right spot. Green = correct. Look at which side of the rainbow each star is brightest on.`;
-  const rv=$("#starReveal"); rv.classList.remove("hide");
-  rv.innerHTML="<b>The answer (hottest → coolest):</b><br>"+STARS.map((s,i)=>`${i+1}. Star ${STAR_SHUFFLE.indexOf(i)+1} = type <b>${s.type}</b>, about ${uT(s.T)}, ${s.note}`).join("<br>")+
-    "<br><br>Notice the hydrogen dips are strongest in the middle (type A, ~10,000 K). In the hottest stars, hydrogen is too hot to absorb well; in the coolest, it's too cold. Astronomers use exactly these clues to sort stars.";
-  state.res.sort=`${right}/7 correct`; m5check(); renderResults();
-};
-$("#starReset").onclick=()=>{ sortSeq.length=0; $("#starFb").textContent=""; $("#starReveal").classList.add("hide"); $("#starCheck").disabled=true; buildStars(); };
-
-// D. carbon star
+const HUNT=[
+  {q:"Which star has the deepest hydrogen lines?", a:"A0", why:"Type A stars (like Vega) have the strongest hydrogen lines of all. Hotter and cooler stars both show weaker ones."},
+  {q:"Which star shows wide molecule bands from titanium oxide (TiO)?", a:"M5", why:"Only the coolest stars are cool enough for molecules like TiO to survive. Their wide bands make the jagged sawtooth shape."},
+  {q:"Which star shows lots of thin metal lines (sodium, magnesium, calcium) like the Sun?", a:"G2", why:"Our Sun is type G2. Sun-like stars show hundreds of thin metal lines; calcium's pair near 395 nm is among the strongest."}
+];
+const huntAns={};
+function buildHunt(){
+  const box=$("#hunt"); box.innerHTML="";
+  HUNT.forEach((H,qi)=>{ const d=document.createElement("div"); d.className="predict"; d.innerHTML=`<div class="q">Line hunt ${qi+1}: ${H.q}</div><div class="row hb"></div><div class="fb"></div>`;
+    const row=d.querySelector(".hb"), fb=d.querySelector(".fb");
+    STARS.forEach(s=>{ const b=document.createElement("button"); b.className="chip"; b.textContent=s.type; b.onclick=()=>{ row.querySelectorAll("button").forEach(x=>x.classList.remove("right","wrong")); const ok=s.type===H.a; b.classList.add(ok?"right":"wrong"); fb.className="fb "+(ok?"good":"bad"); fb.textContent= ok? "Yes! "+H.why : "Not that one. Turn on the right fingerprint above and compare the dips."; huntAns[qi]=ok; if(Object.keys(huntAns).length) { const n=Object.values(huntAns).filter(Boolean).length; state.res.hunt=`${n}/3`; if(n===3) $("#huntWhy").classList.remove("hide"); } m6check(); renderResults(); }; row.appendChild(b); });
+    box.appendChild(d); });
+}
 let dcCmp=false, dcBands=false;
 const C2=[[473.7,"C₂"],[516.5,"C₂"],[563.5,"C₂"],[430.5,"CH"]];
 function drawDC(){
@@ -834,41 +1110,23 @@ function drawDC(){
 }
 $("#dcCompare").onclick=e=>{dcCmp=!dcCmp; e.currentTarget.classList.toggle("on",dcCmp); drawDC();};
 $("#dcBands").onclick=e=>{dcBands=!dcBands; e.currentTarget.classList.toggle("on",dcBands); drawDC();};
-predict("#p5",1,["Single atoms make thin, sharp lines. These dips are wide with a sharp edge on one side, which is the signature of molecules.","Yes! C₂ molecules make wide sawtooth bands (called Swan bands). Only a star with more carbon than oxygen shows them so strongly.","Nope. Dust wouldn't pick out the same exact colors in every carbon star."]);
+predict("#p6",1,["Single atoms make thin, sharp lines. These dips are wide with a sharp edge on one side, which is the signature of molecules.","Yes! C₂ molecules make wide sawtooth bands (called Swan bands). Only a star with more carbon than oxygen shows them so strongly.","Nope. Dust wouldn't pick out the same exact colors in every carbon star."],()=>{state.res.dc="✓"; m6check(); renderResults();});
+predict("#p3",0,["Right! A line is bright in every row of the band, so adding down its column makes a tall peak.","Not quite. The camera just takes a picture; this page does the adding up.","Not quite. The lines are straight; the peaks come from adding up the brightness down each column."]);
+function m6check(){ if(sunChecked.size===Object.keys(SUN_EL).length && Object.values(huntAns).filter(Boolean).length===3) markDone(6); }
 
-// E. Doppler
-const C_KMS=299792;
-function shifted(arr,v){ const f=1+v/C_KMS; return arr.map((_,i)=>{ const lam=(L0+i)/f; const j=lam-L0; const a=Math.floor(j); const t=j-a; const v0=arr[Math.max(0,Math.min(arr.length-1,a))], v1=arr[Math.max(0,Math.min(arr.length-1,a+1))]; return v0*(1-t)+v1*t; }); }
-const dopObs = shifted(STAR.A0V, DOP_TRUE);
-function drawDop(){
-  const v=+$("#dopV").value; const c=$("#dopCanvas"); const {ctx,w,h}=setupCanvas(c);
-  const F=frame(ctx,w,h,{xmin:L0,xmax:L1,ymin:0,ymax:1.1,rainbow:true,rainbowAlpha:.16,ylabel:"brightness"});
-  drawSpecLine(ctx,F,dopObs,"#fff",2);
-  const f=1+v/C_KMS; ctx.setLineDash([5,4]); ctx.strokeStyle="#ff5a8a"; ctx.lineWidth=2;
-  [656.28,486.13,434.05,410.17].forEach(l=>{ const x=F.X(l*f); ctx.beginPath(); ctx.moveTo(x,F.y0); ctx.lineTo(x,F.y1); ctx.stroke(); }); ctx.setLineDash([]);
-  ctx.fillStyle="#ff5a8a"; ctx.font='bold 11px "Atkinson Hyperlegible"'; ctx.textAlign="left"; ctx.fillText("your hydrogen lines",F.x0+6,F.y0+12);
-  $("#dopVout").innerHTML = v===0? "0 km/s (not moving)" : `${uV(v)} ${v>0?"(away)":"(toward)"}`;
-  const sh=656.28*v/C_KMS;
-  $("#dopYours").innerHTML=`<b>Your numbers:</b> at ${uV(v)}, the red hydrogen line moves from 656.3 nm to <b>${fmt(656.28+sh,1)} nm</b>, a shift of ${fmt(sh,1)} nm.<br>Check: 300,000 × (${fmt(sh,2)} ÷ 656.3) = <b>${fmt(C_KMS*sh/656.28)} km/s</b>.`;
-}
-$("#dopV").addEventListener("input",drawDop);
-$("#dopCheck").onclick=()=>{ const v=+$("#dopV").value; const err=Math.abs(v-DOP_TRUE); const fb=$("#dopFb");
-  if(err<=150){ fb.className="fb good"; fb.innerHTML=`Nailed it! The secret speed was ${uV(DOP_TRUE)}, moving <b>away</b> from us (redshift). That's super fast for a star; most move tens of km/s.`; state.res.dop=`${fmt(v)} km/s (true ${fmt(DOP_TRUE)})`; m5check(); }
-  else { fb.className="fb bad"; fb.textContent = v<DOP_TRUE? "Not yet. The dips sit to the right (redder) of your lines, so slide toward faster 'away' speeds." : "Too far. Your lines are now past the dips; slide back a bit."; }
-  renderResults(); };
-
-function m5check(){ if(sunChecked.size===Object.keys(SUN_EL).length && state.res.sort && state.res.dop) markDone(5); }
 /* ================= results ================= */
 function renderResults(){
   const R=state.res;
+  const own=R.own? Object.entries(R.own).map(([k,v])=>`${k}: ${v}`).join("; "):"—";
   const tiles=[
-    ["Hydrogen lines found", R.hLines!=null? `${R.hLines} / 4`:"—"],
-    ["Calibration", R.cal||"—"],
-    ["Mystery signals solved", R.mys!=null? `${R.mys} / 3`:"—"],
-    ["My phone's peaks", R.phone||"—"],
+    ["Hydrogen lines built", R.hLines!=null? `${R.hLines} / 4`:"—"],
+    ["My calibration", R.cal|| (store.get(CAL_KEY)?"saved ✓":"—")],
+    ["My gas IDs", own],
+    ["Example mysteries solved", R.mys? `${R.mys.size} / 3`:"—"],
+    ["Spectra in notebook", R.nb? String(R.nb):"—"],
     ["Elements in the Sun", R.sun||"—"],
-    ["Star sorting", R.sort||"—"],
-    ["Speedy star", R.dop||"—"]
+    ["Star line hunt", R.hunt||"—"],
+    ["Carbon star", R.dc||"—"]
   ];
   $("#resTiles").innerHTML=tiles.map(([k,v])=>`<div class="tile"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("");
 }
@@ -879,12 +1137,17 @@ $("#copyRes").onclick=async()=>{
 };
 
 /* ================= init ================= */
-function drawAll(){ drawBB(); drawAtom(); drawHStrip(); drawCal(); drawGas(); drawMys(); drawAbs(); drawSun(); drawStarThumbs(); drawDC(); drawDop(); }
-buildLevelBtns(); buildMys(); buildSun(); buildStars(); drawGr(); renderResults();
-drawAll();
+makeLoader($("#load3"),["H"],CALLAB);
+makeLoader($("#load4"),["H"],CALLAB);
+makeLoader($("#load5"),["He","Ne","Hg","M1","M2","M3"],TESTLAB);
+buildLevelBtns(); buildOv(); buildSun(); buildStarOv(); buildStars(); buildHunt(); syncLabControls();
+$("#nudgeOut").textContent="0 nm";
+function drawAll(){ drawAbs(); drawAtom(); drawHStrip(); drawGas(); drawSun(); drawStarThumbs(); drawDC(); drawNb(); labChanged(); }
+drawAll(); renderResults();
 let rT; window.addEventListener("resize",()=>{ clearTimeout(rT); rT=setTimeout(drawAll,120); });
 if(window.matchMedia) window.matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change",drawAll);
 if(document.fonts) document.fonts.ready.then(drawAll);
+
 </script>
 </body>
 </html>
