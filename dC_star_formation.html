@@ -4,373 +4,531 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dwarf Carbon Star Formation: A Theoretical Model</title>
+  <title>How Dwarf Carbon Stars Form | Benjamin Roulston</title>
+  <meta name="description"
+    content="How dwarf carbon stars form through binary mass transfer from an AGB companion, the observational evidence, and the open questions in this research.">
   <style>
     :root {
       --bg: #02040e;
       --deep: #050918;
       --panel: rgba(8, 18, 45, 0.85);
+      --card: rgba(5, 9, 24, 0.9);
+      --line: rgba(74, 240, 255, 0.16);
+      --text: #c8dff7;
+      --muted: rgba(200, 223, 247, 0.68);
+      --faint: rgba(200, 223, 247, 0.45);
       --accent: #4af0ff;
       --gold: #ffd066;
       --red: #ff5e3a;
       --green: #3aff9e;
       --purple: #c084fc;
+      --blue: #88bbff;
       --glow: 0 0 18px rgba(74, 240, 255, 0.55);
+      --serif: Georgia, 'Times New Roman', Times, serif;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
 
     body {
       background: var(--bg);
-      color: #c8dff7;
-      font-family: 'Georgia', 'Times New Roman', Times, serif;
+      color: var(--text);
+      font-family: var(--serif);
       min-height: 100vh;
       overflow-x: hidden;
+      line-height: 1.6;
     }
 
-    #starfield {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
+    a { color: var(--accent); }
+    a:hover { color: #9ff7ff; }
+
+    #starfield { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+    .wrap { position: relative; z-index: 10; max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+
+    /* Site bar (same as the other resources pages) */
+    #br-sitebar {
+      display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: .25rem 1rem;
+      padding: .5rem clamp(1rem, 4vw, 2rem); background: #f3f4f6; color: #374151; box-shadow: 0 1px 3px rgba(0, 0, 0, .08);
+      font: 600 14px/1.4 var(--sans); position: relative; z-index: 50; margin: 0;
+    }
+    #br-sitebar a { color: #2563eb; text-decoration: none; }
+    #br-sitebar a:hover, #br-sitebar a:focus-visible { text-decoration: underline; }
+    #br-sitebar span { font-weight: 400; opacity: .85; }
+    @media print { #br-sitebar { display: none; } }
+
+    header.hero { text-align: center; padding: 2.4rem 0 1.2rem; }
+    header.hero h1 {
+      font-size: clamp(1.6rem, 4vw, 2.5rem); font-weight: bold; color: var(--accent);
+      text-shadow: 0 0 30px rgba(74, 240, 255, 0.45); line-height: 1.2;
+    }
+    header.hero p.lede {
+      max-width: 760px; margin: 0.9rem auto 0; font-size: 1.02rem; color: var(--muted); font-style: italic;
     }
 
-    header {
-      position: relative;
-      z-index: 10;
-      text-align: center;
-      padding: 2rem 1rem 0.8rem;
-      border-bottom: 1px solid rgba(74, 240, 255, 0.15);
+    nav.toc {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: .4rem; padding: 0.6rem 0 0.4rem;
     }
-
-    header h1 {
-      font-family: 'Georgia', 'Times New Roman', Times, serif;
-      font-size: clamp(1.1rem, 2.8vw, 2rem);
-      font-weight: bold;
-      color: var(--accent);
-      text-shadow: 0 0 30px rgba(74, 240, 255, 0.5);
+    nav.toc a {
+      font-size: .8rem; padding: .3rem .8rem; border: 1px solid rgba(74, 240, 255, .3); border-radius: 2px;
+      color: rgba(74, 240, 255, .8); text-decoration: none; transition: all .2s;
     }
+    nav.toc a:hover { background: rgba(74, 240, 255, .12); border-color: var(--accent); box-shadow: var(--glow); }
 
-    header p {
-      margin-top: 0.4rem;
-      font-size: 0.78rem;
-      font-style: italic;
-      color: rgba(200, 223, 247, 0.55);
+    section.block { padding: 2.6rem 0 0.4rem; scroll-margin-top: 10px; }
+    section.block > h2 {
+      font-size: clamp(1.25rem, 2.6vw, 1.6rem); color: var(--accent); margin-bottom: .3rem;
+      border-bottom: 1px solid var(--line); padding-bottom: .4rem;
     }
+    section.block > .kicker { font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); }
+    .prose { max-width: 820px; }
+    .prose p { margin: .8rem 0; color: var(--muted); font-size: .98rem; }
+    .prose p strong, .prose li strong { color: var(--text); }
 
-    #stage-nav {
-      position: relative;
-      z-index: 10;
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-      padding: 1rem 1rem 0.5rem;
+    .star-a { color: var(--gold); font-weight: bold; }
+    .star-b { color: var(--blue); font-weight: bold; }
+    .highlight { color: var(--green); }
+    .warn { color: var(--red); }
+    .transfer { color: var(--purple); }
+
+    /* Fact tiles */
+    .facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1.4rem; }
+    .fact { background: var(--card); border: 1px solid var(--line); border-radius: 3px; padding: 1rem 1.1rem; }
+    .fact .num { font-size: 1.7rem; color: var(--gold); font-weight: bold; line-height: 1.1; }
+    .fact .lbl { font-size: .86rem; color: var(--muted); margin-top: .35rem; }
+    .fact .src { font-size: .72rem; color: var(--faint); margin-top: .45rem; font-style: italic; }
+
+    /* Animation */
+    .anim-shell { margin-top: 1.2rem; border: 1px solid var(--line); background: var(--panel); border-radius: 3px; overflow: hidden; }
+    .toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: .6rem 1rem; padding: .7rem .9rem; border-bottom: 1px solid var(--line); }
+    .toolbar .grp { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem; }
+    .toolbar .grp-label { font-size: .72rem; color: var(--faint); margin-right: .2rem; font-style: italic; }
+
+    .pill {
+      font-family: var(--serif); font-size: .74rem; padding: .3rem .75rem; border: 1px solid rgba(74, 240, 255, .3);
+      background: transparent; color: rgba(74, 240, 255, .7); cursor: pointer; border-radius: 2px; transition: all .2s;
     }
+    .pill:hover { border-color: var(--accent); color: var(--accent); }
+    .pill.active { background: rgba(74, 240, 255, .12); border-color: var(--accent); color: var(--accent); box-shadow: var(--glow); }
+    .pill:disabled { opacity: .35; cursor: default; box-shadow: none; }
+    .pill.m-rlof.active { border-color: var(--red); color: var(--red); background: rgba(255, 94, 58, .12); box-shadow: 0 0 14px rgba(255, 94, 58, .4); }
+    .pill.m-wrlof.active { border-color: var(--purple); color: var(--purple); background: rgba(192, 132, 252, .12); box-shadow: 0 0 14px rgba(192, 132, 252, .4); }
+    .pill.m-bhl.active { border-color: var(--green); color: var(--green); background: rgba(58, 255, 158, .1); box-shadow: 0 0 14px rgba(58, 255, 158, .35); }
 
-    .stage-btn {
-      font-family: 'Georgia', 'Times New Roman', Times, serif;
-      font-size: 0.7rem;
-      padding: 0.3rem 0.7rem;
-      border: 1px solid rgba(74, 240, 255, 0.3);
-      background: transparent;
-      color: rgba(74, 240, 255, 0.6);
-      cursor: pointer;
-      border-radius: 2px;
-      transition: all 0.25s;
-    }
+    #timeline { position: relative; display: flex; align-items: flex-start; padding: .8rem 1rem .4rem; overflow-x: auto; scrollbar-width: none; }
+    #timeline::-webkit-scrollbar { display: none; }
+    .tl-node { display: flex; flex-direction: column; align-items: center; min-width: 78px; cursor: pointer; background: none; border: 0; color: inherit; font-family: inherit; }
+    .tl-node:focus-visible { outline: 1px dashed var(--accent); outline-offset: 2px; }
+    .tl-dot { width: 13px; height: 13px; border-radius: 50%; border: 2px solid rgba(74, 240, 255, .4); background: var(--deep); transition: all .3s; }
+    .tl-node.active .tl-dot, .tl-node:hover .tl-dot { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 10px var(--accent); }
+    .tl-node.done .tl-dot { background: rgba(74, 240, 255, .35); }
+    .tl-node.skipped { opacity: .3; cursor: default; }
+    .tl-label { font-size: .64rem; color: var(--faint); margin-top: 5px; text-align: center; white-space: nowrap; }
+    .tl-node.active .tl-label { color: var(--accent); }
+    .tl-line { flex: 1; height: 1px; margin-top: 6px; background: linear-gradient(90deg, rgba(74, 240, 255, .3), rgba(74, 240, 255, .1)); min-width: 16px; }
 
-    .stage-btn:hover,
-    .stage-btn.active {
-      background: rgba(74, 240, 255, 0.12);
-      border-color: var(--accent);
-      color: var(--accent);
-      box-shadow: var(--glow);
-    }
-
-    #timeline {
-      position: relative;
-      z-index: 10;
-      display: flex;
-      align-items: center;
-      padding: 0.5rem 2rem;
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-
-    #timeline::-webkit-scrollbar {
-      display: none;
-    }
-
-    .tl-node {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-width: 80px;
-      cursor: pointer;
-    }
-
-    .tl-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      border: 2px solid rgba(74, 240, 255, 0.4);
-      background: var(--deep);
-      transition: all 0.3s;
-    }
-
-    .tl-node.active .tl-dot,
-    .tl-node:hover .tl-dot {
-      background: var(--accent);
-      border-color: var(--accent);
-      box-shadow: 0 0 10px var(--accent);
-    }
-
-    .tl-label {
-      font-size: 0.55rem;
-      color: rgba(200, 223, 247, 0.4);
-      margin-top: 4px;
-      text-align: center;
-      white-space: nowrap;
-    }
-
-    .tl-node.active .tl-label {
-      color: var(--accent);
-    }
-
-    .tl-line {
-      flex: 1;
-      height: 1px;
-      background: linear-gradient(90deg, rgba(74, 240, 255, 0.3), rgba(74, 240, 255, 0.1));
-      min-width: 20px;
-    }
-
-    #scene-wrap {
-      position: relative;
-      z-index: 10;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-    }
-
-    #scene {
-      width: 100%;
-      max-width: 100%;
-      background: var(--panel);
-      border-left: none;
-      border-right: none;
-      border-top: 1px solid rgba(74, 240, 255, 0.18);
-      border-bottom: 1px solid rgba(74, 240, 255, 0.18);
-      box-shadow: 0 0 60px rgba(0, 0, 0, 0.7), inset 0 0 80px rgba(74, 240, 255, 0.03);
-      overflow: hidden;
-      position: relative;
-    }
-
-    canvas#starCanvas {
-      display: block;
-      width: 100%;
-    }
-
-    #info-wrap {
-      position: relative;
-      z-index: 10;
-      padding: 0.8rem 1rem;
-      display: flex;
-      justify-content: center;
-    }
-
-    #info-panel {
-      width: 100%;
-      max-width: 100%;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-    }
-
-    .info-box {
-      background: rgba(5, 9, 24, 0.9);
-      border: 1px solid rgba(74, 240, 255, 0.14);
-      border-radius: 3px;
-      padding: 0.9rem 1.1rem;
-    }
-
-    .info-box h3 {
-      font-size: 0.78rem;
-      font-weight: bold;
-      color: var(--accent);
-      margin-bottom: 0.5rem;
-    }
-
-    .info-box p {
-      font-size: 0.73rem;
-      line-height: 1.75;
-      color: rgba(200, 223, 247, 0.75);
-    }
-
-    .star-a {
-      color: var(--gold);
-      font-weight: bold;
-    }
-
-    .star-b {
-      color: #88bbff;
-      font-weight: bold;
-    }
-
-    .highlight {
-      color: var(--green);
-    }
-
-    .warn {
-      color: var(--red);
-    }
-
-    .transfer {
-      color: var(--purple);
-    }
-
-    #controls {
-      position: relative;
-      z-index: 10;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 1rem;
-      padding: 0.6rem 1rem 1.5rem;
-      flex-wrap: wrap;
-    }
-
-    .ctrl-btn {
-      font-family: 'Georgia', 'Times New Roman', Times, serif;
-      font-size: 0.72rem;
-      padding: 0.45rem 1.3rem;
-      border: 1px solid rgba(74, 240, 255, 0.4);
-      background: rgba(74, 240, 255, 0.06);
-      color: var(--accent);
-      cursor: pointer;
-      border-radius: 2px;
-      transition: all 0.2s;
-    }
-
-    .ctrl-btn:hover {
-      background: rgba(74, 240, 255, 0.15);
-      box-shadow: var(--glow);
-    }
-
-    .ctrl-btn.primary {
-      border-color: var(--gold);
-      color: var(--gold);
-      background: rgba(255, 208, 102, 0.07);
-    }
-
-    .ctrl-btn.primary:hover {
-      background: rgba(255, 208, 102, 0.15);
-      box-shadow: 0 0 18px rgba(255, 208, 102, 0.4);
-    }
-
-    #speed-label {
-      font-size: 0.68rem;
-      color: rgba(200, 223, 247, 0.45);
-    }
-
+    #scene { position: relative; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    canvas#starCanvas { display: block; width: 100%; }
     #transfer-badge {
-      position: absolute;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-family: 'Georgia', 'Times New Roman', Times, serif;
-      font-size: 0.62rem;
-      font-style: italic;
-      padding: 0.25rem 0.9rem;
-      border-radius: 20px;
-      border: 1px solid;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.4s;
-      z-index: 5;
-      white-space: nowrap;
+      position: absolute; top: 10px; left: 50%; transform: translateX(-50%); font-size: .7rem; font-style: italic;
+      padding: .25rem .9rem; border-radius: 20px; border: 1px solid; pointer-events: none; opacity: 0; transition: opacity .4s; white-space: nowrap;
     }
+    #transfer-badge.show { opacity: 1; }
+    #transfer-badge.rlof { border-color: var(--red); color: var(--red); background: rgba(255, 94, 58, .12); }
+    #transfer-badge.wrlof { border-color: var(--purple); color: var(--purple); background: rgba(192, 132, 252, .12); }
+    #transfer-badge.bhl { border-color: var(--green); color: var(--green); background: rgba(58, 255, 158, .1); }
+    #transfer-badge.ce { border-color: var(--gold); color: var(--gold); background: rgba(255, 208, 102, .12); }
 
-    #transfer-badge.show {
-      opacity: 1;
+    #mode-row { display: none; padding: .7rem .9rem 0; }
+    #mode-row.show { display: block; }
+    #mode-note { font-size: .82rem; color: var(--muted); margin-top: .45rem; }
+
+    .stage-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: .3rem 1rem; padding: .9rem .9rem 0; }
+    .stage-head h3 { font-size: 1.08rem; color: var(--accent); }
+    .stage-head .age { font-size: .78rem; color: var(--gold); font-style: italic; }
+
+    #info-panel { display: grid; grid-template-columns: 1fr 1fr; gap: .9rem; padding: .8rem .9rem .9rem; }
+    .info-box { background: var(--card); border: 1px solid rgba(74, 240, 255, .14); border-radius: 3px; padding: .9rem 1.05rem; }
+    .info-box h4 { font-size: .86rem; margin-bottom: .45rem; }
+    .info-box h4.a { color: var(--gold); }
+    .info-box h4.b { color: var(--blue); }
+    .info-box p { font-size: .86rem; line-height: 1.7; color: var(--muted); }
+
+    #controls { display: flex; justify-content: center; align-items: center; gap: .7rem; padding: .2rem .9rem 1.1rem; flex-wrap: wrap; }
+    .ctrl-btn {
+      font-family: var(--serif); font-size: .78rem; padding: .45rem 1.2rem; border: 1px solid rgba(74, 240, 255, .4);
+      background: rgba(74, 240, 255, .06); color: var(--accent); cursor: pointer; border-radius: 2px; transition: all .2s;
     }
+    .ctrl-btn:hover { background: rgba(74, 240, 255, .15); box-shadow: var(--glow); }
+    .ctrl-btn.primary { border-color: var(--gold); color: var(--gold); background: rgba(255, 208, 102, .07); }
+    .ctrl-btn.primary:hover { background: rgba(255, 208, 102, .15); box-shadow: 0 0 18px rgba(255, 208, 102, .4); }
+    #speed-label { font-size: .74rem; color: var(--faint); }
+    .anim-foot { font-size: .74rem; color: var(--faint); font-style: italic; padding: 0 .9rem .9rem; }
 
-    #transfer-badge.rlof {
-      border-color: var(--red);
-      color: var(--red);
-      background: rgba(255, 94, 58, 0.12);
+    /* Explorer */
+    .explorer { display: grid; grid-template-columns: 340px 1fr; gap: 1.1rem; margin-top: 1.2rem; }
+    .panel { background: var(--card); border: 1px solid var(--line); border-radius: 3px; padding: 1rem 1.1rem; }
+    .ctl { margin-bottom: 1rem; }
+    .ctl label { display: flex; justify-content: space-between; gap: .5rem; font-size: .84rem; color: var(--text); }
+    .ctl label output { color: var(--gold); font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .ctl .hint { font-size: .74rem; color: var(--faint); font-style: italic; margin-top: .15rem; }
+    input[type=range] { width: 100%; margin-top: .35rem; accent-color: #4af0ff; }
+    input[type=range]:disabled { opacity: .4; }
+    .check { display: flex; align-items: flex-start; gap: .45rem; font-size: .8rem; color: var(--muted); margin-top: .3rem; cursor: pointer; }
+    .check input { margin-top: .25rem; accent-color: #4af0ff; }
+    .seg { display: flex; gap: .35rem; margin-top: .4rem; flex-wrap: wrap; }
+
+    .readout { display: grid; grid-template-columns: repeat(3, 1fr); gap: .7rem; margin-bottom: .9rem; }
+    .ro { background: rgba(2, 4, 14, .6); border: 1px solid var(--line); border-radius: 3px; padding: .6rem .75rem; }
+    .ro .k { font-size: .7rem; color: var(--faint); }
+    .ro .v { font-size: 1.3rem; color: var(--text); font-variant-numeric: tabular-nums; line-height: 1.25; }
+    .ro .s { font-size: .7rem; color: var(--faint); font-style: italic; }
+    .verdict { font-size: .95rem; padding: .55rem .8rem; border-radius: 3px; margin-bottom: .8rem; border: 1px solid; }
+    .verdict.yes { border-color: rgba(58, 255, 158, .5); color: var(--green); background: rgba(58, 255, 158, .07); }
+    .verdict.no { border-color: rgba(255, 94, 58, .45); color: #ff9a80; background: rgba(255, 94, 58, .07); }
+    #budgetCanvas { display: block; width: 100%; }
+    .budget-text { font-size: .86rem; color: var(--muted); margin-top: .8rem; line-height: 1.7; }
+    .caveat { font-size: .78rem; color: var(--faint); font-style: italic; margin-top: .9rem; line-height: 1.6; }
+
+    /* Evidence cards */
+    .cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 1.2rem; }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 3px; padding: 1rem 1.15rem; }
+    .card h3 { font-size: 1rem; color: var(--gold); margin-bottom: .45rem; }
+    .card p { font-size: .88rem; color: var(--muted); line-height: 1.7; }
+    .card .cite { font-size: .74rem; color: var(--faint); font-style: italic; margin-top: .55rem; }
+    .card.wide { grid-column: 1 / -1; }
+
+    ol.refs { margin: 1rem 0 0 1.2rem; font-size: .84rem; color: var(--muted); }
+    ol.refs li { margin: .35rem 0; }
+
+    footer { text-align: center; font-size: .78rem; color: var(--faint); padding: 2.4rem 0 2rem; }
+
+    @media (max-width: 860px) {
+      .explorer { grid-template-columns: 1fr; }
     }
-
-    #transfer-badge.wrlof {
-      border-color: var(--purple);
-      color: var(--purple);
-      background: rgba(192, 132, 252, 0.12);
-    }
-
-    #transfer-badge.bhl {
-      border-color: var(--green);
-      color: var(--green);
-      background: rgba(58, 255, 158, 0.1);
-    }
-
-    #transfer-badge.ce {
-      border-color: var(--gold);
-      color: var(--gold);
-      background: rgba(255, 208, 102, 0.12);
-    }
-
-    @media (max-width: 600px) {
-      #info-panel {
-        grid-template-columns: 1fr;
-      }
-
-      .tl-node {
-        min-width: 60px;
-      }
+    @media (max-width: 640px) {
+      .facts, .cards, #info-panel { grid-template-columns: 1fr; }
+      .readout { grid-template-columns: 1fr 1fr; }
+      .tl-node { min-width: 62px; }
     }
   </style>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-163ZQGF3WY"></script>
+  <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments); } gtag('js', new Date()); gtag('config', 'G-163ZQGF3WY');</script>
 </head>
 
 <body>
+  <nav id="br-sitebar" aria-label="Site"><a href="research.html">&larr; Research</a><span><a href="index.html">Benjamin Roulston</a></span></nav>
+  <canvas id="starfield" aria-hidden="true"></canvas>
 
-  <canvas id="starfield"></canvas>
+  <div class="wrap">
+    <header class="hero">
+      <h1>How Dwarf Carbon Stars Form</h1>
+      <p class="lede">Ordinary-looking dwarf stars with atmospheres full of carbon they could never have made themselves.
+        They are the fossil record of a companion star that lived, died, and left its ashes behind.</p>
+      <nav class="toc" aria-label="On this page">
+        <a href="#puzzle">The puzzle</a>
+        <a href="#formation">Formation</a>
+        <a href="#budget">Carbon budget</a>
+        <a href="#evidence">Evidence</a>
+        <a href="#open">Open questions</a>
+        <a href="#refs">References</a>
+      </nav>
+    </header>
 
-  <header>
-    <h1>Dwarf Carbon Star Formation: A Theoretical Model</h1>
-    <p>A theoretical model for the formation of dwarf carbon stars in binary systems, first proposed by <a
-        href="https://ui.adsabs.harvard.edu/abs/1977ApJ...216..757D/abstract">Dahn et al. 1977</a> and later refined by
-      subsequent studies. This visualization illustrates the key stages of binary evolution leading to the formation of
-      a dwarf carbon star,
-      and the standard model accepted today.</p>
-  </header>
+    <!-- ───────────────── The puzzle ───────────────── -->
+    <section class="block" id="puzzle">
+      <div class="kicker">Background</div>
+      <h2>The puzzle</h2>
+      <div class="prose">
+        <p>Almost every star has more oxygen than carbon in its atmosphere. When a cool star has C/O &gt; 1, the
+          chemistry flips: the leftover carbon forms molecules like C<sub>2</sub>, CN and CH that dominate the spectrum.
+          Giant stars can do this to themselves. Late in life, an <strong>asymptotic giant branch (AGB)</strong> star
+          dredges freshly fused carbon up from its interior to its surface.</p>
+        <p>A <strong>dwarf carbon (dC) star</strong> shows the same carbon-rich spectrum, but it is a small,
+          main-sequence K or M dwarf. It has never fused helium, so it cannot have made that carbon. The first one,
+          G&nbsp;77-61, was found in 1977. Within a decade it was shown to be a binary, pointing to the now-standard
+          explanation: <strong>the carbon was donated by a companion</strong> that went through the AGB phase and is
+          now a faint white dwarf.</p>
+        <p>That makes dC stars useful well beyond their own curiosity. They are thought to be the most numerous carbon stars in
+          the Galaxy, and each one records a past episode of binary mass transfer. They may also be the progenitors of
+          the better-known CH, Ba and CEMP-s stars. My research uses them to test how binary stars
+          exchange mass.</p>
+      </div>
+      <div class="facts">
+        <div class="fact">
+          <div class="num">600+</div>
+          <div class="lbl">dC stars confirmed from a Gaia DR3 search of 43,574 carbon star candidates</div>
+          <div class="src">Roulston et al. 2025</div>
+        </div>
+        <div class="fact">
+          <div class="num">~1 per 50 pc</div>
+          <div class="lbl">Local space density of about 2&times;10<sup>&minus;6</sup> pc<sup>&minus;3</sup>: roughly one
+            dC in every 50 pc radius sphere near the Sun</div>
+          <div class="src">Roulston et al. 2025</div>
+        </div>
+        <div class="fact">
+          <div class="num">~95%</div>
+          <div class="lbl">Inferred binary fraction from radial velocity variability: consistent with every dC having
+            a companion</div>
+          <div class="src">Roulston et al. 2019</div>
+        </div>
+      </div>
+    </section>
 
-  <div id="stage-nav"></div>
-  <div id="timeline"></div>
+    <!-- ───────────────── Formation animation ───────────────── -->
+    <section class="block" id="formation">
+      <div class="kicker">Step by step</div>
+      <h2>The formation story</h2>
+      <div class="prose">
+        <p>Step through the life of the binary below. Timescales are approximate, for a ~2&nbsp;M&#9737; primary.
+          Toward the end, binaries take one of two broad paths: some stay in wide orbits of months to years, and others
+          spiral into a <strong>common envelope</strong> and end up in orbits shorter than a few days. Both kinds are
+          observed.</p>
+      </div>
 
-  <div id="scene-wrap">
-    <div id="scene">
-      <canvas id="starCanvas"></canvas>
-      <div id="transfer-badge"></div>
-    </div>
-  </div>
+      <div class="anim-shell">
+        <div class="toolbar">
+          <div class="grp" role="group" aria-label="Evolutionary path">
+            <span class="grp-label">Path:</span>
+            <button class="pill active" data-path="wide">Wide orbit</button>
+            <button class="pill" data-path="ce">Close orbit (common envelope)</button>
+          </div>
+          <div class="grp">
+            <span id="speed-label">Speed: 1&times;</span>
+            <button class="pill" id="btn-speed">Faster</button>
+          </div>
+        </div>
 
-  <div id="info-wrap">
-    <div id="info-panel">
-      <div class="info-box" id="box-left"></div>
-      <div class="info-box" id="box-right"></div>
-    </div>
-  </div>
+        <div id="timeline" role="tablist" aria-label="Evolutionary stages"></div>
 
-  <div id="controls">
-    <button class="ctrl-btn" id="btn-prev">&#9664; Prev</button>
-    <button class="ctrl-btn primary" id="btn-play">&#9654; Play</button>
-    <button class="ctrl-btn" id="btn-next">Next &#9654;</button>
-    <span id="speed-label">Speed: 1&times;</span>
-    <button class="ctrl-btn" id="btn-speed">Faster</button>
+        <div id="mode-row">
+          <div class="grp" role="group" aria-label="Mass transfer mode" style="display:flex;flex-wrap:wrap;gap:.35rem;align-items:center">
+            <span class="grp-label" style="font-size:.72rem;color:var(--faint);font-style:italic;margin-right:.2rem">How the gas gets there:</span>
+            <button class="pill m-wrlof" data-mode="WRLOF">Wind Roche-lobe overflow</button>
+            <button class="pill m-bhl" data-mode="BHL">Wind capture (Bondi&ndash;Hoyle)</button>
+            <button class="pill m-rlof" data-mode="RLOF">Roche-lobe overflow</button>
+          </div>
+          <p id="mode-note"></p>
+        </div>
+
+        <div class="stage-head">
+          <h3 id="stage-title"></h3>
+          <span class="age" id="stage-age"></span>
+        </div>
+
+        <div id="scene" style="margin-top:.7rem">
+          <canvas id="starCanvas" role="img" aria-label="Animated binary star system"></canvas>
+          <div id="transfer-badge"></div>
+        </div>
+
+        <div id="info-panel" aria-live="polite">
+          <div class="info-box" id="box-left"></div>
+          <div class="info-box" id="box-right"></div>
+        </div>
+
+        <div id="controls">
+          <button class="ctrl-btn" id="btn-prev">&#9664; Prev</button>
+          <button class="ctrl-btn primary" id="btn-play">&#9654; Play</button>
+          <button class="ctrl-btn" id="btn-next">Next &#9654;</button>
+        </div>
+        <p class="anim-foot">Not to scale. A real AGB star is hundreds of times larger than its dwarf companion, and the
+          white dwarf is about the size of Earth.</p>
+      </div>
+    </section>
+
+    <!-- ───────────────── Carbon budget explorer ───────────────── -->
+    <section class="block" id="budget">
+      <div class="kicker">Explore</div>
+      <h2>How much carbon does it take?</h2>
+      <div class="prose">
+        <p>Turning a dwarf into a dC is a dilution problem. Whatever carbon-rich gas the dwarf accretes gets mixed into
+          its own envelope, which starts with C/O well below 1. The question at the heart of my current modeling work is
+          <strong>how much material has to be accreted</strong> for the surface to end up with C/O &gt; 1, and how that
+          depends on the star's mass, its metallicity, and how carbon-rich the donor was.</p>
+        <p>The explorer below is a deliberately simple mixing estimate, using the same four ingredients as my MESA model
+          grid. Try changing the metallicity first.</p>
+      </div>
+
+      <div class="explorer">
+        <div class="panel" aria-label="Model inputs">
+          <div class="ctl">
+            <label for="in-mass">Dwarf mass <output id="out-mass"></output></label>
+            <input type="range" id="in-mass" min="0.20" max="0.80" step="0.01" value="0.60">
+            <div class="hint">dC stars are K and M dwarfs. Below ~0.35&nbsp;M&#9737; the whole star is convective.</div>
+          </div>
+          <div class="ctl">
+            <label for="in-feh">Metallicity [Fe/H] <output id="out-feh"></output></label>
+            <input type="range" id="in-feh" min="-2.5" max="0.0" step="0.1" value="-1.0">
+            <div class="hint">0 = solar; &minus;1 = one tenth of the Sun's heavy elements.</div>
+          </div>
+          <div class="ctl">
+            <label for="in-co">Donor's carbon-to-oxygen ratio <output id="out-co"></output></label>
+            <input type="range" id="in-co" min="0" max="1" step="0.001" value="0.4">
+            <label class="check"><input type="checkbox" id="in-colink" checked> <span>Set from metallicity (the donor
+                dredges up the same amount of carbon at any metallicity, but metal-poor stars have less oxygen to
+                overcome)</span></label>
+          </div>
+          <div class="ctl">
+            <label for="in-dm">Mass accreted by the dwarf <output id="out-dm"></output></label>
+            <input type="range" id="in-dm" min="-3" max="-0.3" step="0.01" value="-1.3">
+          </div>
+          <div class="ctl" style="margin-bottom:.4rem">
+            <label>Mixing inside the dwarf</label>
+            <div class="seg" role="group" aria-label="Mixing">
+              <button class="pill active" data-mix="conv">Convective envelope only</button>
+              <button class="pill" data-mix="thm">+ Thermohaline mixing</button>
+            </div>
+            <div class="hint" id="mix-hint"></div>
+          </div>
+          <div class="ctl" style="margin-top:1rem;margin-bottom:0">
+            <label for="in-donor">Donor's initial mass <output id="out-donor"></output></label>
+            <input type="range" id="in-donor" min="1.0" max="4.0" step="0.1" value="2.0">
+            <div class="hint">Used to estimate how much mass the donor sheds before it becomes a white dwarf.</div>
+          </div>
+        </div>
+
+        <div class="panel" aria-live="polite">
+          <div class="readout">
+            <div class="ro">
+              <div class="k">Dwarf's birth C/O</div>
+              <div class="v" id="ro-c0"></div>
+              <div class="s">before any accretion</div>
+            </div>
+            <div class="ro">
+              <div class="k">Mass it gets mixed into</div>
+              <div class="v" id="ro-mix"></div>
+              <div class="s" id="ro-mix-s"></div>
+            </div>
+            <div class="ro">
+              <div class="k">Final surface C/O</div>
+              <div class="v" id="ro-cf"></div>
+              <div class="s">after mixing</div>
+            </div>
+          </div>
+          <div class="verdict" id="verdict"></div>
+          <canvas id="budgetCanvas" role="img" aria-label="Final C/O ratio versus accreted mass"></canvas>
+          <p class="budget-text" id="budget-text"></p>
+        </div>
+      </div>
+      <p class="caveat">How this estimate works: the accreted gas is mixed evenly into the dwarf's convective envelope
+        (or ~90% of the star with thermohaline mixing), and both stars are assumed to be born with the same oxygen
+        abundance. Birth C/O is solar (0.55) with the oxygen enhancement typical of metal-poor stars. Envelope masses,
+        the white dwarf masses and the linked donor C/O are rough approximations, and nothing evolves with time. The
+        real calculation, which follows each star for billions of years in MESA, is what my current project is
+        doing.</p>
+    </section>
+
+    <!-- ───────────────── Evidence ───────────────── -->
+    <section class="block" id="evidence">
+      <div class="kicker">Observations</div>
+      <h2>What the observations tell us</h2>
+      <div class="cards">
+        <div class="card">
+          <h3>Nearly all of them are binaries</h3>
+          <p>G&nbsp;77-61 was found to orbit an unseen companion every 245.5 days. With repeated SDSS spectra of 240 dC
+            stars, we measured how often their radial velocities change. The data are consistent with essentially every
+            dC being in a binary (a binary fraction of ~95%), with typical separations under 1&nbsp;AU, or periods of
+            order a year.</p>
+          <p class="cite">Dearborn et al. 1986; Roulston et al. 2019</p>
+        </div>
+        <div class="card">
+          <h3>The white dwarf is usually hidden</h3>
+          <p>A white dwarf is Earth-sized and fades for billions of years, so in most systems it is invisible next to
+            the dwarf. In about a dozen known dCs the white dwarf is still hot enough to show up in the optical spectrum,
+            as a composite dC + white dwarf. Those systems caught the aftermath of mass transfer relatively recently.</p>
+          <p class="cite">Roulston et al. 2022 and references therein</p>
+        </div>
+        <div class="card">
+          <h3>Some are surprisingly close</h3>
+          <p>In Zwicky Transient Facility light curves of 944 dCs, 34 vary periodically, and 82% of those have periods
+            under 2 days. The shortest known dC period is just 3.2 hours. Orbits that tight almost certainly went through
+            a common-envelope phase, with the dwarf's spin tidally locked to its orbit.</p>
+          <p class="cite">Roulston et al. 2021; Roulston et al. 2022</p>
+        </div>
+        <div class="card">
+          <h3>Spun up and magnetically active</h3>
+          <p>Old dwarfs should be slow, quiet rotators, yet some dCs are X-ray sources. Among the five nearest dCs
+            observed with Chandra, two were detected in X-rays, and those were the only two that are also short-period
+            variables. Their activity is best explained by rapid rotation forced by a tight orbit.</p>
+          <p class="cite">Green et al. 2019; Roulston et al. 2022</p>
+        </div>
+        <div class="card wide">
+          <h3>An old, metal-poor population</h3>
+          <p>In our Gaia DR3 census, dC stars have a vertical scale height of about 860&nbsp;pc, much larger than for
+            young disk stars. This fits an older population, consistent with the evidence that dCs tend to be metal-poor.
+            That is just what the carbon budget predicts: with less oxygen to overcome, a little donated carbon goes a lot
+            further at low metallicity.</p>
+          <p class="cite">Farihi et al. 2018; Roulston et al. 2025</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────────────── Open questions ───────────────── -->
+    <section class="block" id="open">
+      <div class="kicker">Current research</div>
+      <h2>Open questions I'm working on</h2>
+      <div class="cards">
+        <div class="card">
+          <h3>How much mass transfer is actually needed?</h3>
+          <p>I am running a large grid of MESA stellar evolution models, evolving each accreting star to the age of the
+            Universe. The grid spans stellar mass, metallicity, how much material is accreted, and how carbon-rich that
+            material is. Following the mixing over billions of years tells us which combinations still look like a dC
+            star today, and how many of the binaries that should exist actually become one.</p>
+        </div>
+        <div class="card">
+          <h3>The common-envelope problem</h3>
+          <p>The short-period dCs went through a common envelope, but models suggest the dwarf cannot accrete enough
+            carbon during that brief phase. So the carbon likely arrived earlier, probably through wind Roche-lobe
+            overflow, with the common envelope coming near the end of the donor's thermally pulsing AGB phase. How
+            those two steps fit together is still open.</p>
+        </div>
+        <div class="card wide">
+          <h3>From a census to a population</h3>
+          <p>Gaia's low-resolution spectra let us find dC stars across the whole sky, not just where earlier surveys
+            happened to look. A well-defined sample, with a measured space density and scale height, is what population
+            synthesis models of binary evolution have to reproduce. That comparison is how dC stars can test our
+            picture of mass transfer.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────────────── References ───────────────── -->
+    <section class="block" id="refs">
+      <div class="kicker">Further reading</div>
+      <h2>References</h2>
+      <ol class="refs">
+        <li>Dahn, C. C., et al. 1977, ApJ, 216, 757: discovery of G 77-61, the first dwarf carbon star. <a
+            href="https://ui.adsabs.harvard.edu/abs/1977ApJ...216..757D/abstract" target="_blank"
+            rel="noopener">ADS</a></li>
+        <li>Dearborn, D. S. P., et al. 1986, ApJ, 300, 314: "On the Origin of Carbon Dwarf Stars." <a
+            href="https://ui.adsabs.harvard.edu/search/q=author%3A%22Dearborn%22%20year%3A1986%20title%3A%22carbon%20dwarf%22"
+            target="_blank" rel="noopener">ADS</a></li>
+        <li>Farihi, J., et al. 2018, MNRAS: "Dwarf carbon stars are likely metal-poor binaries and unlikely hosts to
+          carbon planets." <a href="https://arxiv.org/abs/1806.06074" target="_blank" rel="noopener">arXiv</a></li>
+        <li>Green, P. J., et al. 2019, ApJ: "A Chandra Study: Are Dwarf Carbon Stars Spun Up and Rejuvenated by Mass
+          Transfer?" <a
+            href="https://ui.adsabs.harvard.edu/search/q=title%3A%22Are%20Dwarf%20Carbon%20Stars%20Spun%20Up%22"
+            target="_blank" rel="noopener">ADS</a></li>
+        <li>Roulston, B. R., et al. 2019, ApJ: "The Time-Domain Spectroscopic Survey: Radial Velocity Variability in
+          Dwarf Carbon Stars." <a href="https://arxiv.org/abs/1812.08086" target="_blank" rel="noopener">arXiv</a></li>
+        <li>Roulston, B. R., et al. 2021, ApJ: "Unexpected Short-Period Variability in Dwarf Carbon Stars from the
+          Zwicky Transient Facility." <a href="https://arxiv.org/abs/2105.00037" target="_blank" rel="noopener">arXiv</a>
+        </li>
+        <li>Roulston, B. R., et al. 2022, ApJ: "New Clues to the Evolution of Dwarf Carbon Stars From Their Variability
+          and X-ray Emission." <a href="https://arxiv.org/abs/2110.00013" target="_blank" rel="noopener">arXiv</a></li>
+        <li>Roulston, B. R., et al. 2025, ApJ: "Carbon Stars from Gaia Data Release 3 and the Space Density of Dwarf
+          Carbon Stars." <a href="https://arxiv.org/abs/2501.18763" target="_blank" rel="noopener">arXiv</a></li>
+        <li>Stancliffe, R. J., et al. 2007, A&amp;A: thermohaline mixing of accreted material in low-mass stars. <a
+            href="https://ui.adsabs.harvard.edu/search/q=author%3A%22Stancliffe%22%20year%3A2007%20thermohaline"
+            target="_blank" rel="noopener">ADS</a></li>
+      </ol>
+      <p class="prose" style="margin-top:1rem;font-size:.86rem;color:var(--faint)">See the <a
+          href="research.html">Research</a> page for my full publication list.</p>
+    </section>
+
+    <footer>&copy; 2026 Benjamin Roulston</footer>
   </div>
 
   <script>
@@ -381,7 +539,7 @@
     function resizeSF() { sfCanvas.width = window.innerWidth; sfCanvas.height = window.innerHeight; }
     function initStars() {
       stars = [];
-      for (let i = 0; i < 320; i++)
+      for (let i = 0; i < 260; i++)
         stars.push({ x: Math.random(), y: Math.random(), r: Math.random() * 1.2 + 0.2, a: Math.random(), da: (Math.random() - 0.5) * 0.005 });
     }
     function drawStars() {
@@ -390,171 +548,166 @@
         s.a = Math.max(0.1, Math.min(1, s.a + s.da));
         if (s.a <= 0.1 || s.a >= 1) s.da *= -1;
         sfCtx.beginPath(); sfCtx.arc(s.x * sfCanvas.width, s.y * sfCanvas.height, s.r, 0, Math.PI * 2);
-        sfCtx.fillStyle = `rgba(200,220,255,${s.a * 0.6})`; sfCtx.fill();
+        sfCtx.fillStyle = `rgba(200,220,255,${s.a * 0.5})`; sfCtx.fill();
       });
     }
     resizeSF(); initStars();
     window.addEventListener('resize', resizeSF);
 
     // ─── Stages ───────────────────────────────────────────────────────────────────
+    // aType/bType select how each star is drawn. ceOnly stages are skipped on the wide path.
     const STAGES = [
       {
-        id: 0, name: 'ZAMS Binary', shortName: 'ZAMS', aType: 'MS_heavy', bType: 'MS_light', transfer: null,
-        titleA: 'Star A &mdash; More Massive Main Sequence', titleB: 'Star B &mdash; Less Massive Main Sequence',
-        descA: 'Star A (e.g. ~2&ndash;4 M&#9737;) begins its life on the <span class="star-a">Zero Age Main Sequence</span>. It burns hydrogen in its core via the pp-chain or CNO cycle. Being more massive, its higher core temperature drives faster nuclear burning &mdash; it will exhaust its hydrogen supply far sooner than Star B.',
-        descB: 'Star B (e.g. ~0.1&ndash;1 M&#9737;) is the slightly less massive <span class="star-b">companion on the ZAMS</span>. Both stars orbit their common center of mass. The orbital separation and mass ratio will critically shape the later mass-transfer channel. Star B evolves much more slowly and remains on the main sequence throughout most of this story.'
+        name: 'A binary is born', short: 'Birth', age: 'Age: 0', aType: 'MS_heavy', bType: 'MS_light',
+        titleA: 'Star A: the future donor', titleB: 'Star B: the future dC star',
+        descA: 'Star A is the more massive star, roughly 1&ndash;4&nbsp;M&#9737;: massive enough to make carbon late in life, but not so massive that it explodes. Because it is more massive it burns through its hydrogen faster, so it evolves first.',
+        descB: 'Star B is a low-mass K or M dwarf, about 0.2&ndash;0.8&nbsp;M&#9737;. It will stay on the main sequence longer than the Universe has existed. Like nearly every star, it is born with <span class="highlight">more oxygen than carbon</span> (C/O &asymp; 0.55 at solar metallicity, lower in metal-poor stars).'
       },
       {
-        id: 1, name: 'RGB / HB Phase', shortName: 'RGB/HB', aType: 'RGB', bType: 'MS_light', transfer: null,
-        titleA: 'Star A &mdash; Red Giant Branch', titleB: 'Star B &mdash; Still on the MS',
-        descA: 'Star A exhausts its core hydrogen and <span class="star-a">expands up the RGB</span>. A hydrogen-burning shell drives deep envelope expansion. The star crosses the Hertzsprung gap and cools dramatically. After the helium flash (for lower masses) it settles on the <span class="highlight">Horizontal Branch</span>, burning helium in its core.',
-        descB: '<span class="star-b">Star B continues its slow main-sequence life</span>, largely unaffected at this stage. The binary orbit may widen slightly due to stellar wind mass loss from Star A. No significant mass transfer occurs yet &mdash; the separation remains large relative to Star A\'s radius.'
+        name: 'Red giant', short: 'Red giant', age: '~1 Gyr', aType: 'RGB', bType: 'MS_light',
+        titleA: 'Star A: red giant branch', titleB: 'Star B: unchanged',
+        descA: 'With the hydrogen in its core used up, Star A burns hydrogen in a shell and its envelope swells into a <span class="star-a">red giant</span>. It then settles down to burn helium in its core, building up carbon and oxygen there.',
+        descB: 'Star B carries on as a normal dwarf. As long as Star A stays well inside its <span class="highlight">Roche lobe</span>, the region where its own gravity dominates, no gas is exchanged.'
       },
       {
-        id: 2, name: 'AGB Phase', shortName: 'AGB', aType: 'AGB', bType: 'MS_light', transfer: null,
-        titleA: 'Star A &mdash; Asymptotic Giant Branch', titleB: 'Star B &mdash; Main Sequence',
-        descA: 'With He core exhausted, Star A ascends the <span class="star-a">Asymptotic Giant Branch</span>. It now has a degenerate C/O core with alternating He- and H-burning shells. The envelope swells to enormous radii (up to ~900 R&#9737;). <span class="highlight">Thermal pulses</span> (He-shell flashes) begin periodically, dredging up processed material from deep within.',
-        descB: '<span class="star-b">Star B remains on the MS</span>. The AGB star\'s intense stellar wind begins to fill the binary system with gas. The Roche lobe geometry becomes critical: if Star A\'s radius approaches its Roche lobe, runaway mass transfer becomes possible.'
+        name: 'Asymptotic giant branch', short: 'AGB', age: '~1.2 Gyr', aType: 'AGB', bType: 'MS_light',
+        titleA: 'Star A: asymptotic giant branch (AGB)', titleB: 'Star B: main sequence',
+        descA: 'Once its core helium is gone, Star A climbs the <span class="star-a">asymptotic giant branch</span>. An inert carbon-oxygen core is wrapped in helium- and hydrogen-burning shells, and the envelope grows to hundreds of solar radii. A slow, dense wind starts carrying the envelope away.',
+        descB: 'The AGB wind starts to fill the system with gas. How much of it Star B can catch depends on the orbital separation, and on how close Star A comes to filling its Roche lobe (dashed outline).'
       },
       {
-        id: 3, name: 'Thermal Pulses & 3DUP', shortName: 'TP-AGB', aType: 'CAGB', bType: 'MS_light', transfer: null,
-        titleA: 'Star A &mdash; TP-AGB Carbon Giant', titleB: 'Star B &mdash; Main Sequence',
-        descA: 'Recurrent <span class="star-a">thermal pulses</span> drive convective Third Dredge-Up (3DUP) events &mdash; watch the star visibly expand and contract with each pulse. <span class="highlight">Carbon-rich material</span> (&#185;&#178;C) from the He-burning intershell zone mixes into the stellar envelope. After sufficient pulses the C/O ratio exceeds 1: <span class="warn">Star A becomes a Carbon Giant</span> whose atmosphere is rich in C, and shows strong absorption features of C&#8322;, CN, and CH molecular bands.',
-        descB: '<span class="star-b">Star B orbits patiently</span>. The AGB wind is now carbon-enriched. Some C-rich material is accreted even before formal mass-transfer begins, gently polluting Star B\'s photosphere. The stage is set for more dramatic mass exchange.'
+        name: 'Becoming a carbon star', short: 'Carbon AGB', age: '~1.2 Gyr, for ~10⁶ yr', aType: 'CAGB', bType: 'MS_light',
+        titleA: 'Star A: thermal pulses and dredge-up', titleB: 'Star B: main sequence',
+        descA: 'The helium shell ignites in repeated <span class="star-a">thermal pulses</span>. After each one, convection reaches down and dredges freshly made carbon to the surface (the <span class="highlight">third dredge-up</span>), along with s-process elements like barium. After enough pulses C/O exceeds 1 and Star A becomes a <span class="warn">carbon star</span>. This is easier at low metallicity, where there is less oxygen to overcome.',
+        descB: 'The wind is now carbon-rich and dusty. Radiation pressure on that dust drives heavy mass loss, and the carbon it carries is exactly what Star B needs. Everything that makes a dC happens in roughly the last million years of Star A\'s life.'
       },
       {
-        id: 4, name: 'Mass Transfer', shortName: 'TRANSFER', aType: 'CAGB', bType: 'dC_forming', transfer: 'active',
-        titleA: 'Star A &mdash; C-Giant, Mass Donor', titleB: 'Star B &mdash; Becoming a dC Star',
-        descA: 'The <span class="star-a">C-rich AGB star</span> transfers mass via one or more channels: <span class="warn">RLOF</span> (Roche lobe overflow), <span class="transfer">WRLOF</span> (wind Roche lobe overflow &mdash; dust-driven wind focused through L&#8321;), or <span class="highlight">BHL</span> (Bondi&ndash;Hoyle&ndash;Lyttleton wind accretion). <em>Click the scene to cycle between transfer modes.</em>',
-        descB: '<span class="star-b">Star B accretes carbon-rich material</span>, becoming a <span class="highlight">dwarf Carbon (dC) star</span> &mdash; a main-sequence star with a carbon-enhanced atmosphere. The &#185;&#178;C/&#185;&#179;C ratio and heavy s-process elements (Ba, Sr, Ce) trace the AGB nucleosynthesis. This chemical fingerprint is the <span class="transfer">defining signature</span> of past mass transfer.'
+        name: 'Mass transfer', short: 'Transfer', age: 'Last ~10⁵ yr of the AGB', aType: 'CAGB', bType: 'dC_forming', transfer: 'active',
+        titleA: 'Star A: carbon-rich donor', titleB: 'Star B: accreting carbon',
+        descA: 'Star A loses most of its envelope, and some of that carbon-rich gas lands on Star B. Choose a mechanism above to see the three main ways this can happen. For the wide orbits most dCs have, <span class="transfer">wind Roche-lobe overflow</span> is a leading candidate, because it can be far more efficient than simple wind capture.',
+        descB: 'Accreted carbon mixes into Star B\'s convective envelope. If enough arrives to push the surface past <span class="highlight">C/O = 1</span>, Star B becomes a dwarf carbon star. The accreted gas also carries angular momentum, which can spin the star up. <a href="#budget">How much is enough?</a>'
       },
       {
-        id: 5, name: 'Common Envelope', shortName: 'CE (opt.)', aType: 'CAGB_CE', bType: 'dC_CE', transfer: 'CE',
-        titleA: 'AGB Envelope Engulfs Both Stars', titleB: 'Companion Embedded Deep Inside CE',
-        descA: '<span class="warn">If RLOF is dynamically unstable</span> (high mass ratio, runaway transfer), the expanded AGB star physically subsumes its companion inside a <span class="warn">Common Envelope</span>. Both stars orbit within the shared giant envelope. Drag forces cause rapid orbital inspiral. The envelope is ejected if sufficient orbital energy is deposited, leaving a tight post-CE binary.',
-        descB: 'During CE, <span class="star-b">Star B spirals inward through the AGB envelope</span> &mdash; visible here orbiting tightly inside the shared giant. The outcome depends on the energy budget (&alpha;-formalism) and envelope binding energy. Survival yields a tight WD+dC binary with periods as short as hours to days. <em>Not all systems undergo CE.</em>'
+        name: 'Common envelope', short: 'Common env.', age: '≲ 10³ yr', aType: 'CAGB_CE', bType: 'dC_CE', transfer: 'CE', ceOnly: true,
+        titleA: 'The envelope engulfs both stars', titleB: 'Star B spirals inward',
+        descA: 'If mass transfer becomes unstable, Star A\'s envelope swallows Star B. Drag inside this <span class="warn">common envelope</span> makes the orbit shrink rapidly, and the released orbital energy can unbind and eject the envelope.',
+        descB: 'Star B emerges in an orbit of hours to days. The puzzle: models suggest it <span class="warn">cannot accrete enough carbon during this short phase</span>. So in close dC systems the carbon was probably delivered first, with the common envelope coming near the very end of the AGB.'
       },
       {
-        id: 6, name: 'WD Formation', shortName: 'WD + dC', aType: 'WD', bType: 'dC', transfer: null,
-        titleA: 'Star A &rarr; White Dwarf + Planetary Nebula', titleB: 'Star B &mdash; dC Star',
-        descA: 'The AGB star sheds its entire envelope via superwind or CE ejection, leaving behind its tiny <span class="star-a">degenerate C/O white dwarf core</span> (~0.5&ndash;1.0 M&#9737;). Note how small the WD is relative to the companion &mdash; roughly Earth-sized. The hot WD ionizes the ejected material as a <span class="highlight">planetary nebula</span> (visible ~10&#8308;&ndash;10&#8309; yr).',
-        descB: 'The <span class="star-b">dC star now dominates the optical light</span> of the system. Its carbon-enhanced spectrum (C&#8322; Swan bands, CH G-band) and s-process overabundances are direct fossils of the AGB nucleosynthesis. The WD may only be detected via a <span class="highlight">UV excess</span> &mdash; it is far too small and faint to see in optical light.'
+        name: 'White dwarf and planetary nebula', short: 'White dwarf', age: '~10⁴ yr after', aType: 'WD', bType: 'dC',
+        titleA: 'Star A: a new white dwarf', titleB: 'Star B: a dwarf carbon star',
+        descA: 'With its envelope gone, Star A is left as its bare carbon-oxygen core: a <span class="star-a">white dwarf</span> of roughly 0.55&ndash;0.85&nbsp;M&#9737; packed into a body the size of Earth. For a few tens of thousands of years it is hot enough to make the ejected gas glow as a <span class="highlight">planetary nebula</span>.',
+        descB: 'Star B now outshines its companion in visible light. Its spectrum shows C<sub>2</sub>, CN and CH bands, the fingerprint of carbon made inside another star. While the white dwarf is still hot, the system can show a <span class="highlight">composite spectrum</span>.'
       },
       {
-        id: 7, name: 'Final State', shortName: 'FINAL', aType: 'WD_cool', bType: 'dC', transfer: null,
-        titleA: 'Star A &mdash; Cool, Fading White Dwarf', titleB: 'Star B &mdash; Observed dC Star',
-        descA: '<span class="star-a">The white dwarf cools over billions of years</span>, fading from UV to optical to infrared. It orbits silently, nearly invisible. Many dC systems have WD companions confirmed only through <span class="highlight">radial velocity variations</span> or UV spectroscopy &mdash; the WD reveals itself only indirectly.',
-        descB: 'This is what we observe: a <span class="star-b">seemingly ordinary cool dwarf</span> with an inexplicable carbon overabundance. With no current AGB companion visible, only the chemical signature survives. dC stars are the <span class="highlight">Rosetta Stones</span> of binary AGB evolution &mdash; ~2000 confirmed, with thousands likely undiscovered in <em>SDSS</em> and <em>Gaia</em> data.'
+        name: 'Today', short: 'Today', age: 'Billions of years later', aType: 'WD_cool', bType: 'dC',
+        titleA: 'Star A: a cool, faint white dwarf', titleB: 'Star B: what we observe',
+        descA: 'The white dwarf cools and fades until it is essentially invisible. We usually infer it only indirectly: from the dwarf\'s <span class="highlight">radial velocity wobble</span>, or, in close systems, from the effects of the tight orbit.',
+        descB: 'What we see is an apparently ordinary K or M dwarf with an impossible amount of carbon. Wide systems orbit every months to years. Post-common-envelope systems orbit in under a few days, are tidally locked, spotted and X-ray active. <span class="highlight">Over 600</span> have been confirmed in Gaia DR3.'
       }
     ];
 
-    const TRANSFER_TYPES = ['RLOF', 'WRLOF', 'BHL'];
+    const MODE_NOTES = {
+      WRLOF: '<span class="transfer">Wind Roche-lobe overflow:</span> the dusty wind is slow and accelerates gradually, so the Roche-lobe geometry can focus it through the inner Lagrange point toward the companion. This can deliver a much larger share of the wind than simple capture, without the donor itself filling its Roche lobe.',
+      BHL: '<span class="highlight">Wind capture (Bondi&ndash;Hoyle&ndash;Lyttleton):</span> the wind flows out in all directions and the companion only catches gas that passes within its gravitational capture radius. Usually only a few percent of the wind is captured.',
+      RLOF: '<span class="warn">Roche-lobe overflow:</span> the giant itself fills its Roche lobe and gas pours through the inner Lagrange point in a narrow stream. From a giant with a deep convective envelope this tends to run away, which leads to a common envelope.'
+    };
 
-    // ─── Canvas ───────────────────────────────────────────────────────────────────
+    // ─── State ────────────────────────────────────────────────────────────────────
     const canvas = document.getElementById('starCanvas');
     const ctx = canvas.getContext('2d');
-    let W, H, animId, t = 0;
-    let speedMult = 1;
-    let currentStage = 0;
-    let isPlaying = false;
-    let autoAdvance = null;
-    let transferType = 0;
-    let transferTypeLabel = TRANSFER_TYPES[0];
-    let particles = [];
-    let ceParticles = [];
+    let W = 800, H = 400, t = 0, speedMult = 1;
+    let currentStage = 0, isPlaying = false, autoAdvance = null;
+    let transferMode = 'WRLOF', path = 'wide';
+    let particles = [], ceParticles = [];
+    const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     function resize() {
       const wrap = document.getElementById('scene');
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
       W = wrap.clientWidth;
-      H = Math.round(W * 0.52);
-      canvas.width = W; canvas.height = H; canvas.style.height = H + 'px';
+      H = Math.round(Math.max(260, Math.min(W * 0.5, 520)));
+      canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+      canvas.style.height = H + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
 
-    // ─── Nav builders ─────────────────────────────────────────────────────────────
+    function stageAvailable(i) { return !(STAGES[i].ceOnly && path === 'wide'); }
+
+    // ─── Nav ──────────────────────────────────────────────────────────────────────
     function buildNav() {
-      const nav = document.getElementById('stage-nav');
       const tl = document.getElementById('timeline');
-      nav.innerHTML = ''; tl.innerHTML = '';
+      tl.innerHTML = '';
       STAGES.forEach((s, i) => {
-        const b = document.createElement('button');
-        b.className = 'stage-btn' + (i === currentStage ? ' active' : '');
-        b.textContent = s.name; b.onclick = () => goTo(i);
-        nav.appendChild(b);
         if (i > 0) { const l = document.createElement('div'); l.className = 'tl-line'; tl.appendChild(l); }
-        const node = document.createElement('div');
-        node.className = 'tl-node' + (i === currentStage ? ' active' : '');
-        node.innerHTML = `<div class="tl-dot"></div><div class="tl-label">${s.shortName}</div>`;
-        node.onclick = () => goTo(i);
+        const node = document.createElement('button');
+        node.className = 'tl-node'; node.setAttribute('role', 'tab');
+        node.innerHTML = `<div class="tl-dot"></div><div class="tl-label">${s.short}</div>`;
+        node.onclick = () => { if (stageAvailable(i)) { stopPlay(); goTo(i); } };
         tl.appendChild(node);
       });
     }
     function updateNav() {
-      document.querySelectorAll('.stage-btn').forEach((b, i) => b.classList.toggle('active', i === currentStage));
-      document.querySelectorAll('.tl-node').forEach((n, i) => n.classList.toggle('active', i === currentStage));
+      document.querySelectorAll('.tl-node').forEach((n, i) => {
+        n.classList.toggle('active', i === currentStage);
+        n.classList.toggle('done', i < currentStage);
+        n.classList.toggle('skipped', !stageAvailable(i));
+        n.setAttribute('aria-selected', i === currentStage ? 'true' : 'false');
+        n.title = stageAvailable(i) ? STAGES[i].name : 'Only on the common-envelope path';
+        if (i === currentStage) {
+          const tl = document.getElementById('timeline');
+          const target = n.offsetLeft - tl.clientWidth / 2 + n.offsetWidth / 2;
+          tl.scrollTo({ left: Math.max(0, target), behavior: 'smooth' });
+        }
+      });
+      document.querySelectorAll('[data-path]').forEach(b => b.classList.toggle('active', b.dataset.path === path));
+      document.querySelectorAll('[data-mode]').forEach(b => b.classList.toggle('active', b.dataset.mode === transferMode));
+      document.getElementById('mode-row').classList.toggle('show', STAGES[currentStage].transfer === 'active');
+      document.getElementById('mode-note').innerHTML = MODE_NOTES[transferMode];
     }
     function updateInfo() {
       const s = STAGES[currentStage];
-      document.getElementById('box-left').innerHTML = `<h3>&#9733; ${s.titleA}</h3><p>${s.descA}</p>`;
-      document.getElementById('box-right').innerHTML = `<h3>&#9733; ${s.titleB}</h3><p>${s.descB}</p>`;
+      document.getElementById('stage-title').textContent = s.name;
+      document.getElementById('stage-age').textContent = s.age;
+      let descB = s.descB;
+      if (currentStage >= 6) {
+        descB += path === 'wide'
+          ? ' <em>On this path the orbit stays wide, with a period of months to years, like G&nbsp;77-61 (245.5 days).</em>'
+          : ' <em>On this path the orbit is now only hours to days long, and Star B is tidally locked.</em>';
+      }
+      document.getElementById('box-left').innerHTML = `<h4 class="a">${s.titleA}</h4><p>${s.descA}</p>`;
+      document.getElementById('box-right').innerHTML = `<h4 class="b">${s.titleB}</h4><p>${descB}</p>`;
     }
     function showBadge(type) {
       const b = document.getElementById('transfer-badge');
       b.className = 'show ' + type.toLowerCase();
-      b.textContent = type === 'CE' ? '⚠ Common Envelope' : 'Mass Transfer: ' + type;
+      b.textContent = type === 'CE' ? 'Common envelope' : ({ RLOF: 'Roche-lobe overflow', WRLOF: 'Wind Roche-lobe overflow', BHL: 'Bondi–Hoyle wind capture' })[type];
     }
     function hideBadge() { document.getElementById('transfer-badge').className = ''; }
 
-    // ─── Bezier helper ────────────────────────────────────────────────────────────
+    // ─── Helpers ──────────────────────────────────────────────────────────────────
     function quadBez(p0, p1, p2, tt) {
       const mt = 1 - tt;
       return { x: mt * mt * p0.x + 2 * mt * tt * p1.x + tt * tt * p2.x, y: mt * mt * p0.y + 2 * mt * tt * p1.y + tt * tt * p2.y };
     }
-
-    // ─── Transfer stream helpers ──────────────────────────────────────────────────
-
-    function getL1(ax, ay, bx, by) {
-      // L1 sits ~42% of the way from A to B
-      return { x: ax + (bx - ax) * 0.42, y: ay + (by - ay) * 0.42 };
-    }
+    function getL1(ax, ay, bx, by) { return { x: ax + (bx - ax) * 0.42, y: ay + (by - ay) * 0.42 }; }
     function getAxes(ax, ay, bx, by) {
-      const dx = bx - ax, dy = by - ay, len = Math.hypot(dx, dy);
+      const dx = bx - ax, dy = by - ay, len = Math.hypot(dx, dy) || 1;
       return { ux: dx / len, uy: dy / len, nx: -dy / len, ny: dx / len, len };
     }
-
     function spawnParticle() {
-      if (transferTypeLabel === 'RLOF') {
-        particles.push({
-          mode: 'RLOF', p: Math.random() * 0.08,
-          spread: (Math.random() - 0.5) * 0.05, size: Math.random() * 2.8 + 1.2
-        });
-      } else if (transferTypeLabel === 'WRLOF') {
-        particles.push({
-          mode: 'WRLOF', p: Math.random() * 0.06,
-          cone: (Math.random() - 0.5) * 1.1, size: Math.random() * 2.0 + 0.8
-        });
-      } else {
-        const isWake = Math.random() < 0.38;
-        particles.push({
-          mode: 'BHL', p: Math.random() * 0.05, isWake,
-          offPerp: (Math.random() - 0.5) * (isWake ? 0.22 : 2.0),
-          size: Math.random() * 1.8 + 0.6
-        });
-      }
+      if (transferMode === 'RLOF') particles.push({ mode: 'RLOF', p: Math.random() * 0.08, spread: (Math.random() - 0.5) * 0.05, size: Math.random() * 2.6 + 1.1 });
+      else if (transferMode === 'WRLOF') particles.push({ mode: 'WRLOF', p: Math.random() * 0.06, cone: (Math.random() - 0.5) * 1.1, size: Math.random() * 2.0 + 0.8 });
+      else { const isWake = Math.random() < 0.3; particles.push({ mode: 'BHL', p: Math.random() * 0.05, isWake, offPerp: (Math.random() - 0.5) * (isWake ? 0.22 : 2.0), size: Math.random() * 1.8 + 0.6 }); }
     }
     function spawnCEParticle(cx, cy, r) {
       const a = Math.random() * Math.PI * 2;
-      ceParticles.push({
-        x: cx + Math.cos(a) * r * 0.35, y: cy + Math.sin(a) * r * 0.35,
-        vx: Math.cos(a) * (0.5 + Math.random() * 0.9), vy: Math.sin(a) * (0.5 + Math.random() * 0.9),
-        life: 1, col: `hsl(${22 + Math.random() * 38},88%,66%)`
-      });
+      ceParticles.push({ x: cx + Math.cos(a) * r * 0.35, y: cy + Math.sin(a) * r * 0.35, vx: Math.cos(a) * (0.5 + Math.random() * 0.9), vy: Math.sin(a) * (0.5 + Math.random() * 0.9), life: 1, h: 22 + Math.random() * 38 });
     }
-
-    // ─── Drawing helpers ──────────────────────────────────────────────────────────
     function drawStar(x, y, r, color, glow, glowR) {
       const gr = glowR || r * 3;
       const g1 = ctx.createRadialGradient(x, y, 0, x, y, gr);
-      g1.addColorStop(0, glow || color); g1.addColorStop(1, 'transparent');
+      g1.addColorStop(0, glow || color); g1.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.beginPath(); ctx.arc(x, y, gr, 0, Math.PI * 2); ctx.fillStyle = g1; ctx.fill();
       const g2 = ctx.createRadialGradient(x - r * 0.3, y - r * 0.3, 0, x, y, r);
       g2.addColorStop(0, '#fff'); g2.addColorStop(0.3, color); g2.addColorStop(1, glow || color);
@@ -562,447 +715,489 @@
     }
     function drawOrbit(cx, cy, rx, ry) {
       ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(74,240,255,0.1)'; ctx.lineWidth = 1;
+      ctx.strokeStyle = 'rgba(74,240,255,0.12)'; ctx.lineWidth = 1;
       ctx.setLineDash([4, 8]); ctx.stroke(); ctx.setLineDash([]);
     }
-
-    // ─── Star properties ──────────────────────────────────────────────────────────
+    function pulseFrac(tt) { const raw = (Math.sin(tt * 0.045) + 1) / 2; return Math.max(0, (raw - 0.70) / 0.30); }
     function starProps(type, baseRa, baseRb, tt) {
-      // Thermal pulse model: sin-based, only the top 30% of the sine counts
-      const raw = (Math.sin(tt * 0.045) + 1) / 2;           // 0–1
-      const frac = Math.max(0, (raw - 0.70) / 0.30);        // 0 when quiet, 0–1 at peak
-      const pulseScale = 1 + frac * 0.50;               // up to +50% radius at peak pulse
-
+      const pulseScale = 1 + pulseFrac(tt) * 0.45;
       switch (type) {
         case 'MS_heavy': return { r: baseRa, color: '#fff8c8', glow: 'rgba(255,240,160,0.5)' };
         case 'MS_light': return { r: baseRb, color: '#aac8ff', glow: 'rgba(130,170,255,0.4)' };
         case 'RGB': return { r: baseRa * 2.2, color: '#ff8844', glow: 'rgba(255,100,40,0.5)' };
         case 'AGB': return { r: baseRa * 3.0, color: '#ff6622', glow: 'rgba(255,80,20,0.5)' };
-        case 'CAGB': return { r: baseRa * 3.4 * pulseScale, color: '#cc3300', glow: 'rgba(180,30,0,0.55)' };
-        case 'CAGB_CE': return { r: baseRa * 3.4 * pulseScale, color: '#ff4400', glow: 'rgba(255,100,0,0.6)' };
-        case 'dC_forming': return { r: baseRb, color: '#88ff88', glow: 'rgba(80,255,100,0.45)' };
+        case 'CAGB': return { r: baseRa * 3.3 * pulseScale, color: '#cc3300', glow: 'rgba(180,30,0,0.55)' };
+        case 'CAGB_CE': return { r: baseRa * 1.4, color: '#ff7a33', glow: 'rgba(255,120,30,0.5)' };
+        case 'dC_forming': return { r: baseRb, color: '#9dffa0', glow: 'rgba(80,255,100,0.45)' };
         case 'dC': return { r: baseRb, color: '#55ee99', glow: 'rgba(50,220,120,0.4)' };
-        case 'dC_CE': return { r: baseRb, color: '#44dd88', glow: 'rgba(40,200,100,0.4)' };
-        // WD is very small — ~1/50th the radius of the companion, like Earth vs Sun
-        case 'WD': return { r: baseRb * 0.18, color: '#cceeff', glow: 'rgba(180,230,255,0.75)' };
-        case 'WD_cool': return { r: baseRb * 0.15, color: '#88aacc', glow: 'rgba(100,150,200,0.4)' };
+        case 'dC_CE': return { r: baseRb * 0.9, color: '#44dd88', glow: 'rgba(40,200,100,0.4)' };
+        case 'WD': return { r: Math.max(2.5, baseRb * 0.17), color: '#e6f6ff', glow: 'rgba(180,230,255,0.8)' };
+        case 'WD_cool': return { r: Math.max(2.2, baseRb * 0.15), color: '#88aacc', glow: 'rgba(100,150,200,0.35)' };
         default: return { r: baseRa, color: '#ffffff', glow: 'rgba(255,255,255,0.3)' };
       }
     }
-    function labelForType(t) {
-      return ({
-        MS_heavy: 'Star A (MS)', MS_light: 'Star B (MS)', RGB: 'Star A (RGB)', AGB: 'Star A (AGB)',
-        CAGB: 'Star A (C-Giant)', CAGB_CE: 'Star A', dC_forming: 'Star B (\u2192dC)',
-        dC: 'Star B (dC)', dC_CE: 'Star B', WD: 'Star A (WD)', WD_cool: 'Star A (WD)'
-      })[t] || t;
-    }
+    const LABELS = {
+      MS_heavy: 'Star A', MS_light: 'Star B', RGB: 'Star A (red giant)', AGB: 'Star A (AGB)', CAGB: 'Star A (carbon star)',
+      CAGB_CE: 'AGB core', dC_forming: 'Star B (→ dC)', dC: 'Star B (dC)', dC_CE: 'Star B', WD: 'Star A (white dwarf)', WD_cool: 'Star A (cool WD)'
+    };
+    const smallFont = () => `italic ${Math.max(10, W * 0.012)}px Georgia,serif`;
 
     // ─── Main draw loop ───────────────────────────────────────────────────────────
     function draw() {
       ctx.clearRect(0, 0, W, H);
-
-      // Nebula bg
       const nb = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, W * 0.7);
-      nb.addColorStop(0, 'rgba(20,30,80,0.2)'); nb.addColorStop(1, 'rgba(2,4,14,0)');
+      nb.addColorStop(0, 'rgba(20,30,80,0.22)'); nb.addColorStop(1, 'rgba(2,4,14,0)');
       ctx.fillStyle = nb; ctx.fillRect(0, 0, W, H);
 
       const s = STAGES[currentStage];
-      const baseRa = W * 0.028, baseRb = W * 0.022;
-      const orbitRx = W * 0.26, orbitRy = H * 0.18;
+      const unit = Math.min(W, H * 2);
+      const baseRa = unit * 0.028, baseRb = unit * 0.022;
       const cx = W / 2, cy = H / 2;
-      const angA = t * 0.008 * speedMult, angB = angA + Math.PI;
+      const isCE = s.transfer === 'CE';
+      const closeFinal = path === 'ce' && currentStage >= 6;
+
+      let orx = W * 0.27, ory = H * 0.2, omega = 0.008;
+      if (isCE) { orx = W * 0.045; ory = H * 0.035; omega = 0.03; }
+      else if (closeFinal) { orx = W * 0.05; ory = H * 0.04; omega = 0.05; }
+      else if (path === 'wide' && currentStage >= 6) { orx = W * 0.31; ory = H * 0.23; omega = 0.006; }
+
+      const angA = t * omega, angB = angA + Math.PI;
       const pA = starProps(s.aType, baseRa, baseRb, t);
       const pB = starProps(s.bType, baseRa, baseRb, t);
+      // Lighter star sits farther from the centre of mass
+      const qA = (currentStage >= 6) ? 0.45 : 0.4;
+      const ax = cx + Math.cos(angA) * orx * (2 * qA), ay = cy + Math.sin(angA) * ory * (2 * qA);
+      const bx = cx + Math.cos(angB) * orx * (2 * (1 - qA)), by = cy + Math.sin(angB) * ory * (2 * (1 - qA));
 
-      // CE: stars use tight inner orbit (they've spiralled together)
-      const isCE = s.transfer === 'CE';
-      const orxEff = isCE ? orbitRx * 0.18 : orbitRx;
-      const oryEff = isCE ? orbitRy * 0.18 : orbitRy;
-      const ax = cx + Math.cos(angA) * orxEff, ay = cy + Math.sin(angA) * oryEff;
-      const bx = cx + Math.cos(angB) * orxEff, by = cy + Math.sin(angB) * oryEff;
-
-      // ── COMMON ENVELOPE ───────────────────────────────────────────────────────
       if (isCE) {
-        const ceR = W * 0.22 + Math.sin(t * 0.018) * W * 0.018;
-
-        // Thick multi-layer gradient envelope
+        const ceR = unit * 0.2 + Math.sin(t * 0.018) * unit * 0.015;
         const g1 = ctx.createRadialGradient(cx, cy, 0, cx, cy, ceR);
-        g1.addColorStop(0, 'rgba(255,60,0,0.0)');
-        g1.addColorStop(0.20, 'rgba(255,90,10,0.08)');
-        g1.addColorStop(0.50, 'rgba(230,60,0,0.22)');
-        g1.addColorStop(0.72, 'rgba(190,45,0,0.36)');
-        g1.addColorStop(0.88, 'rgba(255,130,20,0.25)');
-        g1.addColorStop(1.00, 'rgba(100,20,0,0.0)');
-        ctx.beginPath(); ctx.arc(cx, cy, ceR, 0, Math.PI * 2);
-        ctx.fillStyle = g1; ctx.fill();
-
-        // Bright outer limb
+        g1.addColorStop(0, 'rgba(255,60,0,0.0)'); g1.addColorStop(0.2, 'rgba(255,90,10,0.08)');
+        g1.addColorStop(0.5, 'rgba(230,60,0,0.22)'); g1.addColorStop(0.72, 'rgba(190,45,0,0.36)');
+        g1.addColorStop(0.88, 'rgba(255,130,20,0.25)'); g1.addColorStop(1, 'rgba(100,20,0,0.0)');
+        ctx.beginPath(); ctx.arc(cx, cy, ceR, 0, Math.PI * 2); ctx.fillStyle = g1; ctx.fill();
         ctx.beginPath(); ctx.arc(cx, cy, ceR * 0.91, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(255,150,45,${0.32 + Math.sin(t * 0.025) * 0.1})`;
-        ctx.lineWidth = ceR * 0.07; ctx.stroke();
-
-        // Inner bright halo (around the embedded stars)
-        const innerR = ceR * 0.22;
-        const gi = ctx.createRadialGradient(cx, cy, 0, cx, cy, innerR);
-        gi.addColorStop(0, 'rgba(255,180,60,0.18)');
-        gi.addColorStop(1, 'rgba(255,100,20,0.0)');
-        ctx.beginPath(); ctx.arc(cx, cy, innerR, 0, Math.PI * 2);
-        ctx.fillStyle = gi; ctx.fill();
-
-        // CE label
-        ctx.font = `italic bold ${Math.max(11, W * 0.014)}px Georgia,serif`;
-        ctx.fillStyle = 'rgba(255,195,80,0.80)';
-        ctx.textAlign = 'center';
-        ctx.fillText('Common Envelope', cx, cy - ceR * 0.58);
-        ctx.font = `italic ${Math.max(9, W * 0.011)}px Georgia,serif`;
-        ctx.fillStyle = 'rgba(255,165,55,0.55)';
-        ctx.fillText('(both stars orbit inside)', cx, cy - ceR * 0.58 + W * 0.018);
-
-        // Ejecta particles
-        if (Math.random() < 0.35) spawnCEParticle(cx, cy, ceR);
+        ctx.strokeStyle = `rgba(255,150,45,${0.3 + Math.sin(t * 0.025) * 0.1})`; ctx.lineWidth = ceR * 0.06; ctx.stroke();
+        ctx.font = `italic bold ${Math.max(12, W * 0.015)}px Georgia,serif`;
+        ctx.fillStyle = 'rgba(255,195,80,0.85)'; ctx.textAlign = 'center';
+        ctx.fillText('Common envelope', cx, cy - ceR * 0.6);
+        ctx.font = smallFont(); ctx.fillStyle = 'rgba(255,165,55,0.6)';
+        ctx.fillText('(both stars orbit inside)', cx, cy - ceR * 0.6 + Math.max(15, W * 0.02));
+        if (!reduceMotion && Math.random() < 0.35) spawnCEParticle(cx, cy, ceR);
         ceParticles = ceParticles.filter(p => p.life > 0);
         ceParticles.forEach(p => {
-          p.x += p.vx; p.y += p.vy; p.life -= 0.010;
+          p.x += p.vx * speedMult; p.y += p.vy * speedMult; p.life -= 0.01 * speedMult;
           ctx.beginPath(); ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
-          const hsl = p.col; // e.g. "hsl(30,88%,66%)"
-          const hsla = hsl.replace('hsl(', 'hsla(').replace(')', `,${(p.life * 0.85).toFixed(2)})`);
-          ctx.fillStyle = hsla; ctx.fill();
+          ctx.fillStyle = `hsla(${p.h},88%,66%,${Math.max(0, p.life * 0.85).toFixed(2)})`; ctx.fill();
         });
-
-        // Tight inner orbit dashes
-        ctx.beginPath(); ctx.ellipse(cx, cy, orxEff * 1.6, oryEff * 1.6, 0, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(255,200,100,0.22)'; ctx.lineWidth = 1;
-        ctx.setLineDash([3, 7]); ctx.stroke(); ctx.setLineDash([]);
-
       } else {
-        drawOrbit(cx, cy, orbitRx, orbitRy);
+        drawOrbit(cx, cy, orx * 2 * qA, ory * 2 * qA);
+        drawOrbit(cx, cy, orx * 2 * (1 - qA), ory * 2 * (1 - qA));
       }
 
-      // ── Center of mass dot ────────────────────────────────────────────────────
-      ctx.beginPath(); ctx.arc(cx, cy, 3, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(74,240,255,0.35)'; ctx.fill();
+      ctx.beginPath(); ctx.arc(cx, cy, 2.5, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(74,240,255,0.4)'; ctx.fill();
 
-      // ── Roche lobe dashed outline ─────────────────────────────────────────────
-      if ((s.aType === 'CAGB' || s.aType === 'AGB') && !isCE) {
-        const rl = pA.r * 2.0;
-        ctx.beginPath(); ctx.ellipse(ax, ay, rl * 1.5, rl, -angA, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(255,100,50,0.2)'; ctx.lineWidth = 1;
+      // Roche lobe outline for the AGB stages
+      if ((s.aType === 'CAGB' || s.aType === 'AGB') && !isCE && s.transfer !== 'active') {
+        const ang = Math.atan2(by - ay, bx - ax);
+        const rl = Math.hypot(bx - ax, by - ay) * 0.36;
+        ctx.beginPath(); ctx.ellipse(ax, ay, rl * 1.15, rl * 0.9, ang, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(255,120,70,0.28)'; ctx.lineWidth = 1;
         ctx.setLineDash([3, 7]); ctx.stroke(); ctx.setLineDash([]);
       }
 
-      // ── Thermal pulse flash halo (CAGB stages) ────────────────────────────────
-      if (s.aType === 'CAGB' || s.aType === 'CAGB_CE') {
-        const raw = (Math.sin(t * 0.045) + 1) / 2;
-        const frac = Math.max(0, (raw - 0.70) / 0.30);
+      // Thermal pulse flash
+      if (s.aType === 'CAGB') {
+        const frac = pulseFrac(t);
         if (frac > 0.04) {
-          // The star body itself has already grown (from starProps pulseScale).
-          // Add an expanding flash ring on top.
-          const flashR = pA.r * (1 + frac * 1.1);
+          const flashR = pA.r * (1 + frac * 1.0);
           const fg = ctx.createRadialGradient(ax, ay, pA.r * 0.85, ax, ay, flashR);
-          fg.addColorStop(0, `rgba(255,230,90,${frac * 0.65})`);
-          fg.addColorStop(0.55, `rgba(255,140,20,${frac * 0.3})`);
-          fg.addColorStop(1, 'rgba(255,80,0,0)');
-          ctx.beginPath(); ctx.arc(ax, ay, flashR, 0, Math.PI * 2);
-          ctx.fillStyle = fg; ctx.fill();
-          ctx.beginPath(); ctx.arc(ax, ay, flashR, 0, Math.PI * 2);
-          ctx.strokeStyle = `rgba(255,210,70,${frac * 0.55})`;
-          ctx.lineWidth = 1.5; ctx.stroke();
+          fg.addColorStop(0, `rgba(255,230,90,${frac * 0.6})`); fg.addColorStop(0.55, `rgba(255,140,20,${frac * 0.28})`); fg.addColorStop(1, 'rgba(255,80,0,0)');
+          ctx.beginPath(); ctx.arc(ax, ay, flashR, 0, Math.PI * 2); ctx.fillStyle = fg; ctx.fill();
+        }
+        if (currentStage === 3) {
+          ctx.font = smallFont(); ctx.fillStyle = `rgba(255,210,100,${0.45 + frac * 0.5})`; ctx.textAlign = 'center';
+          ctx.fillText(frac > 0.04 ? 'thermal pulse: carbon dredged up' : 'C/O > 1', ax, ay + pA.r + Math.max(18, W * 0.025));
         }
       }
 
-      // ── Mass transfer stream ──────────────────────────────────────────────────
-      if (s.transfer === 'active') {
-        const axes = getAxes(ax, ay, bx, by);
-        const L1 = getL1(ax, ay, bx, by);
+      if (s.transfer === 'active') drawTransfer(ax, ay, bx, by, pA, cx);
 
-        if (transferTypeLabel === 'RLOF') {
-          // ── RLOF: tight ballistic stream through L1, like water from a tap ──
-          // The AGB fills its Roche lobe; gas pours through L1 in a narrow jet.
-
-          // Draw Roche lobe filled (not just outline) to show overflow
-          const rlR = pA.r * 1.85;
-          const rlGrad = ctx.createRadialGradient(ax, ay, pA.r, ax, ay, rlR);
-          rlGrad.addColorStop(0, 'rgba(255,94,58,0.18)');
-          rlGrad.addColorStop(1, 'rgba(255,94,58,0.0)');
-          ctx.beginPath(); ctx.ellipse(ax, ay, rlR * 1.4, rlR, -angA, 0, Math.PI * 2);
-          ctx.fillStyle = rlGrad; ctx.fill();
-          // Roche lobe border — glowing red, clearly overflowing
-          ctx.beginPath(); ctx.ellipse(ax, ay, rlR * 1.4, rlR, -angA, 0, Math.PI * 2);
-          ctx.strokeStyle = 'rgba(255,94,58,0.55)'; ctx.lineWidth = 1.5;
-          ctx.setLineDash([4, 5]); ctx.stroke(); ctx.setLineDash([]);
-
-          // Narrow stream tube: A → slight arc through L1 → B
-          // ctrl sits just above L1 to give a gentle curve
-          const ctrlX = L1.x - axes.nx * axes.len * 0.08;
-          const ctrlY = L1.y - axes.ny * axes.len * 0.08;
-          ctx.beginPath(); ctx.moveTo(ax, ay);
-          ctx.quadraticCurveTo(ctrlX, ctrlY, bx, by);
-          ctx.strokeStyle = 'rgba(255,94,58,0.30)'; ctx.lineWidth = W * 0.012; ctx.stroke();
-          // Bright narrow core
-          ctx.beginPath(); ctx.moveTo(ax, ay);
-          ctx.quadraticCurveTo(ctrlX, ctrlY, bx, by);
-          ctx.strokeStyle = 'rgba(255,160,120,0.55)'; ctx.lineWidth = W * 0.004; ctx.stroke();
-
-          // Particles along stream
-          if (Math.random() < 0.35 * speedMult) spawnParticle();
-          particles = particles.filter(p => p.p < 1);
-          particles.forEach(p => {
-            p.p += 0.011 * speedMult;
-            const pt = quadBez({ x: ax, y: ay }, { x: ctrlX, y: ctrlY }, { x: bx, y: by }, p.p);
-            // Small perpendicular jitter so it looks like a narrow ribbon
-            const jit = p.spread * axes.len;
-            ctx.beginPath(); ctx.arc(pt.x + axes.nx * jit, pt.y + axes.ny * jit, p.size, 0, Math.PI * 2);
-            const alpha = Math.sin(p.p * Math.PI) * 0.85 + 0.15;
-            ctx.fillStyle = `rgba(255,120,70,${alpha.toFixed(2)})`; ctx.fill();
-          });
-
-          // Label near L1
-          ctx.font = `italic ${Math.max(8, W * 0.011)}px Georgia,serif`;
-          ctx.fillStyle = 'rgba(255,130,90,0.75)'; ctx.textAlign = 'center';
-          ctx.fillText('L\u2081 overflow', L1.x, L1.y - W * 0.022);
-
-        } else if (transferTypeLabel === 'WRLOF') {
-          // ── WRLOF: broad dust-driven wind cone funnelled preferentially through L1 ──
-          // The wind fills the Roche lobe but escapes preferentially toward the companion.
-
-          // Wide hazy wind envelope around AGB
-          const windR = pA.r * 3.2;
-          const wg = ctx.createRadialGradient(ax, ay, pA.r, ax, ay, windR);
-          wg.addColorStop(0, 'rgba(192,132,252,0.22)');
-          wg.addColorStop(0.5, 'rgba(192,132,252,0.10)');
-          wg.addColorStop(1, 'rgba(192,132,252,0.0)');
-          ctx.beginPath(); ctx.arc(ax, ay, windR, 0, Math.PI * 2);
-          ctx.fillStyle = wg; ctx.fill();
-
-          // Focused "funnel" cone pointing toward companion — two bounding lines from A
-          const coneHalf = 0.52; // radians half-angle of cone
-          const dirAngle = Math.atan2(by - ay, bx - ax);
-          const coneLen = axes.len * 0.88;
-          for (const sign of [-1, 1]) {
-            const edgeAngle = dirAngle + sign * coneHalf;
-            ctx.beginPath(); ctx.moveTo(ax, ay);
-            ctx.lineTo(ax + Math.cos(edgeAngle) * coneLen, ay + Math.sin(edgeAngle) * coneLen);
-            ctx.strokeStyle = 'rgba(192,132,252,0.28)'; ctx.lineWidth = 1;
-            ctx.setLineDash([5, 7]); ctx.stroke(); ctx.setLineDash([]);
-          }
-          // Filled cone
-          ctx.beginPath(); ctx.moveTo(ax, ay);
-          ctx.arc(ax, ay, coneLen, dirAngle - coneHalf, dirAngle + coneHalf);
-          ctx.closePath();
-          const cg = ctx.createRadialGradient(ax, ay, 0, ax, ay, coneLen);
-          cg.addColorStop(0, 'rgba(192,132,252,0.18)');
-          cg.addColorStop(1, 'rgba(192,132,252,0.0)');
-          ctx.fillStyle = cg; ctx.fill();
-
-          // Particles: launched in the cone, curve toward B
-          if (Math.random() < 0.30 * speedMult) spawnParticle();
-          particles = particles.filter(p => p.p < 1);
-          particles.forEach(p => {
-            p.p += 0.008 * speedMult;
-            // Each particle has its own cone offset; those near centre reach B,
-            // those at the edges disperse past B
-            const launchAngle = dirAngle + p.cone * 0.5;
-            const startX = ax + Math.cos(launchAngle) * pA.r * 1.2;
-            const startY = ay + Math.sin(launchAngle) * pA.r * 1.2;
-            // ctrl guides it toward B with varying accuracy
-            const ctrlPX = L1.x + axes.nx * axes.len * p.cone * 0.25;
-            const ctrlPY = L1.y + axes.ny * axes.len * p.cone * 0.25;
-            const endX = bx + axes.nx * Math.abs(p.cone) * axes.len * 0.15;
-            const endY = by + axes.ny * Math.abs(p.cone) * axes.len * 0.15;
-            const pt = quadBez({ x: startX, y: startY }, { x: ctrlPX, y: ctrlPY }, { x: endX, y: endY }, p.p);
-            const alpha = (Math.sin(p.p * Math.PI) * 0.7 + 0.3) * (1 - Math.abs(p.cone) * 0.6);
-            ctx.beginPath(); ctx.arc(pt.x, pt.y, p.size, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(192,132,252,${Math.max(0, alpha).toFixed(2)})`; ctx.fill();
-          });
-
-          ctx.font = `italic ${Math.max(8, W * 0.011)}px Georgia,serif`;
-          ctx.fillStyle = 'rgba(192,132,252,0.75)'; ctx.textAlign = 'center';
-          ctx.fillText('dust-driven wind cone', ax + (bx - ax) * 0.5, Math.min(ay, by) - W * 0.04);
-
-        } else {
-          // ── BHL: isotropic stellar wind; companion accretes via gravitational focusing ──
-
-          // Large diffuse spherical wind halo
-          const windR2 = axes.len * 1.0;
-          const wg2 = ctx.createRadialGradient(ax, ay, pA.r * 0.8, ax, ay, windR2);
-          wg2.addColorStop(0, 'rgba(58,255,158,0.18)');
-          wg2.addColorStop(0.3, 'rgba(58,255,158,0.10)');
-          wg2.addColorStop(0.7, 'rgba(58,255,158,0.04)');
-          wg2.addColorStop(1, 'rgba(58,255,158,0.0)');
-          ctx.beginPath(); ctx.arc(ax, ay, windR2, 0, Math.PI * 2);
-          ctx.fillStyle = wg2; ctx.fill();
-
-          // Bondi-Hoyle accretion radius circle around B — clearly visible
-          const rBHL = axes.len * 0.13;
-          ctx.beginPath(); ctx.arc(bx, by, rBHL, 0, Math.PI * 2);
-          ctx.strokeStyle = 'rgba(58,255,158,0.55)'; ctx.lineWidth = 1.5;
-          ctx.setLineDash([3, 4]); ctx.stroke(); ctx.setLineDash([]);
-
-          // Gravitational wake: teardrop trailing DOWNWIND from B
-          // Wind travels from A toward B, so wake trails in the A→B direction (away from A)
-          const wakeAngle = Math.atan2(by - ay, bx - ax); // A→B direction = downwind past B
-          const wakeLen = axes.len * 0.28;
-          const wakeTipX = bx + Math.cos(wakeAngle) * wakeLen;
-          const wakeTipY = by + Math.sin(wakeAngle) * wakeLen;
-          // Draw filled wake teardrop with gradient
-          const wakeGrad = ctx.createLinearGradient(bx, by, wakeTipX, wakeTipY);
-          wakeGrad.addColorStop(0, 'rgba(58,255,158,0.22)');
-          wakeGrad.addColorStop(0.5, 'rgba(58,255,158,0.10)');
-          wakeGrad.addColorStop(1, 'rgba(58,255,158,0.0)');
-          for (let w = 0; w < 8; w++) {
-            const wf = w / 7;
-            const wpx = bx + Math.cos(wakeAngle) * wakeLen * wf;
-            const wpy = by + Math.sin(wakeAngle) * wakeLen * wf;
-            const wr = rBHL * (1 - wf * 0.85);
-            ctx.beginPath(); ctx.arc(wpx, wpy, wr, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(58,255,158,${(0.22 * (1 - wf)).toFixed(3)})`; ctx.fill();
-          }
-
-          // ── Particles ────────────────────────────────────────────────────────
-          // Spawn more frequently so the isotropic wind looks dense
-          if (Math.random() < 0.55 * speedMult) spawnParticle();
-          particles = particles.filter(p => p.p < 1);
-          particles.forEach(p => {
-            p.p += 0.006 * speedMult;
-
-            if (p.isWake) {
-              // Accreted particles: travel from A toward B, curving slightly inward
-              // They start partway along the A→B path so they emerge near B
-              const startFrac = 0.55 + p.offPerp * 0.2;
-              const startX = ax + (bx - ax) * startFrac + axes.nx * axes.len * p.offPerp * 0.5;
-              const startY = ay + (by - ay) * startFrac + axes.ny * axes.len * p.offPerp * 0.5;
-              const ctrlAX = startX + (bx - startX) * 0.5 - axes.nx * axes.len * p.offPerp * 0.3;
-              const ctrlAY = startY + (by - startY) * 0.5 - axes.ny * axes.len * p.offPerp * 0.3;
-              const pt = quadBez({ x: startX, y: startY }, { x: ctrlAX, y: ctrlAY }, { x: bx, y: by }, p.p);
-              const alpha = Math.sin(p.p * Math.PI) * 0.80 + 0.10;
-              ctx.beginPath(); ctx.arc(pt.x, pt.y, p.size, 0, Math.PI * 2);
-              ctx.fillStyle = `rgba(58,255,158,${alpha.toFixed(2)})`; ctx.fill();
-            } else {
-              // Isotropic wind: particles radiate outward from A in ALL directions
-              // Each particle travels straight at its fixed launch angle
-              const launchAngle = p.offPerp * Math.PI; // offPerp is -1..1 → full 360°
-              const maxDist = windR2 * 0.95;
-              const dist = p.p * maxDist;
-              const px = ax + Math.cos(launchAngle) * dist;
-              const py = ay + Math.sin(launchAngle) * dist;
-              // Fade in then out as they travel away
-              const alpha = Math.sin(p.p * Math.PI) * 0.55 + 0.05;
-              ctx.beginPath(); ctx.arc(px, py, p.size, 0, Math.PI * 2);
-              ctx.fillStyle = `rgba(58,230,140,${alpha.toFixed(2)})`; ctx.fill();
-            }
-          });
-
-          // Labels — placed well clear of the AGB star and each other
-          const smallFont = `italic ${Math.max(8, W * 0.011)}px Georgia,serif`;
-          ctx.font = smallFont; ctx.textAlign = 'center';
-          // "isotropic stellar wind" label: above canvas center, clear of AGB
-          ctx.fillStyle = 'rgba(58,255,158,0.72)';
-          ctx.fillText('isotropic stellar wind', cx, H * 0.10);
-          // BHL radius label: below the accretion circle around B, offset perpendicular to avoid star label
-          ctx.fillStyle = 'rgba(58,255,158,0.58)';
-          ctx.fillText('BHL accretion radius', bx, by + rBHL + Math.max(14, W * 0.020));
-        }
-      }
-
-      // ── Planetary nebula (WD stage) ───────────────────────────────────────────
+      // Planetary nebula
       if (s.aType === 'WD') {
-        const pnr = W * 0.088 + Math.sin(t * 0.008) * W * 0.01;
+        const pnr = unit * 0.09 + Math.sin(t * 0.008) * unit * 0.008;
         for (let i = 0; i < 2; i++) {
-          const r2 = pnr - i * W * 0.022;
-          const g = ctx.createRadialGradient(ax, ay, r2 * 0.78, ax, ay, r2);
-          g.addColorStop(0, 'rgba(74,240,255,0)');
-          g.addColorStop(0.65, `rgba(${i === 0 ? '74,200,255' : '150,100,255'},0.14)`);
-          g.addColorStop(1, 'rgba(74,240,255,0)');
+          const r2 = pnr - i * unit * 0.022;
+          const g = ctx.createRadialGradient(ax, ay, r2 * 0.75, ax, ay, r2);
+          g.addColorStop(0, 'rgba(74,240,255,0)'); g.addColorStop(0.65, `rgba(${i === 0 ? '74,200,255' : '150,100,255'},0.16)`); g.addColorStop(1, 'rgba(74,240,255,0)');
           ctx.beginPath(); ctx.arc(ax, ay, r2, 0, Math.PI * 2); ctx.fillStyle = g; ctx.fill();
         }
-        ctx.font = `italic ${Math.max(8, W * 0.011)}px Georgia,serif`;
-        ctx.fillStyle = 'rgba(100,210,255,0.55)';
-        ctx.textAlign = 'center';
-        ctx.fillText('Planetary Nebula', ax, ay - W * 0.094);
+        ctx.font = smallFont(); ctx.fillStyle = 'rgba(120,215,255,0.65)'; ctx.textAlign = 'center';
+        ctx.fillText('planetary nebula', ax, ay + pnr + Math.max(14, W * 0.018));
       }
 
-      // ── Draw stars ────────────────────────────────────────────────────────────
-      if (isCE) {
-        // Draw dC companion behind AGB in CE
-        drawStar(bx, by, pB.r, pB.color, pB.glow, pB.r * 3);
-        drawStar(ax, ay, pA.r, pA.color, pA.glow, pA.r * 3.5);
-      } else {
-        drawStar(ax, ay, pA.r, pA.color, pA.glow, pA.r * 4);
-        drawStar(bx, by, pB.r, pB.color, pB.glow, pB.r * 3.5);
+      if (isCE) { drawStar(bx, by, pB.r, pB.color, pB.glow, pB.r * 3); drawStar(ax, ay, pA.r, pA.color, pA.glow, pA.r * 3.5); }
+      else { drawStar(ax, ay, pA.r, pA.color, pA.glow, pA.r * 4); drawStar(bx, by, pB.r, pB.color, pB.glow, pB.r * 3.5); }
+
+      // Star labels (skip inside the CE where they would overlap)
+      if (!isCE) {
+        ctx.font = `${Math.max(11, W * 0.014)}px Georgia,serif`; ctx.textAlign = 'center';
+        if (closeFinal) {
+          // Fixed labels with leader lines; the stars are too close to label in place
+          const lyA = cy - Math.max(70, H * 0.26), lxA = cx - Math.max(90, W * 0.14), lxB = cx + Math.max(90, W * 0.14);
+          const aLeft = ax <= bx;
+          [[aLeft ? lxA : lxB, ax, ay, pA, s.aType], [aLeft ? lxB : lxA, bx, by, pB, s.bType]].forEach(([lx, sx, sy, pp, ty]) => {
+            ctx.strokeStyle = 'rgba(200,223,247,0.25)'; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(lx, lyA + 6); ctx.lineTo(sx, sy - pp.r - 2); ctx.stroke();
+            ctx.fillStyle = pp.color; ctx.fillText(LABELS[ty], lx, lyA);
+          });
+          ctx.font = smallFont(); ctx.fillStyle = 'rgba(74,240,255,0.65)';
+          ctx.fillText('orbit: hours to days', cx, cy + Math.max(55, H * 0.2));
+        } else {
+          // Place each label on the far side of its star from the companion
+          const ax2 = getAxes(ax, ay, bx, by);
+          const place = (x, y, r, dirx, diry, text, color) => {
+            const tw = ctx.measureText(text).width, gap = Math.max(10, W * 0.012);
+            // Smallest distance along (dirx, diry) at which the text box clears the star
+            const dx = Math.abs(dirx) > 0.05 ? (r + gap + tw / 2) / Math.abs(dirx) : Infinity;
+            const dy = Math.abs(diry) > 0.05 ? (r + gap + 8) / Math.abs(diry) : Infinity;
+            let d = Math.min(dx, dy);
+            let lx = x + dirx * d, ly = y + diry * d + 4;
+            lx = Math.min(Math.max(lx, tw / 2 + 6), W - tw / 2 - 6);
+            ly = Math.min(Math.max(ly, 18), H - 28);
+            // If clamping to the canvas edge pushed the label onto the star, put it above or below instead
+            const hitsStar = Math.abs(lx - x) < tw / 2 + r && Math.abs(ly - 4 - y) < r + 10;
+            if (hitsStar) {
+              lx = Math.min(Math.max(x, tw / 2 + 6), W - tw / 2 - 6);
+              ly = (y - r - gap > 40) ? y - r - gap : y + r + gap + 12;
+            }
+            ctx.fillStyle = color; ctx.fillText(text, lx, ly);
+          };
+          const labelA = ['CAGB', 'AGB', 'RGB'].includes(s.aType) ? '#ffc89a' : pA.color;
+          place(ax, ay, pA.r, -ax2.ux, -ax2.uy, LABELS[s.aType], labelA);
+          place(bx, by, pB.r, ax2.ux, ax2.uy, LABELS[s.bType], pB.color);
+        }
       }
 
-      // ── Labels ────────────────────────────────────────────────────────────────
-      const fSz = Math.max(9, W * 0.013);
-      ctx.font = `${fSz}px Georgia,serif`;
-      ctx.textAlign = 'center';
-      // Push star-name labels well above the star body + any transfer annotations
-      const labelClearA = pA.r + Math.max(16, W * 0.028);
-      const labelClearB = pB.r + Math.max(16, W * 0.022);
-      ctx.fillStyle = pA.color;
-      ctx.fillText(labelForType(s.aType), ax, ay - labelClearA);
-      ctx.fillStyle = pB.color;
-      ctx.fillText(labelForType(s.bType), bx, by - labelClearB);
+      ctx.font = `bold ${Math.max(10, W * 0.014)}px Georgia,serif`;
+      ctx.fillStyle = 'rgba(74,240,255,0.7)'; ctx.textAlign = 'left';
+      ctx.fillText(`Stage ${currentStage + 1} of ${STAGES.length}`, Math.max(10, W * 0.02), H - Math.max(10, H * 0.04));
 
-      // ── Stage title & arrows ──────────────────────────────────────────────────
-      ctx.font = `bold ${Math.max(9, W * 0.015)}px Georgia,serif`;
-      ctx.fillStyle = 'rgba(74,240,255,0.72)';
-      ctx.textAlign = 'left';
-      ctx.fillText(`Stage ${currentStage + 1}/${STAGES.length}: ${s.name}`, W * 0.02, H * 0.96);
-      ctx.font = `italic ${Math.max(8, W * 0.011)}px Georgia,serif`;
-      ctx.fillStyle = 'rgba(200,223,247,0.28)';
-      ctx.textAlign = 'right'; ctx.fillText('\u2190 earlier', W * 0.18, H * 0.96);
-      ctx.textAlign = 'left'; ctx.fillText('later \u2192', W * 0.83, H * 0.96);
-
-      t += speedMult;
-      animId = requestAnimationFrame(draw);
+      if (!reduceMotion) t += speedMult;
       drawStars();
+      requestAnimationFrame(draw);
+    }
+
+    function drawTransfer(ax, ay, bx, by, pA, cx) {
+      const axes = getAxes(ax, ay, bx, by);
+      const L1 = getL1(ax, ay, bx, by);
+      const motion = reduceMotion ? 0 : 1;
+
+      if (transferMode === 'RLOF') {
+        const ang = Math.atan2(by - ay, bx - ax);
+        const rl = axes.len * 0.42;
+        ctx.beginPath(); ctx.ellipse(ax, ay, rl * 1.12, rl * 0.85, ang, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255,94,58,0.08)'; ctx.fill();
+        ctx.strokeStyle = 'rgba(255,94,58,0.55)'; ctx.lineWidth = 1.5; ctx.setLineDash([4, 5]); ctx.stroke(); ctx.setLineDash([]);
+        const ctrlX = L1.x - axes.nx * axes.len * 0.08, ctrlY = L1.y - axes.ny * axes.len * 0.08;
+        ctx.beginPath(); ctx.moveTo(L1.x - axes.ux * 4, L1.y - axes.uy * 4); ctx.quadraticCurveTo(ctrlX, ctrlY, bx, by);
+        ctx.strokeStyle = 'rgba(255,94,58,0.3)'; ctx.lineWidth = Math.max(4, W * 0.01); ctx.stroke();
+        if (Math.random() < 0.35 * speedMult * motion) spawnParticle();
+        particles = particles.filter(p => p.p < 1);
+        particles.forEach(p => {
+          p.p += 0.011 * speedMult * motion;
+          const pt = quadBez(L1, { x: ctrlX, y: ctrlY }, { x: bx, y: by }, p.p);
+          const jit = p.spread * axes.len;
+          ctx.beginPath(); ctx.arc(pt.x + axes.nx * jit, pt.y + axes.ny * jit, p.size, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255,120,70,${(Math.sin(p.p * Math.PI) * 0.85 + 0.15).toFixed(2)})`; ctx.fill();
+        });
+        ctx.font = smallFont(); ctx.fillStyle = 'rgba(255,140,100,0.85)'; ctx.textAlign = 'center';
+        ctx.fillText('L₁', L1.x + axes.nx * 18, L1.y + axes.ny * 18 + 4);
+      } else if (transferMode === 'WRLOF') {
+        const windR = pA.r * 2.6;
+        const wg = ctx.createRadialGradient(ax, ay, pA.r, ax, ay, windR);
+        wg.addColorStop(0, 'rgba(192,132,252,0.22)'); wg.addColorStop(1, 'rgba(192,132,252,0.0)');
+        ctx.beginPath(); ctx.arc(ax, ay, windR, 0, Math.PI * 2); ctx.fillStyle = wg; ctx.fill();
+        const coneHalf = 0.5, dirAngle = Math.atan2(by - ay, bx - ax), coneLen = axes.len * 0.9;
+        ctx.beginPath(); ctx.moveTo(ax, ay); ctx.arc(ax, ay, coneLen, dirAngle - coneHalf, dirAngle + coneHalf); ctx.closePath();
+        const cg = ctx.createRadialGradient(ax, ay, 0, ax, ay, coneLen);
+        cg.addColorStop(0, 'rgba(192,132,252,0.2)'); cg.addColorStop(1, 'rgba(192,132,252,0.0)');
+        ctx.fillStyle = cg; ctx.fill();
+        if (Math.random() < 0.32 * speedMult * motion) spawnParticle();
+        particles = particles.filter(p => p.p < 1);
+        particles.forEach(p => {
+          p.p += 0.008 * speedMult * motion;
+          const la = dirAngle + p.cone * 0.5;
+          const sx = ax + Math.cos(la) * pA.r * 1.1, sy = ay + Math.sin(la) * pA.r * 1.1;
+          const ctrl = { x: L1.x + axes.nx * axes.len * p.cone * 0.25, y: L1.y + axes.ny * axes.len * p.cone * 0.25 };
+          const end = { x: bx + axes.nx * Math.abs(p.cone) * axes.len * 0.15, y: by + axes.ny * Math.abs(p.cone) * axes.len * 0.15 };
+          const pt = quadBez({ x: sx, y: sy }, ctrl, end, p.p);
+          const alpha = (Math.sin(p.p * Math.PI) * 0.7 + 0.3) * (1 - Math.abs(p.cone) * 0.6);
+          ctx.beginPath(); ctx.arc(pt.x, pt.y, p.size, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(192,132,252,${Math.max(0, alpha).toFixed(2)})`; ctx.fill();
+        });
+        ctx.font = smallFont(); ctx.fillStyle = 'rgba(200,150,255,0.8)'; ctx.textAlign = 'center';
+        ctx.fillText('dusty wind focused toward the companion', W / 2, H - Math.max(12, H * 0.04));
+      } else {
+        const windR2 = axes.len * 1.0;
+        const wg2 = ctx.createRadialGradient(ax, ay, pA.r * 0.8, ax, ay, windR2);
+        wg2.addColorStop(0, 'rgba(58,255,158,0.16)'); wg2.addColorStop(0.5, 'rgba(58,255,158,0.06)'); wg2.addColorStop(1, 'rgba(58,255,158,0.0)');
+        ctx.beginPath(); ctx.arc(ax, ay, windR2, 0, Math.PI * 2); ctx.fillStyle = wg2; ctx.fill();
+        const rBHL = axes.len * 0.13;
+        ctx.beginPath(); ctx.arc(bx, by, rBHL, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(58,255,158,0.55)'; ctx.lineWidth = 1.5; ctx.setLineDash([3, 4]); ctx.stroke(); ctx.setLineDash([]);
+        const wa = Math.atan2(by - ay, bx - ax), wl = axes.len * 0.28;
+        for (let w = 0; w < 8; w++) {
+          const wf = w / 7;
+          ctx.beginPath(); ctx.arc(bx + Math.cos(wa) * wl * wf, by + Math.sin(wa) * wl * wf, rBHL * (1 - wf * 0.85), 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(58,255,158,${(0.16 * (1 - wf)).toFixed(3)})`; ctx.fill();
+        }
+        if (Math.random() < 0.55 * speedMult * motion) spawnParticle();
+        particles = particles.filter(p => p.p < 1);
+        particles.forEach(p => {
+          p.p += 0.006 * speedMult * motion;
+          if (p.isWake) {
+            const sf = 0.55 + p.offPerp * 0.2;
+            const sx = ax + (bx - ax) * sf + axes.nx * axes.len * p.offPerp * 0.5, sy = ay + (by - ay) * sf + axes.ny * axes.len * p.offPerp * 0.5;
+            const ctrl = { x: sx + (bx - sx) * 0.5 - axes.nx * axes.len * p.offPerp * 0.3, y: sy + (by - sy) * 0.5 - axes.ny * axes.len * p.offPerp * 0.3 };
+            const pt = quadBez({ x: sx, y: sy }, ctrl, { x: bx, y: by }, p.p);
+            ctx.beginPath(); ctx.arc(pt.x, pt.y, p.size, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(58,255,158,${(Math.sin(p.p * Math.PI) * 0.8 + 0.1).toFixed(2)})`; ctx.fill();
+          } else {
+            const la = p.offPerp * Math.PI, d = p.p * windR2 * 0.95;
+            ctx.beginPath(); ctx.arc(ax + Math.cos(la) * d, ay + Math.sin(la) * d, p.size, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(58,230,140,${(Math.sin(p.p * Math.PI) * 0.5 + 0.05).toFixed(2)})`; ctx.fill();
+          }
+        });
+        ctx.font = smallFont(); ctx.textAlign = 'center'; ctx.fillStyle = 'rgba(58,255,158,0.7)';
+        // Label off to the side (perpendicular to the A-B line) so it never collides with Star B's label
+        const sgn = axes.ny <= 0 ? 1 : -1, off = rBHL + Math.max(16, W * 0.02);
+        ctx.fillText('capture radius', bx + sgn * axes.nx * off, by + sgn * axes.ny * off + 4);
+      }
     }
 
     // ─── Navigation ───────────────────────────────────────────────────────────────
+    function nextAvail(i, dir) {
+      let j = i;
+      do { j += dir; } while (j >= 0 && j < STAGES.length && !stageAvailable(j));
+      return (j < 0 || j >= STAGES.length) ? i : j;
+    }
     function goTo(i) {
       currentStage = Math.max(0, Math.min(STAGES.length - 1, i));
       particles = []; ceParticles = [];
       const s = STAGES[currentStage];
-      if (s.transfer === 'active') { transferTypeLabel = TRANSFER_TYPES[transferType % TRANSFER_TYPES.length]; showBadge(transferTypeLabel); }
+      if (s.transfer === 'active') showBadge(transferMode);
       else if (s.transfer === 'CE') showBadge('CE');
       else hideBadge();
       updateNav(); updateInfo();
     }
+    function stopPlay() {
+      clearTimeout(autoAdvance); isPlaying = false;
+      document.getElementById('btn-play').innerHTML = '&#9654; Play';
+    }
     function autoPlay() {
       if (!isPlaying) return;
       autoAdvance = setTimeout(() => {
-        if (currentStage < STAGES.length - 1) { goTo(currentStage + 1); autoPlay(); }
-        else { isPlaying = false; document.getElementById('btn-play').innerHTML = '&#9654; Play'; }
-      }, 4200 / speedMult);
+        const n = nextAvail(currentStage, 1);
+        if (n !== currentStage) { goTo(n); autoPlay(); } else stopPlay();
+      }, 6500 / speedMult);
     }
-
-    document.getElementById('btn-prev').onclick = () => {
-      clearTimeout(autoAdvance); isPlaying = false;
-      document.getElementById('btn-play').innerHTML = '&#9654; Play'; goTo(currentStage - 1);
-    };
-    document.getElementById('btn-next').onclick = () => {
-      clearTimeout(autoAdvance); isPlaying = false;
-      document.getElementById('btn-play').innerHTML = '&#9654; Play'; goTo(currentStage + 1);
-    };
+    document.getElementById('btn-prev').onclick = () => { stopPlay(); goTo(nextAvail(currentStage, -1)); };
+    document.getElementById('btn-next').onclick = () => { stopPlay(); goTo(nextAvail(currentStage, 1)); };
     document.getElementById('btn-play').onclick = () => {
       isPlaying = !isPlaying;
-      document.getElementById('btn-play').innerHTML = isPlaying ? '&#9646;&#9646; Pause' : '&#9654; Play';
-      if (isPlaying) { if (currentStage === STAGES.length - 1) goTo(0); autoPlay(); }
+      document.getElementById('btn-play').innerHTML = isPlaying ? '&#10074;&#10074; Pause' : '&#9654; Play';
+      if (isPlaying) { if (nextAvail(currentStage, 1) === currentStage) goTo(0); autoPlay(); }
       else clearTimeout(autoAdvance);
     };
     document.getElementById('btn-speed').onclick = () => {
       speedMult = speedMult === 1 ? 2 : speedMult === 2 ? 4 : 1;
-      document.getElementById('speed-label').textContent = `Speed: ${speedMult}\u00d7`;
+      document.getElementById('speed-label').textContent = `Speed: ${speedMult}×`;
     };
+    document.querySelectorAll('[data-path]').forEach(b => b.onclick = () => {
+      path = b.dataset.path;
+      if (!stageAvailable(currentStage)) currentStage = nextAvail(currentStage, -1);
+      goTo(currentStage);
+    });
+    document.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => {
+      transferMode = b.dataset.mode; particles = [];
+      showBadge(transferMode); updateNav();
+    });
     canvas.addEventListener('click', () => {
       if (STAGES[currentStage].transfer === 'active') {
-        transferType++; transferTypeLabel = TRANSFER_TYPES[transferType % TRANSFER_TYPES.length];
-        particles = []; showBadge(transferTypeLabel);
+        const order = ['WRLOF', 'BHL', 'RLOF'];
+        transferMode = order[(order.indexOf(transferMode) + 1) % 3]; particles = [];
+        showBadge(transferMode); updateNav();
       }
     });
+    document.addEventListener('keydown', e => {
+      if (e.target.closest && e.target.closest('input')) return;
+      const r = document.getElementById('formation').getBoundingClientRect();
+      if (r.bottom < 0 || r.top > window.innerHeight) return;
+      if (e.key === 'ArrowRight') { stopPlay(); goTo(nextAvail(currentStage, 1)); }
+      if (e.key === 'ArrowLeft') { stopPlay(); goTo(nextAvail(currentStage, -1)); }
+    });
 
-    window.addEventListener('resize', () => resize());
+    // ─── Carbon budget explorer ───────────────────────────────────────────────────
+    const CO_SUN = 0.55;            // Asplund et al. 2009 solar C/O
+    const DC_SUN_DREDGE = 0.75;     // extra C/O a solar-metallicity carbon star gets (C/O ≈ 1.3)
+    const mix = { mode: 'conv' };
+    const el = id => document.getElementById(id);
+
+    function oFe(feh) { return feh <= -1 ? 0.4 : Math.max(0, -0.4 * feh); }   // alpha enhancement
+    function birthCO(feh) { return CO_SUN * Math.pow(10, -oFe(feh)); }
+    function linkedDonorCO(feh) { return birthCO(feh) + DC_SUN_DREDGE * Math.pow(10, -(feh + oFe(feh))); }
+    // Approximate convective envelope mass (M☉) for low-mass main-sequence stars
+    const ENV = [[0.35, 0.35], [0.40, 0.22], [0.45, 0.16], [0.50, 0.12], [0.60, 0.08], [0.70, 0.055], [0.80, 0.035]];
+    function envMass(m) {
+      if (m <= 0.35) return m;
+      for (let i = 1; i < ENV.length; i++) {
+        if (m <= ENV[i][0]) { const [x0, y0] = ENV[i - 1], [x1, y1] = ENV[i]; return y0 + (y1 - y0) * (m - x0) / (x1 - x0); }
+      }
+      return ENV[ENV.length - 1][1];
+    }
+    function mixMass(m, mode) { const e = envMass(m); return mode === 'thm' ? Math.max(e, 0.9 * m) : e; }
+    // Initial-final mass relation (Cummings et al. 2018, approximate)
+    function wdMass(mi) { return mi < 2.8 ? 0.0873 * mi + 0.476 : 0.181 * mi + 0.21; }
+    const CO_MIN = 1.0, CO_MAX = 40;
+    const coFromSlider = v => CO_MIN * Math.pow(CO_MAX / CO_MIN, v);
+    const sliderFromCO = c => Math.log(c / CO_MIN) / Math.log(CO_MAX / CO_MIN);
+    const finalCO = (c0, cd, mmix, dm) => (mmix * c0 + dm * cd) / (mmix + dm);
+    const fmtM = m => m >= 0.1 ? m.toFixed(2) : m >= 0.01 ? m.toFixed(3) : m.toFixed(4);
+    const fmtCO = c => c >= 10 ? c.toFixed(0) : c.toFixed(2);
+
+    function readInputs() {
+      const m = +el('in-mass').value, feh = +el('in-feh').value, dm = Math.pow(10, +el('in-dm').value);
+      const linked = el('in-colink').checked;
+      let cd = linked ? linkedDonorCO(feh) : coFromSlider(+el('in-co').value);
+      cd = Math.min(Math.max(cd, CO_MIN), CO_MAX);
+      if (linked) el('in-co').value = sliderFromCO(cd);
+      el('in-co').disabled = linked;
+      return { m, feh, dm, cd, linked, mdon: +el('in-donor').value };
+    }
+
+    function updateBudget() {
+      const p = readInputs();
+      const c0 = birthCO(p.feh), mm = mixMass(p.m, mix.mode), cf = finalCO(c0, p.cd, mm, p.dm);
+      el('out-mass').textContent = p.m.toFixed(2) + ' M☉';
+      el('out-feh').textContent = (p.feh > 0 ? '+' : '') + p.feh.toFixed(1);
+      el('out-co').textContent = 'C/O = ' + fmtCO(p.cd);
+      el('out-dm').textContent = fmtM(p.dm) + ' M☉';
+      el('out-donor').textContent = p.mdon.toFixed(1) + ' M☉';
+      el('ro-c0').textContent = c0.toFixed(2);
+      el('ro-mix').textContent = fmtM(mm) + ' M☉';
+      el('ro-mix-s').textContent = p.m <= 0.35 ? 'whole star (fully convective)' : mix.mode === 'thm' ? '~90% of the star' : 'convective envelope';
+      el('ro-cf').textContent = fmtCO(cf);
+      el('mix-hint').textContent = mix.mode === 'thm'
+        ? 'Accreted carbon-rich gas is slightly heavier than the star’s own gas, so it can sink and mix through most of the star.'
+        : 'Gas is mixed only through the outer convective zone.';
+
+      const v = el('verdict');
+      if (cf > 1) { v.className = 'verdict yes'; v.textContent = `C/O = ${fmtCO(cf)} → this star would look like a dwarf carbon star.`; }
+      else { v.className = 'verdict no'; v.textContent = `C/O = ${fmtCO(cf)} → not enough carbon: still an ordinary oxygen-rich dwarf.`; }
+
+      const mwd = wdMass(p.mdon), mlost = Math.max(0.05, p.mdon - mwd);
+      let txt;
+      if (p.cd <= 1.0001) {
+        txt = 'With a donor C/O of 1, no amount of accreted gas can push the dwarf above C/O = 1.';
+      } else {
+        const need = mm * (1 - c0) / (p.cd - 1);
+        const eff = need / mlost;
+        txt = `To reach C/O = 1 this dwarf needs at least <strong>${fmtM(need)}&nbsp;M&#9737;</strong> of the donor’s gas. `
+          + `A ${p.mdon.toFixed(1)}&nbsp;M&#9737; donor leaves a ~${mwd.toFixed(2)}&nbsp;M&#9737; white dwarf, so it sheds about ${mlost.toFixed(1)}&nbsp;M&#9737; in total. `;
+        if (need > mlost) txt += `That is <strong>more than the donor ever loses</strong>, so this combination cannot make a dC.`;
+        else if (need > p.m) txt += `That is <strong>more than the dwarf's own mass</strong>, so in practice this combination cannot make a dC.`;
+        else {
+          const pct = eff * 100;
+          txt += `The dwarf would have to capture at least <strong>${pct < 1 ? pct.toFixed(1) : pct.toFixed(0)}%</strong> of it. `;
+          txt += pct < 5 ? 'Even simple wind capture, which typically catches a few percent, could manage that.'
+            : pct < 40 ? 'That is more than simple wind capture usually provides, pointing to a more efficient channel like wind Roche-lobe overflow.'
+              : 'That is a very high efficiency for any wind-fed channel.';
+          txt += ' And only gas lost after the donor became carbon-rich counts, so the real requirement is higher.';
+        }
+      }
+      el('budget-text').innerHTML = txt;
+      drawBudget(p, c0);
+    }
+
+    const bCanvas = el('budgetCanvas'), bctx = bCanvas.getContext('2d');
+    let BW = 600, BH = 300;
+    function resizeBudget() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      BW = bCanvas.clientWidth || 600; BH = Math.round(Math.max(220, Math.min(BW * 0.55, 330)));
+      bCanvas.width = Math.round(BW * dpr); bCanvas.height = Math.round(BH * dpr); bCanvas.style.height = BH + 'px';
+      bctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    function drawBudget(p, c0) {
+      const g = bctx; g.clearRect(0, 0, BW, BH);
+      const L = 46, R = 14, T = 14, B = 40;
+      const xmin = -3, xmax = Math.log10(0.5);
+      const ymax = Math.max(2, Math.min(p.cd * 1.08, 6));
+      const X = lx => L + (lx - xmin) / (xmax - xmin) * (BW - L - R);
+      const Y = y => T + (1 - Math.min(y, ymax) / ymax) * (BH - T - B);
+
+      // dC region
+      g.fillStyle = 'rgba(58,255,158,0.06)'; g.fillRect(L, T, BW - L - R, Y(1) - T);
+      // grid + axes
+      g.strokeStyle = 'rgba(200,223,247,0.12)'; g.lineWidth = 1; g.font = '11px Georgia,serif'; g.fillStyle = 'rgba(200,223,247,0.6)';
+      g.textAlign = 'center';
+      [[-3, '0.001'], [-2, '0.01'], [-1, '0.1'], [Math.log10(0.5), '0.5']].forEach(([lx, lab]) => {
+        g.beginPath(); g.moveTo(X(lx), T); g.lineTo(X(lx), BH - B); g.stroke();
+        g.fillText(lab, X(lx), BH - B + 15);
+      });
+      g.fillText('Mass accreted (M☉)', L + (BW - L - R) / 2, BH - 6);
+      g.textAlign = 'right';
+      const step = ymax > 4 ? 1 : 0.5;
+      for (let y = 0; y <= ymax + 1e-9; y += step) {
+        g.beginPath(); g.moveTo(L, Y(y)); g.lineTo(BW - R, Y(y)); g.stroke();
+        g.fillText(y.toFixed(step < 1 ? 1 : 0), L - 6, Y(y) + 4);
+      }
+      g.save(); g.translate(13, T + (BH - T - B) / 2); g.rotate(-Math.PI / 2); g.textAlign = 'center';
+      g.fillText('Final surface C/O', 0, 0); g.restore();
+
+      // C/O = 1 line
+      g.strokeStyle = 'rgba(58,255,158,0.75)'; g.setLineDash([6, 5]); g.lineWidth = 1.5;
+      g.beginPath(); g.moveTo(L, Y(1)); g.lineTo(BW - R, Y(1)); g.stroke(); g.setLineDash([]);
+      g.fillStyle = 'rgba(58,255,158,0.85)'; g.textAlign = 'left'; g.font = 'italic 11px Georgia,serif';
+      g.fillText('dC stars (C/O > 1)', L + 6, Y(1) - 6);
+
+      // Curves for both mixing modes
+      ['conv', 'thm'].forEach(mode => {
+        const mm = mixMass(p.m, mode), on = mode === mix.mode;
+        g.beginPath();
+        for (let i = 0; i <= 160; i++) {
+          const lx = xmin + (xmax - xmin) * i / 160, y = finalCO(c0, p.cd, mm, Math.pow(10, lx));
+          i ? g.lineTo(X(lx), Y(y)) : g.moveTo(X(lx), Y(y));
+        }
+        g.strokeStyle = on ? '#ffd066' : 'rgba(255,208,102,0.35)'; g.lineWidth = on ? 2.5 : 1.5;
+        if (!on) g.setLineDash([4, 4]); g.stroke(); g.setLineDash([]);
+      });
+      // legend
+      g.font = '11px Georgia,serif'; g.textAlign = 'right';
+      g.fillStyle = mix.mode === 'conv' ? '#ffd066' : 'rgba(255,208,102,0.55)'; g.fillText('convective envelope only', BW - R - 6, BH - B - 24);
+      g.fillStyle = mix.mode === 'thm' ? '#ffd066' : 'rgba(255,208,102,0.55)'; g.fillText('+ thermohaline mixing', BW - R - 6, BH - B - 9);
+
+      // current point
+      const lxNow = Math.log10(p.dm), yNow = finalCO(c0, p.cd, mixMass(p.m, mix.mode), p.dm);
+      g.strokeStyle = 'rgba(74,240,255,0.5)'; g.lineWidth = 1;
+      g.beginPath(); g.moveTo(X(lxNow), T); g.lineTo(X(lxNow), BH - B); g.stroke();
+      g.beginPath(); g.arc(X(lxNow), Y(yNow), 6, 0, Math.PI * 2);
+      g.fillStyle = yNow > 1 ? '#3aff9e' : '#ff5e3a'; g.fill();
+      g.strokeStyle = '#02040e'; g.lineWidth = 2; g.stroke();
+    }
+
+    ['in-mass', 'in-feh', 'in-co', 'in-dm', 'in-colink', 'in-donor'].forEach(id => el(id).addEventListener('input', updateBudget));
+    document.querySelectorAll('[data-mix]').forEach(b => b.onclick = () => {
+      mix.mode = b.dataset.mix;
+      document.querySelectorAll('[data-mix]').forEach(x => x.classList.toggle('active', x === b));
+      updateBudget();
+    });
+
+    // ─── Start ────────────────────────────────────────────────────────────────────
+    window.addEventListener('resize', () => { resize(); resizeBudget(); updateBudget(); });
     resize(); buildNav(); goTo(0); draw();
+    resizeBudget(); updateBudget();
   </script>
 </body>
 

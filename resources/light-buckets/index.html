@@ -179,6 +179,9 @@ ol.tight{margin:6px 0 6px 20px;padding:0}ol.tight li{margin:4px 0}
 .keyidea span{color:#f2b441}
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .keyidea span{color:#8a5a00} }
 :root[data-theme="dark"] .keyidea span{color:#8a5a00}
+
+.tchip{display:inline-block;margin-left:6px;font-family:"JetBrains Mono",monospace;font-size:12px;padding:2px 8px;border-radius:999px;background:var(--chip);color:var(--ink2);white-space:nowrap;vertical-align:1px}
+.tchip.bonus{background:var(--amber-soft);color:var(--amber-ink)}
 </style>
 
 <meta name="description" content="A hands-on lens lab: learn how lenses bend light, measure focal lengths, and build a working telescope, then see why bigger telescopes collect more light.">
@@ -202,7 +205,7 @@ ol.tight{margin:6px 0 6px 20px;padding:0}ol.tight li{margin:4px 0}
 <header class="hero">
   <h1>Light Buckets</h1>
   <div class="rain"></div>
-  <p class="lede">You have two lenses. By the end of this lab you'll know how they bend light, how to measure them, and how to put them together into a working telescope.</p>
+  <p class="lede">You have two lenses: a <b>big</b> one and a <b>small</b> one. By the end of this lab you'll know how they bend light, how to measure them, and how to put them together into a working telescope that you take home.</p>
   <nav class="missionnav" aria-label="Steps">
     <a href="#s1" id="nav1"><span class="dot"></span>1 · Rays</a>
     <a href="#s2" id="nav2"><span class="dot"></span>2 · Bending</a>
@@ -214,6 +217,7 @@ ol.tight{margin:6px 0 6px 20px;padding:0}ol.tight li{margin:4px 0}
     <a href="#s8" id="nav8"><span class="dot"></span>8 · Telescope</a>
     <a href="#s9" id="nav9"><span class="dot"></span>9 · Light buckets</a>
     <a href="#s10" id="nav10"><span class="dot"></span>10 · Mirrors</a>
+    <a href="#s11" id="nav12"><span class="dot"></span>11 · Build yours</a>
     <a href="#results" id="nav11"><span class="dot"></span>My results</a>
   </nav>
 
@@ -223,7 +227,7 @@ ol.tight{margin:6px 0 6px 20px;padding:0}ol.tight li{margin:4px 0}
       <div>
         <p style="margin-top:0"><b>Your kit</b> (work with a partner):</p>
         <ul class="kit">
-          <li>2 lenses</li>
+          <li>2 lenses: a big one (5 cm wide) and a small one (3 cm wide)</li>
           <li>a meter stick (or a 30 cm ruler plus a tape measure)</li>
           <li>a white index card</li>
           <li>your worksheet and a pencil</li>
@@ -233,13 +237,14 @@ ol.tight{margin:6px 0 6px 20px;padding:0}ol.tight li{margin:4px 0}
       <div>
         <p style="margin-top:0"><b>Set up:</b></p>
         <ol class="kit">
-          <li>Put a small piece of tape on the edge of the <b>wider</b> lens and write <b>A</b>. The other lens is <b>B</b>. If they're the same width, pick either one.</li>
+          <li>Put a small piece of tape on the edge of the <b>big</b> lens and write <b>A</b>. The small lens is <b>B</b>. Your partner does the same with their lenses.</li>
           <li>Hold lenses by their <b>edges</b>. Fingerprints on the glass make everything blurry.</li>
           <li>Find a <b>bright window</b> or a lamp on the far side of the room. You'll need it in Steps 5, 6 and 8.</li>
         </ol>
       </div>
     </div>
     <div class="callout warn"><b>Safety:</b> never look at the Sun through a lens or a telescope, and never use a lens to focus sunlight on anything (it can start a fire or hurt your eyes).</div>
+    <div class="callout plan10"><b>Your plan for today:</b> Steps 1–8 are the core (about 35 minutes; the ⏱ tags show roughly how long each takes). Steps 9 and 10 are bonus: do them if you finish early, or at home. Then you build your own telescope (Step 11) with the paper build guide.</div>
     <p style="margin-bottom:4px"><b>How each step works</b></p>
     <div class="howkey">
       <div><span class="k-sw k-tasks"></span><b>Things to try</b> on this page. They tick off by themselves as you do them.</div>
@@ -267,7 +272,7 @@ ol.tight{margin:6px 0 6px 20px;padding:0}ol.tight li{margin:4px 0}
 
 <!-- ============ STEP 1 ============ -->
 <section class="panel" id="s1">
-  <div class="mission-head"><div class="badge">1</div><div><h2>Light travels in straight lines</h2><div class="sub">Before we can bend light, we need a way to draw it.</div></div></div>
+  <div class="mission-head"><div class="badge">1</div><div><h2>Light travels in straight lines</h2><div class="sub">Before we can bend light, we need a way to draw it. <span class="tchip core">⏱ 2 min</span></div></div></div>
   <p class="goal">🎯 You'll learn: what a ray is, and why light from far away arrives "parallel".</p>
   <p>Light leaves a glowing object, like a light bulb, in <b>every direction</b>. Each bit of light travels in a straight line until something changes its path. Scientists draw those paths as lines with arrows, called <b>rays</b>.</p>
   <p>The box on the right is a lens 5 cm tall. Only the rays that land on it matter.</p>
@@ -293,7 +298,7 @@ ol.tight{margin:6px 0 6px 20px;padding:0}ol.tight li{margin:4px 0}
 
 <!-- ============ STEP 2 ============ -->
 <section class="panel" id="s2">
-  <div class="mission-head"><div class="badge">2</div><div><h2>Light bends when it enters glass</h2><div class="sub">This bending is called <b>refraction</b>.</div></div></div>
+  <div class="mission-head"><div class="badge">2</div><div><h2>Light bends when it enters glass</h2><div class="sub">This bending is called <b>refraction</b>. <span class="tchip core">⏱ 4 min</span></div></div></div>
   <p class="goal">🎯 You'll learn: why light bends at a surface, and which way it bends.</p>
   <p>Light travels slower in glass or water than in air. When a beam hits glass at a slant, one edge of the beam slows down first, so the whole beam <b>turns</b>. It's like a toy car rolling at an angle from pavement onto grass: the wheel that hits the grass first slows down and the car swerves.</p>
   <canvas id="s2Canvas" height="280" aria-label="A ray bending at an air-glass surface"></canvas>
@@ -326,10 +331,10 @@ ol.tight{margin:6px 0 6px 20px;padding:0}ol.tight li{margin:4px 0}
   <div class="keyidea"><span>Key idea</span>Light bends when it crosses from air into glass (toward the straight-in line) and again when it comes back out (away from it). Light hitting straight-on doesn't bend.</div>
   <div class="handson"><div class="hs-h">🖐 With your lenses · Worksheet Step 2</div>
     <ol>
-      <li>Lay your worksheet flat. Hold <b>Lens A</b> about <b>2 cm</b> (a finger's width) above the bold sentence in Step 2.</li>
+      <li>Lay your worksheet flat. Hold the small lens, <b>Lens B</b>, about <b>1 cm</b> above the bold sentence in Step 2.</li>
       <li>Look straight down through it. Are the words bigger, smaller or the same?</li>
-      <li>Slowly lift the lens toward your eye, up to about <b>30 cm</b> (a ruler's length) above the paper. Watch the words the whole time.</li>
-      <li>Circle what you saw on your worksheet. Then try Lens B.</li>
+      <li>Keep your eye about 30 cm above the paper. Slowly lift the lens up toward your eye, to about <b>15 cm</b> above the paper. Watch the words the whole time: they grow, blur, then flip.</li>
+      <li>Circle what you saw on your worksheet. Then try Lens A: the same thing happens, but you have to lift it much higher (about 40 cm) before the words flip. Why? You'll find out in Step 4.</li>
     </ol>
   </div>
   <details class="math"><summary>For the curious: the bending rule</summary>
@@ -341,7 +346,7 @@ ol.tight{margin:6px 0 6px 20px;padding:0}ol.tight li{margin:4px 0}
 
 <!-- ============ STEP 3 ============ -->
 <section class="panel" id="s3">
-  <div class="mission-head"><div class="badge">3</div><div><h2>The shape decides where light goes</h2><div class="sub">Same glass, different shapes, very different results.</div></div></div>
+  <div class="mission-head"><div class="badge">3</div><div><h2>The shape decides where light goes</h2><div class="sub">Same glass, different shapes, very different results. <span class="tchip core">⏱ 3 min</span></div></div></div>
   <p class="goal">🎯 You'll learn: how the shape of a piece of glass decides where light goes, and what a converging lens is.</p>
   <p>Parallel rays come in from the left, like starlight. Each ray bends where it enters and leaves the glass, by an amount that depends on how <b>tilted</b> the glass surface is at that spot. Pick a shape and watch.</p>
   <canvas id="s3Canvas" height="270" aria-label="Rays through different glass shapes"></canvas>
@@ -376,7 +381,7 @@ ol.tight{margin:6px 0 6px 20px;padding:0}ol.tight li{margin:4px 0}
 
 <!-- ============ STEP 4 ============ -->
 <section class="panel" id="s4">
-  <div class="mission-head"><div class="badge">4</div><div><h2>The focal point</h2><div class="sub">Where a converging lens brings parallel light together.</div></div></div>
+  <div class="mission-head"><div class="badge">4</div><div><h2>The focal point</h2><div class="sub">Where a converging lens brings parallel light together. <span class="tchip core">⏱ 2 min</span></div></div></div>
   <p class="goal">🎯 You'll learn: what focal length means, and what decides it.</p>
   <p>A converging lens bends every parallel ray toward the same spot: the <b>focal point</b> (F). The distance from the middle of the lens to that spot is the lens's most important number, its <b>focal length</b>, written <b>f</b>. Two things set it: how <b>curved</b> the faces are, and what the lens is <b>made of</b>.</p>
   <canvas id="rayCanvas" height="270" aria-label="Rays meeting at a focal point"></canvas>
@@ -412,7 +417,7 @@ ol.tight{margin:6px 0 6px 20px;padding:0}ol.tight li{margin:4px 0}
 
 <!-- ============ STEP 5 ============ -->
 <section class="panel" id="s5">
-  <div class="mission-head"><div class="badge">5</div><div><h2>Lenses make pictures</h2><div class="sub">Called <b>images</b>. They can land on a piece of paper.</div></div></div>
+  <div class="mission-head"><div class="badge">5</div><div><h2>Lenses make pictures</h2><div class="sub">Called <b>images</b>. They can land on a piece of paper. <span class="tchip core">⏱ 4 min</span></div></div></div>
   <p class="goal">🎯 You'll learn: how a lens makes a picture, why it's upside down, and where the sharp spot is.</p>
   <p>Every point on a candle flame sends rays in all directions. The lens catches some of them and bends them back together at <b>one point</b> on the other side. Do that for every point on the candle and you get a picture: an <b>image</b>. Follow the bright yellow ray: it leaves the <b>top</b> of the flame, goes straight through the middle of the lens, and lands at the <b>bottom</b>. That's why the picture is <b>upside down</b>.</p>
   <canvas id="imgCanvas" class="drag" height="290" aria-label="Lens forming an image on a screen"></canvas>
@@ -445,7 +450,7 @@ ol.tight{margin:6px 0 6px 20px;padding:0}ol.tight li{margin:4px 0}
     <ol>
       <li>Stand 3 m or more from a bright window (or a lamp). Turn your back to it if the room is bright.</li>
       <li>Hold <b>Lens A</b> up, facing the window. Hold the white card <b>right behind the lens</b>, touching it.</li>
-      <li>Slowly pull the card away from the lens. At some point a small, sharp picture of the window appears. Go past it and it blurs again.</li>
+      <li>Slowly pull the card away from the lens. At about a ruler's length (30 cm), a small, sharp picture of the window appears. Go past it and it blurs again.</li>
       <li>Is the picture upside down? Sketch it on your worksheet.</li>
       <li><b>Bonus:</b> try a lamp only about 1 m away. Is the sharp spot closer to the lens or farther away than for the window?</li>
     </ol>
@@ -459,7 +464,7 @@ ol.tight{margin:6px 0 6px 20px;padding:0}ol.tight li{margin:4px 0}
 
 <!-- ============ STEP 6 ============ -->
 <section class="panel" id="s6">
-  <div class="mission-head"><div class="badge">6</div><div><h2>Measure a focal length</h2><div class="sub">The trick: use something far away.</div></div></div>
+  <div class="mission-head"><div class="badge">6</div><div><h2>Measure a focal length</h2><div class="sub">The trick: use something far away. <span class="tchip core">⏱ 6 min</span></div></div></div>
   <p class="goal">🎯 You'll learn: how to measure f for a lens you know nothing about, and then measure both of yours.</p>
   <p>Put Steps 1 and 4 together. Light from far away arrives as <b>parallel rays</b>, and a lens brings parallel rays together at its <b>focal point</b>. So when you focus a <b>faraway</b> window onto a card, the card is at the focal point, and the distance from the lens to the card <b>is the focal length</b>.</p>
   <h3>Practice on a mystery lens</h3>
@@ -498,6 +503,7 @@ ol.tight{margin:6px 0 6px 20px;padding:0}ol.tight li{margin:4px 0}
     <div class="row"><button class="primary" id="saveLenses">Use my lenses</button><span class="small" id="lensMsg"></span></div>
     <details class="trouble"><summary>Trouble finding a sharp spot?</summary>
       <ul>
+        <li><b>Lens B:</b> its sharp spot is only a few cm from the lens and the picture is tiny (about the size of a fingernail). Hold the card close and look carefully.</li>
         <li><b>Picture too dim:</b> turn off the lights near you and use the brightest window.</li>
         <li><b>The sharp spot is past arm's length</b> (f longer than about 60 cm): stand the card against a wall and move the lens toward and away from it instead.</li>
         <li><b>Two tries disagree by more than 2 cm:</b> do a third try. The sharp spot is narrow; move slowly.</li>
@@ -510,7 +516,7 @@ ol.tight{margin:6px 0 6px 20px;padding:0}ol.tight li{margin:4px 0}
 
 <!-- ============ STEP 7 ============ -->
 <section class="panel" id="s7">
-  <div class="mission-head"><div class="badge">7</div><div><h2>One lens: a magnifying glass</h2><div class="sub">Close up, a converging lens makes things look bigger.</div></div></div>
+  <div class="mission-head"><div class="badge">7</div><div><h2>One lens: a magnifying glass</h2><div class="sub">Close up, a converging lens makes things look bigger. <span class="tchip core">⏱ 4 min</span></div></div></div>
   <p class="goal">🎯 You'll learn: how a magnifying glass works, and which of your lenses magnifies more.</p>
   <p>When the object is <b>closer to the lens than its focal length</b>, the rays can't come together into a picture. They're still spreading after the lens, and your eye traces them back to a <b>bigger, right-side-up</b> picture behind the object (green). This is how a magnifying glass works, and it's exactly what the <b>eyepiece</b> of a telescope does.</p>
   <canvas id="magCanvas" class="drag" height="270" aria-label="Magnifying glass ray diagram"></canvas>
@@ -533,7 +539,7 @@ ol.tight{margin:6px 0 6px 20px;padding:0}ol.tight li{margin:4px 0}
     </div>
     <div class="fb"></div>
   </div>
-  <div class="keyidea"><span>Key idea</span>Hold an object a little <b>inside</b> the focal length and the lens magnifies it. The <b>shorter</b> the focal length, the stronger the magnifier: about <b>25 ÷ f</b> times.</div>
+  <div class="keyidea"><span>Key idea</span>Hold an object a little <b>inside</b> the focal length and the lens magnifies it. The <b>shorter</b> the focal length, the stronger the magnifier: about <b>1 + 25 ÷ f</b> times.</div>
   <div class="handson"><div class="hs-h">🖐 With your lenses · Worksheet Step 7</div>
     <ol>
       <li>Hold <b>Lens B</b> close to your eye, about <b>2 cm</b> away (closer than feels normal).</li>
@@ -543,15 +549,15 @@ ol.tight{margin:6px 0 6px 20px;padding:0}ol.tight li{margin:4px 0}
     </ol>
   </div>
   <details class="math"><summary>For the curious: magnifying power</summary>
-    <p>Your eye sees clearly down to about 25 cm. A magnifying glass lets you bring things much closer and still see them sharp. Its best magnifying power is about</p>
-    <div class="eq">magnification ≈ 25 cm ÷ f</div>
+    <p>Your eye sees clearly down to about 25 cm. A magnifying glass lets you bring things much closer and still see them sharp. Its best magnifying power (with the picture 25 cm away) is about</p>
+    <div class="eq">magnification ≈ 1 + 25 cm ÷ f</div>
     <div class="yours" id="s7Yours"></div>
   </details>
 </section>
 
 <!-- ============ STEP 8 ============ -->
 <section class="panel" id="s8">
-  <div class="mission-head"><div class="badge">8</div><div><h2>Two lenses: a telescope</h2><div class="sub">The front lens makes a picture. The back lens magnifies it.</div></div></div>
+  <div class="mission-head"><div class="badge">8</div><div><h2>Two lenses: a telescope</h2><div class="sub">The front lens makes a picture. The back lens magnifies it. <span class="tchip core">⏱ 8 min</span></div></div></div>
   <p class="goal">🎯 You'll learn: how two lenses work together, how to plan a telescope, and how to build it.</p>
   <ol class="tight">
     <li>The <b>objective</b> (front lens) points at something far away. Just like in Step 6, it makes a small, upside-down <b>image</b> one focal length (<b>f<sub>o</sub></b>) behind it.</li>
@@ -610,8 +616,8 @@ ol.tight{margin:6px 0 6px 20px;padding:0}ol.tight li{margin:4px 0}
       <li id="dz3">A telescope that makes things look <b>smaller</b>.</li>
     </ul>
     <div class="grid2">
-      <div class="slider-row"><label for="foS">Objective focal length f<sub>o</sub></label><output id="foOut"></output><input type="range" id="foS" min="3" max="100" step="0.1" value="30"></div>
-      <div class="slider-row"><label for="feS">Eyepiece focal length f<sub>e</sub></label><output id="feOut"></output><input type="range" id="feS" min="1" max="40" step="0.1" value="5"></div>
+      <div class="slider-row"><label for="foS">Objective focal length f<sub>o</sub></label><output id="foOut"></output><input type="range" id="foS" min="3" max="100" step="0.1" value="40"></div>
+      <div class="slider-row"><label for="feS">Eyepiece focal length f<sub>e</sub></label><output id="feOut"></output><input type="range" id="feS" min="1" max="40" step="0.1" value="4"></div>
     </div>
   </details>
 
@@ -631,7 +637,7 @@ ol.tight{margin:6px 0 6px 20px;padding:0}ol.tight li{margin:4px 0}
 
 <!-- ============ STEP 9 ============ -->
 <section class="panel" id="s9">
-  <div class="mission-head"><div class="badge">9</div><div><h2>Light buckets</h2><div class="sub">The real reason astronomers build giant telescopes.</div></div></div>
+  <div class="mission-head"><div class="badge">9</div><div><h2>Light buckets</h2><div class="sub">The real reason astronomers build giant telescopes. <span class="tchip bonus">Bonus · 3 min</span></div></div></div>
   <p class="goal">🎯 You'll learn: why a wider telescope shows fainter stars, and how much more light yours collects than your eye.</p>
   <p>Most stars are too faint to see because only a little of their light lands in your eye. Your pupil opens to only about <b>7 mm</b> in the dark. A telescope's objective is a much bigger opening, a <b>light bucket</b>, so it catches far more light from every star.</p>
   <div class="predict" id="p9">
@@ -664,7 +670,7 @@ ol.tight{margin:6px 0 6px 20px;padding:0}ol.tight li{margin:4px 0}
 
 <!-- ============ STEP 10 ============ -->
 <section class="panel" id="s10">
-  <div class="mission-head"><div class="badge">10</div><div><h2>Why giant telescopes use mirrors</h2><div class="sub">A curved mirror can focus light too.</div></div></div>
+  <div class="mission-head"><div class="badge">10</div><div><h2>Why giant telescopes use mirrors</h2><div class="sub">A curved mirror can focus light too. <span class="tchip bonus">Bonus · 3 min</span></div></div></div>
   <p class="goal">🎯 You'll learn: the problem with big lenses, and how mirrors fix it.</p>
   <p>White light is a mix of colors. Glass bends blue light a little more than red light, so a lens brings the colors to slightly different focal points. A curved mirror <b>bounces</b> every color the same way.</p>
   <canvas id="mirCanvas" height="250" aria-label="Lens vs mirror with white light"></canvas>
@@ -689,6 +695,45 @@ ol.tight{margin:6px 0 6px 20px;padding:0}ol.tight li{margin:4px 0}
   <div class="handson"><div class="hs-h">🖐 Look closely · Worksheet Step 10</div>Look through your telescope at a bright window frame or a white edge against something dark. Look along the edges: do you see faint <b>red or blue</b> fringes? That's the lens problem giant telescopes avoid by using mirrors.</div>
 </section>
 
+
+<!-- ============ STEP 11 ============ -->
+<section class="panel" id="s11">
+  <div class="mission-head"><div class="badge">11</div><div><h2>Build your take-home telescope</h2><div class="sub">Everything from Steps 1–8, in a tube. <span class="tchip core">⏱ 15 min</span></div></div></div>
+  <p class="goal">🎯 You'll learn: how your tube telescope focuses, and why you slide it to focus on things at different distances.</p>
+  <p>Your take-home telescope is the meter-stick telescope from Step 8, inside a tube. <b>Lens A</b> (objective) sits at the front of the big tube. <b>Lens B</b> (eyepiece) sits at the end of a paper tube that slides in and out. Sliding the paper tube changes the distance between the lenses: that's how you focus. <b>Use your paper build guide</b> for the step-by-step instructions.</p>
+  <canvas id="tubeCanvas" class="drag" height="250" aria-label="A tube telescope with a sliding eyepiece tube"></canvas>
+  <div class="slider-row"><label for="tubeS">Pull the paper tube out <span class="hint">(or drag the eyepiece end)</span></label><output id="tubeOut"></output><input type="range" id="tubeS" min="0" max="1000" value="0"></div>
+  <div class="row" id="tubeTargets">
+    <span class="small">Look at:</span>
+    <button class="chip on" data-d="1e9">The Moon</button>
+    <button class="chip" data-d="3000">A tree 30 m away</button>
+    <button class="chip" data-d="500">A poster 5 m away</button>
+    <button class="chip" data-d="200">A friend 2 m away</button>
+  </div>
+  <div class="grid2">
+    <div class="readouts" style="margin-top:0;align-content:start">
+      <div class="tile"><div class="k">Lenses are</div><div class="v" id="tubeSep">—</div></div>
+      <div class="tile"><div class="k">Needs to be</div><div class="v" id="tubeNeed">—</div></div>
+      <div class="tile"><div class="k">Focus</div><div class="v" id="tubeFocus">—</div></div>
+    </div>
+    <div><p class="small" style="margin:4px 0">Through the eyepiece:</p><canvas id="tubeView" height="190" aria-label="The view through the tube telescope"></canvas></div>
+  </div>
+  <p class="small" id="tubeSrc"></p>
+  <div class="tasks" data-step="11"></div>
+  <div class="predict" id="p11">
+    <div class="q">You focused on the Moon. Now you look at a poster across the room. To make it sharp, you should…</div>
+    <div class="opts">
+      <button data-a="0">Push the paper tube in (lenses closer)</button>
+      <button data-a="1">Pull the paper tube out (lenses farther apart)</button>
+      <button data-a="2">Nothing: if the Moon is sharp, everything is sharp</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+  <div class="keyidea"><span>Key idea</span>The tube holds the lenses about <b>f<sub>o</sub> + f<sub>e</sub></b> apart and lined up. Closer objects make their picture <b>farther behind</b> the objective (Step 5), so you pull the eyepiece out to focus on them.</div>
+  <div class="handson"><div class="hs-h">🔧 Build it · Build guide</div>Switch to your <b>Build Your Telescope</b> guide and follow it step by step. When you're done, test it on the chart across the room and on the view out the window.</div>
+  <div class="callout warn"><b>Never point your telescope at the Sun.</b> Even for a second, it can permanently damage your eye.</div>
+</section>
+
 <!-- ============ RESULTS ============ -->
 <section class="panel results" id="results">
   <div class="mission-head"><div class="badge">★</div><div><h2>My telescope report</h2><div class="sub">Fills in as you go.</div></div></div>
@@ -703,6 +748,7 @@ ol.tight{margin:6px 0 6px 20px;padding:0}ol.tight li{margin:4px 0}
     <li>A lens makes an upside-down picture; closer than F, it magnifies instead.</li>
     <li>Telescope = long-f objective + short-f eyepiece, f<sub>o</sub> + f<sub>e</sub> apart, magnifying f<sub>o</sub> ÷ f<sub>e</sub>.</li>
     <li>Wider opening = more light = fainter stars. That's why telescopes are light buckets.</li>
+    <li>To focus on closer things, move the eyepiece farther from the objective.</li>
   </ol>
 </section>
 
@@ -742,12 +788,13 @@ const TASKS={
  7:[["sharp","Drag the bug until it looks sharp and bigger."],["both","Get a sharp view with each lens. Which magnifies more?"],["past","Move the bug past F. What happens?"],["q","Answer the check question."]],
  8:[["q","8a · Pick which lens goes in front."],["plan","8b · Work out the spacing and magnification, then check your plan."],["sharp","8c · Slide the eyepiece until the view is sharp."],["swap","Swap the lenses. What happens to the view?"],["jup","Look at Jupiter with a sharp view (3× or more). Can you see its moons?"]],
  9:[["q","Answer the prediction question."],["mine","Tap “My objective” (or “Binoculars” if you haven't saved your lenses)."],["thousand","Slide to the smallest opening that shows more than 1,000 stars."]],
- 10:[["mirror","Switch to the curved mirror and compare where the colors meet."],["q","Answer the check question."]]
+ 10:[["mirror","Switch to the curved mirror and compare where the colors meet."],["q","Answer the check question."]],
+ 11:[["moon","Slide the paper tube until the Moon is sharp."],["poster","Now focus on the poster 5 m away. Which way did you slide?"],["q","Answer the check question."]]
 };
 function renderTasks(){ $$(".tasks").forEach(box=>{ const n=box.dataset.step; box.innerHTML=`<div class="th"><span>Things to try</span><span class="cnt"></span></div><ul class="check">${TASKS[n].map(([k,t])=>`<li data-k="${k}">${t}</li>`).join("")}</ul>`; updTasks(n); }); }
 function updTasks(n){ const box=$(`.tasks[data-step="${n}"]`); if(!box) return; const T=state.tasks[n]||{}; let c=0; box.querySelectorAll("li").forEach(li=>{ const d=!!T[li.dataset.k]; li.classList.toggle("done",d); if(d) c++; }); const all=c===TASKS[n].length; box.querySelector(".cnt").textContent= all? `all done ✓` : `${c} / ${TASKS[n].length}`; box.classList.toggle("all",all); if(all) markDone(n); }
 function tick(n,k){ if(!userActed) return; state.tasks[n]=state.tasks[n]||{}; if(state.tasks[n][k]) return; state.tasks[n][k]=true; const li=$(`.tasks[data-step="${n}"] li[data-k="${k}"]`); if(li){ li.classList.add("flash"); setTimeout(()=>li.classList.remove("flash"),900); } updTasks(n); }
-function markDone(n){ if(state.done[n]) return; state.done[n]=true; const a=$("#nav"+n); if(a) a.classList.add("done"); renderResults(); }
+function markDone(n){ if(state.done[n]) return; state.done[n]=true; const a=$("#nav"+(n==11?12:n)); if(a) a.classList.add("done"); renderResults(); }
 function predict(id,right,msgs,onRight){
   const box=$(id), fb=box.querySelector(".fb");
   box.querySelectorAll(".opts button").forEach(b=>b.addEventListener("click",()=>{ const a=+b.dataset.a; box.querySelectorAll(".opts button").forEach(x=>x.classList.remove("right","wrong")); b.classList.add(a===right?"right":"wrong"); fb.className="fb "+(a===right?"good":"bad"); fb.textContent=msgs[a]; if(a===right&&onRight) onRight(); }));
@@ -1044,8 +1091,8 @@ function drawMag(){
   label(x, sharp? `${fmt(M7,1)}× bigger than at 25 cm` : tooClose? "blurry: too close for your eye" : "blurry and flipped: too far from the lens", 8, r.h-8, sharp?"#1f8a5b":"#8a6a40","left",'bold 13px "Atkinson Hyperlegible"');
   $("#magOut").innerHTML=`${uCM(d,1)} <span class="small">(${d<f?"inside":"outside"} the focal length)</span>`;
   $("#magTile").textContent= sharp? `${fmt(M7,1)}× bigger, right-side up` : tooClose? "blurry: move the bug a little farther away" : "blurry: move the bug closer";
-  $("#magPow").innerHTML= `about ${uX(25/f)} for this lens`;
-  $("#s7Yours").innerHTML=`<b>Your numbers:</b> 25 ÷ ${fmt(f,1)} = <b>${fmt(25/f,1)}×</b>. `+ (myLenses()? (()=>{ const L=myLenses(); return `Lens A: 25 ÷ ${fmt(L.A.f,1)} = ${fmt(25/L.A.f,1)}×; Lens B: 25 ÷ ${fmt(L.B.f,1)} = ${fmt(25/L.B.f,1)}×.`; })() : "");
+  $("#magPow").innerHTML= `about ${uX(1+25/f)} for this lens`;
+  $("#s7Yours").innerHTML=`<b>Your numbers:</b> 1 + 25 ÷ ${fmt(f,1)} = <b>${fmt(1+25/f,1)}×</b>. `+ (myLenses()? (()=>{ const L=myLenses(); return `Lens A: 1 + 25 ÷ ${fmt(L.A.f,1)} = ${fmt(1+25/L.A.f,1)}×; Lens B: 1 + 25 ÷ ${fmt(L.B.f,1)} = ${fmt(1+25/L.B.f,1)}×.`; })() : "");
   if(sharp){ tick(7,"sharp"); magSharpSeen.add(f); if(magSharpSeen.size>=2) tick(7,"both"); }
   if(d>f*1.02) tick(7,"past");
 }
@@ -1055,7 +1102,7 @@ function drawBug(x,s){
   [[-.14,-.12],[.14,-.12],[-.16,.12],[.16,.12],[-.08,.28],[.08,.28]].forEach(([a,b])=>{ x.fillStyle="#222"; x.beginPath(); x.arc(a*s,b*s,s*0.05,0,7); x.fill(); });
 }
 $("#magS").addEventListener("input",drawMag);
-predict("#p7",1,["Try both lenses: the long-focal-length one barely magnifies.","Right! Magnifying power ≈ 25 ÷ f, so a short focal length gives a big number. That's why the short lens is the eyepiece.","Try both."],()=>tick(7,"q"));
+predict("#p7",1,["Try both lenses: the long-focal-length one barely magnifies.","Right! Magnifying power ≈ 1 + 25 ÷ f, so a short focal length gives a big number. That's why the short lens is the eyepiece.","Try both."],()=>tick(7,"q"));
 
 /* ================= STEP 8: telescope ================= */
 const sepFromS=(v,fo,fe)=>Math.max(1,(fo+fe)*(0.4+v/1000*1.0));
@@ -1132,7 +1179,7 @@ let teleNames=null;
 function updSrc(){ const fo=+$("#foS").value, fe=+$("#feS").value;
   $("#teleSrc").innerHTML= teleNames&&!swapped&&Math.abs(teleNames.fo-fo)<0.3&&Math.abs(teleNames.fe-fe)<0.3? `Using <b>your lenses</b>: objective = Lens ${teleNames.o} (f<sub>o</sub> = ${fmt(fo,1)} cm), eyepiece = Lens ${teleNames.e} (f<sub>e</sub> = ${fmt(fe,1)} cm).`
     : `Using ${swapped?"the <b>swapped</b> lenses":"example lenses"}: front lens f<sub>o</sub> = ${fmt(fo,1)} cm, back lens f<sub>e</sub> = ${fmt(fe,1)} cm.${myLenses()||swapped?"":" Measure yours in Step 6 to use them here."}`; }
-function applyLenses(){ const L=myLenses(); buildMagBtns(); drawMag(); buildApPresets(); if(!L){ teleNames=null; updSrc(); return false; }
+function applyLenses(){ const L=myLenses(); buildMagBtns(); drawMag(); buildApPresets(); if($("#tubeCanvas")) drawTube(); if(!L){ teleNames=null; updSrc(); return false; }
   const [o,e]= L.A.f>=L.B.f? [["A",L.A],["B",L.B]] : [["B",L.B],["A",L.A]];
   setTele(o[1].f,e[1].f); swapped=false; const fo=+$("#foS").value, fe=+$("#feS").value; teleNames={o:o[0],e:e[0],fo,fe};
   $("#sepS").value=Math.max(0,sToSep(fo+0.5*fe,fo,fe)); // start out of focus so students find the sharp spot
@@ -1170,7 +1217,7 @@ function drawBucket(){
   else { ctx.fillStyle="#f2b441"; ctx.fillRect(cx-1,cy-1,2,2); label(ctx,"← one pupil (7 mm) is this tiny dot",cx+6,cy+4,"#f2b441","left"); }
   label(ctx,apD<=7?"your pupil: 7 mm":`≈ ${fmt(N,N<10?1:0)} pupils' worth of light`,cx,h-8,"#cfe3ff","center",BOLD);
 }
-function buildApPresets(){ const box=$("#apPresets"); box.innerHTML=""; const L=myLenses(); const list=AP_PRESETS.slice(); if(L){ const o=L.A.f>=L.B.f? L.A:L.B; if(o.d>0) list.splice(1,0,["My objective",o.d]); }
+function buildApPresets(){ const box=$("#apPresets"); box.innerHTML=""; const L=myLenses(); const list=AP_PRESETS.slice(); { const o=L? (L.A.f>=L.B.f? L.A:L.B) : null; list.splice(1,0,["My objective",o&&o.d>0? o.d : 50]); }
   list.forEach(([n,d])=>{ const b=document.createElement("button"); b.className="chip"; b.textContent=n; b.dataset.d=d; b.onclick=()=>{ apD=d; $("#apS").value=sFromAp(d); drawSky(); if(n==="My objective"||n==="Binoculars") tick(9,"mine"); if(d>7){ state.res.ap=`${n}: ${fmt(Math.pow(d/7,2),0)}× your eye`; renderResults(); } }; box.appendChild(b); }); drawSky(); }
 $("#apS").addEventListener("input",e=>{ apD=Math.round(apFromS(+e.target.value)); drawSky(); });
 predict("#p9",1,["Not quite. Light is collected over the whole circle, and area grows with width squared.","Yes! Twice as wide means 2 × 2 = 4 times the area, so 4 times the light.","Close, but a lens collects over an area, not a volume: 2 × 2 = 4."],()=>tick(9,"q"));
@@ -1198,19 +1245,60 @@ function drawSizes(){
 }
 predict("#p10",1,["A lens that big would sag and crack under its own weight, and the glass would have to be perfect all the way through.","Yes! The Extremely Large Telescope's 39 m mirror is made of 798 hexagon segments, each about 1.4 m across, working together as one.","Liquid mirrors do exist (spinning mercury), but the ELT uses hundreds of solid mirror segments."],()=>{ tick(10,"q"); state.res.mirror="✓"; renderResults(); });
 
+
+/* ================= STEP 11: take-home tube ================= */
+const TUBE_OUT=32, TUBE_IN=21.6; // lens A sits 1 cm inside a 33 cm tube; paper tube is 21.6 cm (8.5 in) long
+let tubeD=1e9;
+const tubeP=v=>v/1000*19, tubeV=p=>p/19*1000;
+function tubeLenses(){ const L=myLenses(); if(L){ const [o,e]= L.A.f>=L.B.f? [L.A,L.B]:[L.B,L.A]; return {fo:o.f,fe:e.f,mine:true}; } return {fo:30,fe:5,mine:false}; }
+function drawTube(){
+  const {fo,fe,mine}=tubeLenses(); const p=tubeP(+$("#tubeS").value), sep=TUBE_OUT+p;
+  const di= tubeD>=1e8? fo : 1/(1/fo-1/tubeD), need=di+fe;
+  const c=$("#tubeCanvas"); const {ctx,w,h}=setupCanvas(c); bg(ctx,w,h);
+  const M=mapper(w,h,-4,56,4.2,{cy:h/2-14}); axis(ctx,M,-4,56);
+  // tubes
+  ctx.fillStyle="rgba(196,160,110,.28)"; ctx.strokeStyle="#c4a06e"; ctx.lineWidth=2; ctx.fillRect(M.X(-1),M.Y(2.7),M.X(TUBE_OUT)-M.X(-1),M.Y(-2.7)-M.Y(2.7)); ctx.strokeRect(M.X(-1),M.Y(2.7),M.X(TUBE_OUT)-M.X(-1),M.Y(-2.7)-M.Y(2.7));
+  const i0=sep-TUBE_IN; ctx.fillStyle="rgba(240,236,226,.18)"; ctx.strokeStyle="#e9e4d8"; ctx.fillRect(M.X(i0),M.Y(2.35),M.X(sep)-M.X(i0),M.Y(-2.35)-M.Y(2.35)); ctx.strokeRect(M.X(i0),M.Y(2.35),M.X(sep)-M.X(i0),M.Y(-2.35)-M.Y(2.35));
+  label(ctx,"big mailing tube",M.X(8),M.Y(2.7)-8,"#e3c79a","center",BOLD); label(ctx,"paper tube (slides)",M.X((i0+sep)/2),M.Y(-2.35)+18,"#e9e4d8","center",BOLD);
+  // rays from far object
+  const u0= tubeD>=1e8? 0 : 1/tubeD;
+  [-2,0,2].forEach(y=>{ const uin=y*u0, u=uin-y/fo, y1=y+u*sep, u2=u-y1/fe; ctx.strokeStyle=RAY; ctx.lineWidth=1.4; ctx.beginPath(); ctx.moveTo(M.X(-4),M.Y(y-uin*4)); ctx.lineTo(M.X(0),M.Y(y)); ctx.lineTo(M.X(sep),M.Y(clamp(y1,-4,4))); if(Math.abs(y1)<1.5){ ctx.lineTo(M.X(56),M.Y(clamp(y1+u2*(56-sep),-4.5,4.5))); } ctx.stroke(); });
+  drawLens(ctx,M,0,2.5,fo); drawLens(ctx,M,sep,1.5,fe);
+  dot(ctx,M.X(di),M.Y(0),4,"#fff"); label(ctx,"picture made by Lens A",M.X(di)-8,M.Y(0)-10,"rgba(255,255,255,.85)","right");
+  label(ctx,"Lens A",M.X(0),M.Y(-2.7)+18,"#cfe3ff"); label(ctx,"Lens B",M.X(sep),M.Y(2.7)-8,"#cfe3ff");
+  const ex=Math.min(M.X(sep+2.2),w-12); ctx.fillStyle="#fff"; ctx.beginPath(); ctx.ellipse(ex,M.Y(0),8,5.5,0,0,7); ctx.fill(); dot(ctx,ex-2,M.Y(0),2.6,"#2a5");
+  ruler(ctx,M,0,55,h-6,5,10); grip(ctx,M.X(sep),M.Y(-2.35)+40);
+  c._h=[{x:M.X(sep),set:px=>setSlider("#tubeS",tubeV(clamp(M.inv(px)-TUBE_OUT,0,19)))}];
+  const dE=sep-di, D=1/dE-1/fe, blur= dE<=0.01? 1 : D<0? -D : Math.max(0,D-1/25), ok=dE>0.01&&blur<0.004;
+  $("#tubeOut").innerHTML=`${uCM(p,1)} out`; $("#tubeSep").innerHTML=`${uCM(sep,1)} apart`; $("#tubeNeed").innerHTML=`about ${uCM(need,1)}`;
+  $("#tubeFocus").textContent= ok? "sharp ✓" : sep<need? "blurry: pull the tube out" : "blurry: push the tube in"; $("#tubeFocus").style.color= ok? "var(--good)":"var(--bad)";
+  $("#tubeSrc").innerHTML= mine? `Using <b>your lenses</b> from Step 6: f<sub>o</sub> = ${fmt(fo,1)} cm, f<sub>e</sub> = ${fmt(fe,1)} cm.` : `Using the kit lenses: Lens A f ≈ 30 cm, Lens B f ≈ 5 cm. Save your own measurements in Step 6 to use them here.`;
+  // view
+  const vc=$("#tubeView"); const r=setupCanvas(vc), x=r.ctx; x.fillStyle="#0b1a2a"; x.fillRect(0,0,r.w,r.h);
+  const mag=fo/fe, A=Math.min(r.w,r.h)/200, bb=Math.min(1,blur*8)*28; const old=target; target= tubeD>=1e8? "moon":"sign";
+  x.save(); x.translate(r.w/2,r.h/2); x.beginPath(); x.arc(0,0,Math.min(r.w,r.h)/2-4,0,7); x.clip(); x.rotate(Math.PI);
+  const n=bb>0.5?12:1; for(let k=0;k<n;k++){ x.save(); if(n>1){ const a=k/n*2*Math.PI; x.translate(Math.cos(a)*bb,Math.sin(a)*bb); x.globalAlpha=2.2/n; } drawScene(x,r.w,r.h,A*mag*(tubeD>=1e8?1:Math.min(3,3000/tubeD*0.35+0.6))); x.restore(); }
+  x.restore(); x.globalAlpha=1; target=old; x.strokeStyle="#000"; x.lineWidth=8; x.beginPath(); x.arc(r.w/2,r.h/2,Math.min(r.w,r.h)/2-2,0,7); x.stroke();
+  x.fillStyle="rgba(0,0,0,.55)"; x.fillRect(0,r.h-24,r.w,24); label(x,`${fmt(mag,1)}× · ${ok?"sharp":"blurry"}`,8,r.h-7,"#cfe3ff","left",BOLD);
+  if(ok&&tubeD>=1e8) tick(11,"moon"); if(ok&&tubeD===500) tick(11,"poster");
+}
+$("#tubeS").addEventListener("input",drawTube);
+$$("#tubeTargets .chip").forEach(b=>b.onclick=()=>{ tubeD=+b.dataset.d; $$("#tubeTargets .chip").forEach(x=>x.classList.toggle("on",x===b)); drawTube(); });
+predict("#p11",1,["Try it on the page: pushing in makes it blurrier.","Right! A closer object makes its picture farther behind Lens A (Step 5), so the eyepiece has to move back to stay one eyepiece focal length behind that picture.","Try it: the Moon setting is blurry for the poster."],()=>tick(11,"q"));
+
 /* ================= results ================= */
 function renderResults(){
-  const R=state.res; const tiles=[["Steps done",`${Object.keys(state.done).filter(k=>+k<=10).length} / 10`],["Mystery lens",R.mys||"—"],["My lenses",R.lenses||"—"],["My telescope",R.tele||"—"],["Light bucket",R.ap||"—"]];
+  const R=state.res; const tiles=[["Steps done",`${Object.keys(state.done).filter(k=>+k<=11).length} / 11`],["Mystery lens",R.mys||"—"],["My lenses",R.lenses||"—"],["My telescope",R.tele||"—"],["Light bucket",R.ap||"—"]];
   $("#resTiles").innerHTML=tiles.map(([k,v])=>`<div class="tile"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("");
 }
 $("#copyRes").onclick=async()=>{ const txt="Light Buckets: my report\n"+$$("#resTiles .tile").map(t=>t.querySelector(".k").textContent+": "+t.querySelector(".v").textContent).join("\n"); try{ await navigator.clipboard.writeText(txt); $("#copyMsg").textContent="Copied!"; }catch(e){ $("#copyMsg").textContent="Couldn't copy; take a screenshot instead."; } };
 
 /* ================= init ================= */
 renderTasks();
-["#s1Canvas","#imgCanvas","#mysCanvas","#magCanvas","#teleCanvas"].forEach(id=>makeDrag($(id)));
+["#s1Canvas","#imgCanvas","#mysCanvas","#magCanvas","#teleCanvas","#tubeCanvas"].forEach(id=>makeDrag($(id)));
 loadLensInputs(); newMystery();
 if(myLenses()) lensResult(myLenses());
-function drawAll(){ drawS1(); drawS2(); drawS3(); drawRays(); drawImg(); drawMys(); drawMag(); drawTele(); drawSky(); drawMir(); drawSizes(); }
+function drawAll(){ drawS1(); drawS2(); drawS3(); drawRays(); drawImg(); drawMys(); drawMag(); drawTele(); drawSky(); drawMir(); drawSizes(); drawTube(); }
 buildMagBtns(); buildApPresets(); applyLenses(); drawAll(); renderResults();
 let rT; addEventListener("resize",()=>{ clearTimeout(rT); rT=setTimeout(drawAll,120); });
 if(document.fonts) document.fonts.ready.then(drawAll);
