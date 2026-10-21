@@ -1,15 +1,11 @@
 <!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Transit Detective</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
 <style>
-/* Layout: observing logbook — a target strip, then four numbered stations (scan → fold → measure → verdict) down one column. */
+/* Layout: observing logbook — explorer, fold lab, a target strip, then four numbered stations (scan → fold → measure → verdict) down one column. */
 :root{
   --bg:#eef1f5; --panel:#ffffff; --ink:#18233a; --muted:#5b6780; --line:#d5dbe6;
   --data:#2c4a86; --accent:#c9761a; --accent-soft:#f6e5cf; --good:#2f7d4f; --warn:#a8461f;
@@ -116,21 +112,9 @@ footer{font-size:.8rem;color:var(--muted);max-width:80ch}
 footer a{color:var(--data)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
-<meta name="description" content="Find exoplanets in real TESS light curves: mark transits, fold to find the period, and measure the planet size.">
-<style>
-#br-sitebar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.25rem 1rem;
-  padding:.5rem clamp(1rem,4vw,2rem);background:#f3f4f6;color:#374151;box-shadow:0 1px 3px rgba(0,0,0,.08);
-  font:600 14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;position:relative;z-index:50;margin:0 0 1rem;border-radius:6px}
-#br-sitebar a{color:#2563eb;text-decoration:none}
-#br-sitebar a:hover,#br-sitebar a:focus-visible{text-decoration:underline}
-#br-sitebar span{font-weight:400;opacity:.85}
-@media print{#br-sitebar{display:none}}
-</style>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-163ZQGF3WY"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-163ZQGF3WY');</script>
-</head>
-<body>
-<nav id="br-sitebar" aria-label="Site"><a href="../../resources.html">&larr; Teaching Resources</a><span><a href="../../index.html">Benjamin Roulston</a> </span></nav>
+</head><body>
+
+
 <div class="wrap">
 <header>
   <h1>Transit Detective</h1>
@@ -214,7 +198,7 @@ footer a{color:var(--data)}
   <div class="row"><div class="chips" id="marks"></div><button class="btn" id="clearmarks" type="button">Clear marks</button></div>
   <div class="row"><label for="markday" style="flex-direction:row;align-items:center;gap:8px">Or type the day of a dip <input id="markday" type="number" step="0.01" min="0" style="width:8rem"></label><button class="btn" id="addmark" type="button">Mark dip</button><span class="note" id="marknote" aria-live="polite"></span></div>
   <div class="readout" id="spacing">No dips marked yet.</div>
-  <details class="method" open>
+  <details class="method">
     <summary>How the math works: reading a light curve</summary>
     <ol>
       <li><b>Each dot is one brightness measurement.</b> TESS took a picture every 2 minutes. We averaged them into 10-minute chunks to cut down the noise. The vertical axis shows how much brighter or dimmer the star was than usual: 0% is normal, −1% means 1% of the light was missing.</li>
@@ -227,9 +211,46 @@ footer a{color:var(--data)}
   </details>
 </section>
 
+<section class="station" id="foldlab">
+  <h2>Fold Lab: what folding does, and why it matters</h2>
+  <p>A transit lasts only a few hours, and in a month TESS might catch the same planet 5 to 10 times. For small planets, each single dip is buried in the noise. <b>Folding</b> is the trick astronomers use: cut the month of data into pieces exactly one orbit long, then stack the pieces on top of each other. This is a made-up star with a small planet. Each color is one orbit's worth of data.</p>
+  <div class="quiz" data-quiz="f1"></div>
+  <canvas id="flc" height="300" aria-label="Demo light curve being cut into orbits and stacked"></canvas>
+  <div class="row">
+    <button class="btn primary" id="flgo" type="button">Fold it ▶</button>
+    <button class="btn" id="flback" type="button">Unfold ◀</button>
+    <label class="row" style="flex-direction:row;align-items:center;gap:6px"><input type="checkbox" id="flclose" checked> Close-up on the dip when folded</label>
+  </div>
+  <div class="controls">
+    <label for="fls">Fold amount <span class="v" id="flsv"></span><input id="fls" type="range" min="0" max="1000" value="0"></label>
+    <label for="flp">Trial period (days) <span class="v" id="flpv"></span><input id="flp" type="range" min="1400" max="7000" value="3270"></label>
+    <label for="fln">Orbits stacked <span class="v" id="flnv"></span><input id="fln" type="range" min="1" max="13" value="13"></label>
+  </div>
+  <div class="presets" aria-label="Try a trial period">
+    <button type="button" data-flp="1">Right period</button>
+    <button type="button" data-flp="1.009">Slightly off (+0.03 d)</button>
+    <button type="button" data-flp="0.5">Half the period</button>
+    <button type="button" data-flp="2">Double the period</button>
+    <button type="button" data-fln="-0.01">−0.01 d</button><button type="button" data-fln="0.01">+0.01 d</button>
+  </div>
+  <div class="xres" id="flres"></div>
+  <div class="verdict" id="flmsg" aria-live="polite"></div>
+  <div class="quiz" data-quiz="f2"></div>
+  <details class="method">
+    <summary>Why folding matters</summary>
+    <ol>
+      <li><b>It makes invisible planets visible.</b> Stacking doesn't make the dip any deeper. It makes the noise smaller. Averaging <i>N</i> measurements shrinks the random scatter by √<i>N</i>, so 4 orbits cut the noise in half, 16 orbits to a quarter, and 100 orbits to a tenth. That's how TESS finds Earth-sized planets whose single transits are lost in the scatter.</li>
+      <li><b>It measures the period very precisely.</b> If your trial period is off by even a few minutes, the error adds up every orbit, and the stack smears out. Only the right period makes a sharp dip, so a sharp fold <i>is</i> the measurement.</li>
+      <li><b>It shows the dip's true shape.</b> One noisy dip could be anything. The stacked dip shows its depth (the planet's size) and its shape: a flat-bottomed U for a planet, a sharp V for a grazing eclipse.</li>
+      <li><b>It catches impostors.</b> Fold on double the period and odd and even dips land in different places. If they have different depths, it's two stars eclipsing each other, not a planet. (That's the clue for Star F.)</li>
+    </ol>
+    <span class="live" id="fllive"></span>
+  </details>
+</section>
+
 <section class="station">
   <h2><span class="n">2</span>Fold the data on the orbital period</h2>
-  <p>If the dips repeat every <i>P</i> days, stacking the data in chunks of <i>P</i> days lines all the dips up on top of each other. When the period is right, the dip snaps into one sharp shape.</p>
+  <p>If the dips repeat every <i>P</i> days, stacking the data in chunks of <i>P</i> days lines all the dips up on top of each other. When the period is right, the dip snaps into one sharp shape. (New to folding? Try the <a href="#foldlab" style="color:var(--data)">Fold Lab</a> above first.)</p>
   <div class="row"><button class="btn primary" id="usemarks" type="button">Use the spacing of my marked dips</button><span class="note" id="usenote"></span></div>
   <canvas id="fold" height="300" aria-label="Folded light curve"></canvas>
   <div class="controls">
@@ -243,7 +264,7 @@ footer a{color:var(--data)}
     </div>
   </div>
   <div class="quiz" data-quiz="q2"></div>
-  <details class="method" open>
+  <details class="method">
     <summary>How the math works: folding</summary>
     <ol>
       <li><b>Pick a starting transit.</b> Call its time T<sub>0</sub>, the middle of one dip.</li>
@@ -264,7 +285,7 @@ footer a{color:var(--data)}
     <label for="depth">Dip depth <span class="v" id="depthv"></span><input id="depth" type="range" min="0" max="1000" value="0"></label>
   </div>
   <div class="quiz" data-quiz="q3"></div>
-  <details class="method" open>
+  <details class="method">
     <summary>How the math works: from depth to size</summary>
     <ol>
       <li><b>The dip is an area ratio.</b> Seen from Earth, the star and the planet are both circles. A circle's area is π R², so the fraction of starlight blocked is
@@ -285,7 +306,7 @@ footer a{color:var(--data)}
   <canvas id="sizes" height="170" aria-label="Your object compared to Earth, Neptune and Jupiter, drawn to scale"></canvas>
   <div class="verdict" id="verdict"></div>
   <div class="quiz" data-quiz="q4"></div>
-  <details class="method" open>
+  <details class="method">
     <summary>How the math works: how far, how hot, and how lucky?</summary>
     <ol>
       <li><b>Kepler's third law gives the orbit's size.</b> A planet with a longer year orbits farther out. With the period in years, the distance in AU (1 AU = Earth–Sun distance) and the star's mass in Sun masses:
@@ -358,6 +379,7 @@ window.TESS_DATA.forEach(function(s){
   for(var i=0;i<v.length;i++){if(v[i]!==''){s.t.push(s.t0+i*dt);s.f.push(1+(+v[i])*s.unit*1e-6);}}
   delete s.data;
 });
+
 </script>
 <script>
 (function(){
@@ -485,7 +507,7 @@ function drawSizes(){
     ctx.fillText(b.r.toFixed(1)+" × Earth",cx,H-12);x+=slot+GAP;});
   if(!rp){ctx.fillStyle=css("--muted");ctx.textAlign="right";ctx.textBaseline="top";ctx.fillText("Set the depth in step 3 to add your object",W-6,6);}
 }
-function drawAll(){drawLC();drawFold();drawSizes();updateReadouts();}
+function drawAll(){drawLC();drawFold();drawSizes();updateReadouts();drawFoldLab();}
 
 /* ---------- controls ---------- */
 const PMIN=0.2,PMAX=30;
@@ -643,6 +665,8 @@ function tipRE(r){const km=r*6371;const cmp=r<1.25?"about Earth's size":r<2?"a b
 const QUIZ={
  x1:{q:"Predict: if a planet were twice as wide, its dip would be…",o:["2× deeper","4× deeper","8× deeper"],a:1,why:"The dip depends on the planet's area, and area grows with width squared: 2² = 4. Try it with the planet-size slider."},
  x2:{q:"Predict: if the same planet orbited farther from its star (a longer period), the transit would last…",o:["less time","the same time","more time"],a:2,why:"Farther out, the planet moves more slowly along its orbit, so crossing the star takes longer. Slide the period up and watch the duration."},
+ f1:{q:"Predict: if we stack all the orbits of this noisy data on top of each other, the hidden dip will…",o:["stay hidden","stand out clearly","become 9× deeper"],a:1,why:"The dip doesn't get deeper: every transit is the same depth. What changes is the noise. Random scatter averages out (stacking 16 copies cuts it by √16 = 4×), while the dip, which is in the same place every orbit, stays. Press Fold it and see."},
+ f2:{q:"Predict: if you fold on exactly half the true period, the dip will…",o:["vanish","be about half as deep","split into two dips"],a:1,why:"Every transit still lands in the middle, but every other piece of data has no transit in it, and averaging those flat pieces in halves the dip. Try the 'Half the period' button."},
  q2:{q:"Predict: if you fold on a period that's slightly wrong, the stacked dip will…",o:["get deeper","smear out and look shallower","vanish completely"],a:1,why:"Each transit lands at a slightly different spot, so the dips spread out instead of stacking. Nudge the period by +0.01 d to see it happen."},
  q3:{q:"Predict: an Earth-sized planet around a small red dwarf makes a dip that is ___ than the same planet around the Sun.",o:["shallower","the same","deeper"],a:2,why:"The planet covers a bigger fraction of a small star's disk. That's how TESS found Earth-sized LHS 3844 b (Star C)."},
  q4:{q:"Predict: which planet is most likely to have its orbit lined up so we can see it transit?",o:["one far from its star","one close to its star","they're equally likely"],a:1,why:"From a close-in orbit, the star blocks a wide range of viewing angles. Check the 'Chance we'd see it transit' result below."}};
@@ -821,6 +845,80 @@ $("liveload").onclick=async()=>{
   }catch(e){liveFail(e);}finally{liveLock(false);}
 };
 
+/* ---------- Fold Lab (demo data) ---------- */
+const FL=(function(){const P=2.13,T0=0.9,span=27,dt=4/1440,dep=0.009,noise=0.009,D=0.2,ing=0.025;
+  let seed=20261021;const rnd=()=>{seed=(seed*16807)%2147483647;return seed/2147483647;};
+  const gauss=()=>{const u=Math.max(1e-9,rnd()),v=rnd();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);};
+  const t=[],f=[];for(let x=0;x<span;x+=dt){if(x>13.2&&x<14.4)continue;let ph=((x-T0)/P)%1;if(ph<-.5)ph+=1;if(ph>=.5)ph-=1;const d=Math.abs(ph*P);
+    let m=0;if(d<D/2){m=d<D/2-ing?-dep:-dep*(D/2-d)/ing;}t.push(x);f.push(m+noise*gauss());}
+  return {P,T0,span,dep,noise,D,t,f};})();
+const FS={s:0,Pt:FL.P,n:99,all:true,close:true,anim:null};
+function flK(){return Math.floor((FL.span-FL.T0)/FS.Pt+0.5)+1;}
+function flDark(){const a=document.documentElement.getAttribute("data-theme");if(a)return a==="dark";return !!(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches);}
+function flCol(k){const h=(k*67+205)%360;return "hsl("+h+","+(flDark()?"70%,68%":"62%,40%")+")";}
+function flStats(){const K=FS.all?flK():Math.min(FS.n,flK()),bw=FS.close?0.02:Math.max(0.03,FS.Pt/110),nb=Math.ceil(FS.Pt/bw);const sum=new Float64Array(nb),cnt=new Int32Array(nb);
+  for(let i=0;i<FL.t.length;i++){const k=Math.round((FL.t[i]-FL.T0)/FS.Pt);if(k>=K)continue;const u=FL.t[i]-FL.T0-k*FS.Pt;const b=Math.floor((u+FS.Pt/2)/bw);if(b<0||b>=nb)continue;sum[b]+=FL.f[i];cnt[b]++;}
+  const bins=[];for(let b=0;b<nb;b++)if(cnt[b]>0)bins.push({u:-FS.Pt/2+(b+.5)*bw,m:sum[b]/cnt[b],c:cnt[b]});
+  const out=bins.filter(x=>Math.abs(x.u)>0.12&&x.c>=2).map(x=>x.m);const mu=out.reduce((a,b)=>a+b,0)/Math.max(1,out.length);
+  const sd=Math.sqrt(out.reduce((a,b)=>a+(b-mu)*(b-mu),0)/Math.max(1,out.length-1));
+  const inn=bins.filter(x=>Math.abs(x.u)<0.035);const dip=inn.length?mu-inn.reduce((a,b)=>a+b.m,0)/inn.length:0;
+  const per=out.length?bins.filter(x=>Math.abs(x.u)>0.12).reduce((a,b)=>a+b.c,0)/out.length:0;
+  let tr=0;const tEnd=FL.T0+(K-0.5)*FS.Pt;for(let j=0;FL.T0+j*FL.P<FL.span;j++){const tc=FL.T0+j*FL.P;if(tc<tEnd&&!(tc>13.2&&tc<14.4))tr++;}
+  return {bins,sd,dip,per,K,tr};}
+function drawFoldLab(){
+  const c=$("flc");if(!c)return;const ctx=setupCanvas(c);const s=FS.s,Pt=FS.Pt,K=FS.all?flK():Math.min(FS.n,flK());
+  const cf=FS.close?Math.max(0,Math.min(1,(s-0.8)/0.2)):0;const hw=Pt/2+(0.4-Pt/2)*cf;
+  const x0=-hw*s,x1=FL.span+(hw-FL.span)*s;const yr=FL.noise*3.6+(FL.noise*2.4-FL.noise*3.6)*cf;
+  const A=axes(ctx,c,x0,x1,-yr,yr*0.75,s<0.5?"days since the star was first watched":"days from the middle of the dip","brightness change",v=>(v*100).toFixed(1)+"%");
+  ctx.save();ctx.beginPath();ctx.rect(PAD.l,PAD.t,A.W-PAD.l-PAD.r,A.H-PAD.t-PAD.b);ctx.clip();
+  for(let i=0;i<FL.t.length;i++){const t=FL.t[i];const k=Math.round((t-FL.T0)/Pt);
+    if(k>=K){if(s>0.04)continue;ctx.globalAlpha=.15;ctx.fillStyle=css("--muted");}else{ctx.globalAlpha=.75-.35*Math.max(0,(s-0.85)/0.15);ctx.fillStyle=flCol(k);}
+    const u=t-s*(k*Pt+FL.T0);ctx.fillRect(A.X(u)-1,A.Y(FL.f[i])-1,2.2,2.2);}
+  ctx.globalAlpha=1;
+  if(s<0.97){ctx.strokeStyle=css("--ink");ctx.globalAlpha=0.55*(1-s);ctx.setLineDash([5,5]);ctx.lineWidth=1.2;
+    for(let k=0;k<K;k++){const b=FL.T0+(k+0.5)*Pt;if(b>FL.span)break;const x=A.X(b-s*(k*Pt+FL.T0));ctx.beginPath();ctx.moveTo(x,PAD.t);ctx.lineTo(x,A.H-PAD.b);ctx.stroke();}
+    ctx.setLineDash([]);ctx.globalAlpha=1;
+    if(s<0.15){ctx.fillStyle=css("--muted");ctx.font="12px "+css("--mono");ctx.textAlign="left";ctx.textBaseline="top";ctx.globalAlpha=1-s/0.15;ctx.fillText("dashed lines: cuts every "+Pt.toFixed(3)+" days",PAD.l+6,PAD.t+4);ctx.globalAlpha=1;}}
+  if(s>0.85){const st=flStats();ctx.globalAlpha=(s-0.85)/0.15;ctx.strokeStyle=css("--ink");ctx.lineWidth=3.5;ctx.beginPath();let on=false;
+    st.bins.forEach(b=>{if(b.c<2){on=false;return;}const x=A.X(b.u),y=A.Y(b.m);if(!on){ctx.moveTo(x,y);on=true;}else ctx.lineTo(x,y);});ctx.stroke();ctx.globalAlpha=1;
+    if(s>0.98){ctx.fillStyle=css("--ink");ctx.font="bold 12px "+css("--mono");ctx.textAlign="right";ctx.textBaseline="top";ctx.fillText(A.W>560?"black line = average of the stack":"black line = average",A.W-PAD.r-6,PAD.t+4);}}
+  ctx.restore();updateFoldLab();}
+function updateFoldLab(){
+  const st=flStats(),s=FS.s,Pt=FS.Pt;
+  $("flsv").textContent=s<0.01?"unfolded":s>0.99?"fully stacked":Math.round(s*100)+"%";
+  $("flpv").textContent=Pt.toFixed(3)+" d";$("fln").max=flK();$("fln").value=FS.all?flK():Math.min(FS.n,flK());
+  $("flnv").textContent=st.K+" of "+flK();
+  const folded=s>0.85;
+  const tiles=[["Trial period",Pt.toFixed(3)+" d"],["Orbits stacked",st.K],["Transits in the stack",st.tr],["Scatter: one point",(FL.noise*100).toFixed(2)+"%"],
+    ["Scatter: the average",folded?(st.sd*100).toFixed(2)+"%":"fold first"],["Dip in the average",folded?(st.dip*100).toFixed(2)+"%":"fold first"]];
+  $("flres").innerHTML="";tiles.forEach(([k,v])=>{const d=document.createElement("div");d.innerHTML="<small></small><b></b>";d.children[0].textContent=k;d.children[1].textContent=v;$("flres").appendChild(d);});
+  const r=Pt/FL.P,off=Math.abs(Pt-FL.P),durH=(FL.D*24).toFixed(1);let m;
+  if(s<0.5)m="Unfolded: the dips are in there, but each one is smaller than the scatter of the dots. Can you spot any? Press Fold it to stack the orbits.";
+  else if(off<0.004)m="Lined up! Every transit lands in the same spot, and the average (black line) shows a clear "+(st.dip*100).toFixed(2)+"% dip, even though no single dip was visible. Try fewer orbits stacked and watch the dip sink back into the noise.";
+  else if(Math.abs(r-0.5)<0.006)m="Half the true period: every transit still lands in the middle, but every other piece has no transit in it. Averaging in those flat pieces makes the dip only about half as deep. A planet fold at half the period always looks too shallow.";
+  else if(Math.abs(r-2)<0.01)m="Double the true period: two dips appear, one in the middle and one split across the edges. (Close-up is off so you can see the edges.) That means the real period is half this. (For an eclipsing binary star, those two dips would have different depths.)";
+  else{const drift=off*24,spread=drift*(st.K-1);m="Each piece is "+drift.toFixed(1)+" hours off from the one before, so across "+st.K+" orbits the dips spread over about "+spread.toFixed(0)+" hours. The transit only lasts "+durH+" hours, so the dips smear out"+(spread<3?" a little. Close, but nudge the period to make the dip sharper.":" into a wide, shallow blur.");}
+  $("flmsg").textContent=m;$("flmsg").classList.toggle("bad",s>=0.5&&off>=0.004&&Math.abs(r-0.5)>=0.006);
+  const tp=FL.T0+7*FL.P+0.03,orb=(tp-FL.T0)/Pt,whole=Math.round(orb),left=orb-whole;
+  const npb=Math.max(1,Math.round(st.per||1));
+  $("fllive").innerHTML="<span class='lab'>Live example: where one dot lands</span>A dot at day <b>"+tp.toFixed(2)+"</b>: (t − T<sub>0</sub>) ÷ P = ("+tp.toFixed(2)+" − "+FL.T0.toFixed(2)+") ÷ "+Pt.toFixed(3)+" = <b>"+orb.toFixed(3)+"</b> orbits. Drop the whole orbits ("+whole+") and keep the leftover <b>"+(left>=0?"+":"")+left.toFixed(3)+"</b> of an orbit = "+(left*Pt>=0?"+":"")+(left*Pt).toFixed(3)+" days from the middle of the dip."+
+    "<br><span class='lab' style='margin-top:6px'>Live example: why stacking beats noise</span>Each point of the black line averages about <b>"+npb+"</b> dots. Scatter of one dot ÷ √"+npb+" = "+(FL.noise*100).toFixed(2)+"% ÷ "+Math.sqrt(npb).toFixed(1)+" = <b>"+(FL.noise*100/Math.sqrt(npb)).toFixed(2)+"%</b>"+(s>0.85?" (measured: "+(st.sd*100).toFixed(2)+"%)":"")+", compared with a "+(FL.dep*100).toFixed(2)+"% dip.";
+}
+function flAnimate(to){cancelAnimationFrame(FS.anim);const from=FS.s,t0=performance.now(),dur=2400*Math.abs(to-from)+1;
+  const reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(reduce){FS.s=to;$("fls").value=Math.round(to*1000);drawFoldLab();return;}
+  const step=now=>{const q=Math.min(1,(now-t0)/dur),e=q<.5?2*q*q:1-Math.pow(-2*q+2,2)/2;FS.s=from+(to-from)*e;$("fls").value=Math.round(FS.s*1000);drawFoldLab();if(q<1)FS.anim=requestAnimationFrame(step);};
+  FS.anim=requestAnimationFrame(step);}
+function flSetP(p){FS.Pt=Math.max(1.4,Math.min(7,p));$("flp").value=Math.round(FS.Pt*1000);drawFoldLab();}
+$("flgo").onclick=()=>flAnimate(1);$("flback").onclick=()=>flAnimate(0);
+$("fls").addEventListener("input",e=>{cancelAnimationFrame(FS.anim);FS.s=+e.target.value/1000;drawFoldLab();});
+$("flp").addEventListener("input",e=>{FS.Pt=+e.target.value/1000;drawFoldLab();});
+$("fln").addEventListener("input",e=>{FS.n=+e.target.value;FS.all=FS.n>=flK();drawFoldLab();});
+$("flclose").addEventListener("change",e=>{FS.close=e.target.checked;drawFoldLab();});
+document.querySelectorAll("[data-flp]").forEach(b=>b.addEventListener("click",()=>{FS.close=b.dataset.flp!=="2";$("flclose").checked=FS.close;flSetP(FL.P*(+b.dataset.flp));if(FS.s<0.99)flAnimate(1);}));
+document.querySelectorAll("[data-fln]").forEach(b=>b.addEventListener("click",()=>flSetP(FS.Pt+ +b.dataset.fln)));
+$("fln").max=flK();$("fln").value=flK();FS.n=flK();
+
 /* ---------- boot ---------- */
 window.addEventListener("resize",()=>{clearTimeout(window._rt);window._rt=setTimeout(drawAll,120);});
 try{window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",drawAll);}catch(e){}
@@ -830,5 +928,5 @@ requestAnimationFrame(tdemo);
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(drawAll);
 })();
 </script>
-</body>
-</html>
+
+</body></html>
