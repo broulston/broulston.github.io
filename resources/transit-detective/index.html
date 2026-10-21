@@ -223,7 +223,7 @@ footer a{color:var(--data)}
   </div>
   <div class="controls">
     <label for="fls">Fold amount <span class="v" id="flsv"></span><input id="fls" type="range" min="0" max="1000" value="0"></label>
-    <label for="flp">Trial period (days) <span class="v" id="flpv"></span><input id="flp" type="range" min="1400" max="7000" value="3270"></label>
+    <label for="flp">Trial period (days) <span class="v" id="flpv"></span><input id="flp" type="range" min="800" max="5000" value="2130"></label>
     <label for="fln">Orbits stacked <span class="v" id="flnv"></span><input id="fln" type="range" min="1" max="13" value="13"></label>
   </div>
   <div class="presets" aria-label="Try a trial period">
@@ -909,7 +909,7 @@ function flAnimate(to){cancelAnimationFrame(FS.anim);const from=FS.s,t0=performa
   if(reduce){FS.s=to;$("fls").value=Math.round(to*1000);drawFoldLab();return;}
   const step=now=>{const q=Math.min(1,(now-t0)/dur),e=q<.5?2*q*q:1-Math.pow(-2*q+2,2)/2;FS.s=from+(to-from)*e;$("fls").value=Math.round(FS.s*1000);drawFoldLab();if(q<1)FS.anim=requestAnimationFrame(step);};
   FS.anim=requestAnimationFrame(step);}
-function flSetP(p){FS.Pt=Math.max(1.4,Math.min(7,p));$("flp").value=Math.round(FS.Pt*1000);drawFoldLab();}
+function flSetP(p){FS.Pt=Math.max(0.8,Math.min(5,p));$("flp").value=Math.round(FS.Pt*1000);drawFoldLab();}
 $("flgo").onclick=()=>flAnimate(1);$("flback").onclick=()=>flAnimate(0);
 $("fls").addEventListener("input",e=>{cancelAnimationFrame(FS.anim);FS.s=+e.target.value/1000;drawFoldLab();});
 $("flp").addEventListener("input",e=>{FS.Pt=+e.target.value/1000;drawFoldLab();});
@@ -917,7 +917,7 @@ $("fln").addEventListener("input",e=>{FS.n=+e.target.value;FS.all=FS.n>=flK();dr
 $("flclose").addEventListener("change",e=>{FS.close=e.target.checked;drawFoldLab();});
 document.querySelectorAll("[data-flp]").forEach(b=>b.addEventListener("click",()=>{FS.close=b.dataset.flp!=="2";$("flclose").checked=FS.close;flSetP(FL.P*(+b.dataset.flp));if(FS.s<0.99)flAnimate(1);}));
 document.querySelectorAll("[data-fln]").forEach(b=>b.addEventListener("click",()=>flSetP(FS.Pt+ +b.dataset.fln)));
-$("fln").max=flK();$("fln").value=flK();FS.n=flK();
+$("fln").max=flK();$("fln").value=flK();FS.n=flK();$("flp").value=Math.round(FS.Pt*1000);
 
 /* ---------- boot ---------- */
 window.addEventListener("resize",()=>{clearTimeout(window._rt);window._rt=setTimeout(drawAll,120);});
